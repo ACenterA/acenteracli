@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/elbv2"
-	"github.com/wallix/awless/aws/spec"
+	awsspec "github.com/wallix/awless/aws/spec"
 )
 
 func TestInstance(t *testing.T) {

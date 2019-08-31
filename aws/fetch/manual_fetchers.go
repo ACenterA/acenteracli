@@ -16,7 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/wallix/awless/aws/conv"
+	awsconv "github.com/wallix/awless/aws/conv"
 	"github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/cloud/properties"
 	"github.com/wallix/awless/cloud/rdf"

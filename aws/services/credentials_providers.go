@@ -28,7 +28,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
-	"github.com/wallix/awless/aws/spec"
+	awsspec "github.com/wallix/awless/aws/spec"
 	"github.com/wallix/awless/logger"
 )
 

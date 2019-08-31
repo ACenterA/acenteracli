@@ -29,7 +29,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/wallix/awless/aws/conv"
+	awsconv "github.com/wallix/awless/aws/conv"
 	"github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/graph"
 	tstore "github.com/wallix/triplestore"

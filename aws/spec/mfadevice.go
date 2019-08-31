@@ -24,6 +24,7 @@ import (
 	"strings"
 	"time"
 
+	awsconfig "github.com/wallix/awless/aws/config"
 	"github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/template/env"
 	"github.com/wallix/awless/template/params"
@@ -34,7 +35,6 @@ import (
 	"github.com/boombuler/barcode/qr"
 	"github.com/chzyer/readline"
 	"github.com/fatih/color"
-	"github.com/wallix/awless/aws/config"
 	"github.com/wallix/awless/logger"
 )
 

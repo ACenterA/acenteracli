@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/wallix/awless/aws/config"
-	"github.com/wallix/awless/aws/spec"
+	awsconfig "github.com/wallix/awless/aws/config"
+	awsspec "github.com/wallix/awless/aws/spec"
 	"github.com/wallix/awless/cloud/properties"
 	"github.com/wallix/awless/graph"
 	"github.com/wallix/awless/graph/resourcetest"

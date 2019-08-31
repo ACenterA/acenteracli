@@ -14,10 +14,10 @@ func TestTargetgroup(t *testing.T) {
 					TargetGroups: []*elbv2.TargetGroup{{TargetGroupArn: String("new-tg-arn")}},
 				}, nil
 			}}).ExpectInput("CreateTargetGroup", &elbv2.CreateTargetGroupInput{
-			Name:     String("new-tg"),
-			Port:     Int64(80),
-			Protocol: String("HTTP"),
-			VpcId:    String("any-vpc-id"),
+			Name:                       String("new-tg"),
+			Port:                       Int64(80),
+			Protocol:                   String("HTTP"),
+			VpcId:                      String("any-vpc-id"),
 			HealthCheckIntervalSeconds: Int64(2),
 			HealthCheckPath:            String("/health"),
 			HealthCheckPort:            String("80"),

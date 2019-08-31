@@ -2590,9 +2590,6 @@ type cloudfrontMock struct {
 	DeleteDistributionFunc                                 func(param0 *cloudfront.DeleteDistributionInput) (*cloudfront.DeleteDistributionOutput, error)
 	DeleteDistributionRequestFunc                          func(param0 *cloudfront.DeleteDistributionInput) (*request.Request, *cloudfront.DeleteDistributionOutput)
 	DeleteDistributionWithContextFunc                      func(param0 aws.Context, param1 *cloudfront.DeleteDistributionInput, param2 ...request.Option) (*cloudfront.DeleteDistributionOutput, error)
-	DeleteServiceLinkedRoleFunc                            func(param0 *cloudfront.DeleteServiceLinkedRoleInput) (*cloudfront.DeleteServiceLinkedRoleOutput, error)
-	DeleteServiceLinkedRoleRequestFunc                     func(param0 *cloudfront.DeleteServiceLinkedRoleInput) (*request.Request, *cloudfront.DeleteServiceLinkedRoleOutput)
-	DeleteServiceLinkedRoleWithContextFunc                 func(param0 aws.Context, param1 *cloudfront.DeleteServiceLinkedRoleInput, param2 ...request.Option) (*cloudfront.DeleteServiceLinkedRoleOutput, error)
 	DeleteStreamingDistributionFunc                        func(param0 *cloudfront.DeleteStreamingDistributionInput) (*cloudfront.DeleteStreamingDistributionOutput, error)
 	DeleteStreamingDistributionRequestFunc                 func(param0 *cloudfront.DeleteStreamingDistributionInput) (*request.Request, *cloudfront.DeleteStreamingDistributionOutput)
 	DeleteStreamingDistributionWithContextFunc             func(param0 aws.Context, param1 *cloudfront.DeleteStreamingDistributionInput, param2 ...request.Option) (*cloudfront.DeleteStreamingDistributionOutput, error)
@@ -2800,24 +2797,6 @@ func (m *cloudfrontMock) DeleteDistributionWithContext(param0 aws.Context, param
 	m.addCall("DeleteDistributionWithContext")
 	m.verifyInput("DeleteDistributionWithContext", param0)
 	return m.DeleteDistributionWithContextFunc(param0, param1, param2...)
-}
-
-func (m *cloudfrontMock) DeleteServiceLinkedRole(param0 *cloudfront.DeleteServiceLinkedRoleInput) (*cloudfront.DeleteServiceLinkedRoleOutput, error) {
-	m.addCall("DeleteServiceLinkedRole")
-	m.verifyInput("DeleteServiceLinkedRole", param0)
-	return m.DeleteServiceLinkedRoleFunc(param0)
-}
-
-func (m *cloudfrontMock) DeleteServiceLinkedRoleRequest(param0 *cloudfront.DeleteServiceLinkedRoleInput) (*request.Request, *cloudfront.DeleteServiceLinkedRoleOutput) {
-	m.addCall("DeleteServiceLinkedRoleRequest")
-	m.verifyInput("DeleteServiceLinkedRoleRequest", param0)
-	return m.DeleteServiceLinkedRoleRequestFunc(param0)
-}
-
-func (m *cloudfrontMock) DeleteServiceLinkedRoleWithContext(param0 aws.Context, param1 *cloudfront.DeleteServiceLinkedRoleInput, param2 ...request.Option) (*cloudfront.DeleteServiceLinkedRoleOutput, error) {
-	m.addCall("DeleteServiceLinkedRoleWithContext")
-	m.verifyInput("DeleteServiceLinkedRoleWithContext", param0)
-	return m.DeleteServiceLinkedRoleWithContextFunc(param0, param1, param2...)
 }
 
 func (m *cloudfrontMock) DeleteStreamingDistribution(param0 *cloudfront.DeleteStreamingDistributionInput) (*cloudfront.DeleteStreamingDistributionOutput, error) {
@@ -12295,9 +12274,6 @@ type iamMock struct {
 	DeleteServerCertificateFunc                            func(param0 *iam.DeleteServerCertificateInput) (*iam.DeleteServerCertificateOutput, error)
 	DeleteServerCertificateRequestFunc                     func(param0 *iam.DeleteServerCertificateInput) (*request.Request, *iam.DeleteServerCertificateOutput)
 	DeleteServerCertificateWithContextFunc                 func(param0 aws.Context, param1 *iam.DeleteServerCertificateInput, param2 ...request.Option) (*iam.DeleteServerCertificateOutput, error)
-	DeleteServiceLinkedRoleFunc                            func(param0 *iam.DeleteServiceLinkedRoleInput) (*iam.DeleteServiceLinkedRoleOutput, error)
-	DeleteServiceLinkedRoleRequestFunc                     func(param0 *iam.DeleteServiceLinkedRoleInput) (*request.Request, *iam.DeleteServiceLinkedRoleOutput)
-	DeleteServiceLinkedRoleWithContextFunc                 func(param0 aws.Context, param1 *iam.DeleteServiceLinkedRoleInput, param2 ...request.Option) (*iam.DeleteServiceLinkedRoleOutput, error)
 	DeleteServiceSpecificCredentialFunc                    func(param0 *iam.DeleteServiceSpecificCredentialInput) (*iam.DeleteServiceSpecificCredentialOutput, error)
 	DeleteServiceSpecificCredentialRequestFunc             func(param0 *iam.DeleteServiceSpecificCredentialInput) (*request.Request, *iam.DeleteServiceSpecificCredentialOutput)
 	DeleteServiceSpecificCredentialWithContextFunc         func(param0 aws.Context, param1 *iam.DeleteServiceSpecificCredentialInput, param2 ...request.Option) (*iam.DeleteServiceSpecificCredentialOutput, error)
@@ -13220,24 +13196,6 @@ func (m *iamMock) DeleteServerCertificateWithContext(param0 aws.Context, param1 
 	m.addCall("DeleteServerCertificateWithContext")
 	m.verifyInput("DeleteServerCertificateWithContext", param0)
 	return m.DeleteServerCertificateWithContextFunc(param0, param1, param2...)
-}
-
-func (m *iamMock) DeleteServiceLinkedRole(param0 *iam.DeleteServiceLinkedRoleInput) (*iam.DeleteServiceLinkedRoleOutput, error) {
-	m.addCall("DeleteServiceLinkedRole")
-	m.verifyInput("DeleteServiceLinkedRole", param0)
-	return m.DeleteServiceLinkedRoleFunc(param0)
-}
-
-func (m *iamMock) DeleteServiceLinkedRoleRequest(param0 *iam.DeleteServiceLinkedRoleInput) (*request.Request, *iam.DeleteServiceLinkedRoleOutput) {
-	m.addCall("DeleteServiceLinkedRoleRequest")
-	m.verifyInput("DeleteServiceLinkedRoleRequest", param0)
-	return m.DeleteServiceLinkedRoleRequestFunc(param0)
-}
-
-func (m *iamMock) DeleteServiceLinkedRoleWithContext(param0 aws.Context, param1 *iam.DeleteServiceLinkedRoleInput, param2 ...request.Option) (*iam.DeleteServiceLinkedRoleOutput, error) {
-	m.addCall("DeleteServiceLinkedRoleWithContext")
-	m.verifyInput("DeleteServiceLinkedRoleWithContext", param0)
-	return m.DeleteServiceLinkedRoleWithContextFunc(param0, param1, param2...)
 }
 
 func (m *iamMock) DeleteServiceSpecificCredential(param0 *iam.DeleteServiceSpecificCredentialInput) (*iam.DeleteServiceSpecificCredentialOutput, error) {

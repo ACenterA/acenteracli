@@ -240,7 +240,8 @@
       "required":[
         "ServiceNamespace",
         "ScheduledActionName",
-        "ResourceId"
+        "ResourceId",
+        "ScalableDimension"
       ],
       "members":{
         "ServiceNamespace":{"shape":"ServiceNamespace"},
@@ -425,7 +426,10 @@
         "RDSReaderAverageDatabaseConnections",
         "EC2SpotFleetRequestAverageCPUUtilization",
         "EC2SpotFleetRequestAverageNetworkIn",
-        "EC2SpotFleetRequestAverageNetworkOut"
+        "EC2SpotFleetRequestAverageNetworkOut",
+        "SageMakerVariantInvocationsPerInstance",
+        "ECSServiceAverageCPUUtilization",
+        "ECSServiceAverageMemoryUtilization"
       ]
     },
     "MetricUnit":{"type":"string"},
@@ -489,7 +493,8 @@
       "required":[
         "ServiceNamespace",
         "ScheduledActionName",
-        "ResourceId"
+        "ResourceId",
+        "ScalableDimension"
       ],
       "members":{
         "ServiceNamespace":{"shape":"ServiceNamespace"},
@@ -520,7 +525,8 @@
         "ScalableDimension":{"shape":"ScalableDimension"},
         "MinCapacity":{"shape":"ResourceCapacity"},
         "MaxCapacity":{"shape":"ResourceCapacity"},
-        "RoleARN":{"shape":"ResourceIdMaxLen1600"}
+        "RoleARN":{"shape":"ResourceIdMaxLen1600"},
+        "SuspendedState":{"shape":"SuspendedState"}
       }
     },
     "RegisterScalableTargetResponse":{
@@ -559,7 +565,9 @@
         "dynamodb:table:WriteCapacityUnits",
         "dynamodb:index:ReadCapacityUnits",
         "dynamodb:index:WriteCapacityUnits",
-        "rds:cluster:ReadReplicaCount"
+        "rds:cluster:ReadReplicaCount",
+        "sagemaker:variant:DesiredInstanceCount",
+        "custom-resource:ResourceType:Property"
       ]
     },
     "ScalableTarget":{
@@ -580,7 +588,8 @@
         "MinCapacity":{"shape":"ResourceCapacity"},
         "MaxCapacity":{"shape":"ResourceCapacity"},
         "RoleARN":{"shape":"ResourceIdMaxLen1600"},
-        "CreationTime":{"shape":"TimestampType"}
+        "CreationTime":{"shape":"TimestampType"},
+        "SuspendedState":{"shape":"SuspendedState"}
       }
     },
     "ScalableTargetAction":{
@@ -664,6 +673,7 @@
         "CreationTime":{"shape":"TimestampType"}
       }
     },
+    "ScalingSuspended":{"type":"boolean"},
     "ScheduledAction":{
       "type":"structure",
       "required":[
@@ -705,7 +715,9 @@
         "ec2",
         "appstream",
         "dynamodb",
-        "rds"
+        "rds",
+        "sagemaker",
+        "custom-resource"
       ]
     },
     "StepAdjustment":{
@@ -729,6 +741,14 @@
         "MinAdjustmentMagnitude":{"shape":"MinAdjustmentMagnitude"},
         "Cooldown":{"shape":"Cooldown"},
         "MetricAggregationType":{"shape":"MetricAggregationType"}
+      }
+    },
+    "SuspendedState":{
+      "type":"structure",
+      "members":{
+        "DynamicScalingInSuspended":{"shape":"ScalingSuspended"},
+        "DynamicScalingOutSuspended":{"shape":"ScalingSuspended"},
+        "ScheduledScalingSuspended":{"shape":"ScalingSuspended"}
       }
     },
     "TargetTrackingScalingPolicyConfiguration":{

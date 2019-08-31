@@ -31,7 +31,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/iam/iamiface"
-	"github.com/wallix/awless/aws/config"
+	awsconfig "github.com/wallix/awless/aws/config"
 	"github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/cloud/properties"
 	"github.com/wallix/awless/logger"

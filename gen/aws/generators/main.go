@@ -59,7 +59,7 @@ func main() {
 
 	// commands
 	generateCommands()
-	generateAcceptanceMocks()
+	// generateAcceptanceMocks()
 	generateAcceptanceFactory()
 
 	// properties

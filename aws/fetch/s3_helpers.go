@@ -9,7 +9,7 @@ import (
 	awssdk "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
-	"github.com/wallix/awless/aws/conv"
+	awsconv "github.com/wallix/awless/aws/conv"
 	"github.com/wallix/awless/cloud/rdf"
 	"github.com/wallix/awless/fetch"
 	"github.com/wallix/awless/graph"

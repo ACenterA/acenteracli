@@ -84,10 +84,21 @@ func searchParamInDoc(paramsDoc map[string]string, input, field string) (string,
 
 var simpleTagRegex = regexp.MustCompile(`</?\w+>`)
 var bracketTextRegex = regexp.MustCompile(`\[[\w-]+\]`)
+var doubleQuotesRegex = regexp.MustCompile(`"`)
 
 func trimVal(v interface{}) (out string) {
-	out = strings.SplitN(fmt.Sprint(v), ".", 2)[0]
+	tmpS := fmt.Sprint(v)
+	// tmpS := strings.SplitN(fmt.Sprint(v), ".", 2)
+	out = tmpS
+	/*
+	out = tmpS[0]
+        lTmp := len(tmpS)
+        while(lTMp-- > 0) {
+          out = out + tmpS[1]
+        }
+	*/
 	out = simpleTagRegex.ReplaceAllString(out, "")
+	out = doubleQuotesRegex.ReplaceAllString(out, "\\\"")
 	out = bracketTextRegex.ReplaceAllString(out, "")
 	out = strings.TrimSpace(out)
 	return
