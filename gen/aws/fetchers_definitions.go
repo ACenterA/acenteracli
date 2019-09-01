@@ -32,8 +32,8 @@ func ApiToInterface(api string) string {
 		return "CloudFrontAPI"
 	case "applicationautoscaling":
 		return "ApplicationAutoScalingAPI"
-	case "cloudformation":
-		return "CloudFormationAPI"
+//	case "cloudformation":
+//		return "CloudFormationAPI"
 	case "route53", "lambda":
 		return strings.Title(api) + "API"
 	default:
@@ -60,6 +60,12 @@ type fetcher struct {
 }
 
 var FetchersDefs = []fetchersDef{
+/*
+// warning see aws/services/init.go
+// warning see aws/services/init.go
+// warning see aws/services/init.go
+// warning see aws/services/init.go
+// warning see aws/services/init.go
 	{
 		Name: "infra",
 		Api:  []string{"ec2", "elbv2", "elb", "rds", "autoscaling", "ecr", "ecs", "applicationautoscaling", "acm"},
@@ -96,6 +102,7 @@ var FetchersDefs = []fetchersDef{
 			{Api: "acm", ResourceType: cloud.Certificate, AWSType: "acm.CertificateSummary", ApiMethod: "ListCertificatesPages", Input: "acm.ListCertificatesInput{}", Output: "acm.ListCertificatesOutput", OutputsExtractor: "CertificateSummaryList", Multipage: true, NextPageMarker: "NextToken"},
 		},
 	},
+*/
 	{
 		Name:   "access",
 		Global: true,
@@ -110,6 +117,7 @@ var FetchersDefs = []fetchersDef{
 			{Api: "iam", ResourceType: cloud.MFADevice, AWSType: "iam.VirtualMFADevice", ApiMethod: "ListVirtualMFADevicesPages", Input: "iam.ListVirtualMFADevicesInput{}", Output: "iam.ListVirtualMFADevicesOutput", OutputsExtractor: "VirtualMFADevices", Multipage: true, NextPageMarker: "Marker"},
 		},
 	},
+/*
 	{
 		Name: "storage",
 		Api:  []string{"s3"},
@@ -152,6 +160,8 @@ var FetchersDefs = []fetchersDef{
 			{Api: "cloudwatch", ResourceType: cloud.Alarm, AWSType: "cloudwatch.MetricAlarm", ApiMethod: "DescribeAlarmsPages", Input: "cloudwatch.DescribeAlarmsInput{}", Output: "cloudwatch.DescribeAlarmsOutput", OutputsExtractor: "MetricAlarms", Multipage: true, NextPageMarker: "NextToken"},
 		},
 	},
+*/
+/*
 	{
 		Name:   "cdn",
 		Global: true,
@@ -160,6 +170,8 @@ var FetchersDefs = []fetchersDef{
 			{Api: "cloudfront", ResourceType: cloud.Distribution, AWSType: "cloudfront.DistributionSummary", ApiMethod: "ListDistributionsPages", Input: "cloudfront.ListDistributionsInput{}", Output: "cloudfront.ListDistributionsOutput", OutputsExtractor: "DistributionList.Items", Multipage: true, NextPageMarker: "DistributionList.NextMarker"},
 		},
 	},
+*/
+/*
 	{
 		Name: "cloudformation", //deployment ?
 		Api:  []string{"cloudformation"},
@@ -167,4 +179,5 @@ var FetchersDefs = []fetchersDef{
 			{Api: "cloudformation", ResourceType: cloud.Stack, AWSType: "cloudformation.Stack", ApiMethod: "DescribeStacksPages", Input: "cloudformation.DescribeStacksInput{}", Output: "cloudformation.DescribeStacksOutput", OutputsExtractor: "Stacks", Multipage: true, NextPageMarker: "NextToken"},
 		},
 	},
+*/
 }

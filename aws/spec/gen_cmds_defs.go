@@ -85,7 +85,6 @@ var APIPerTemplateDefName = map[string]string{
 	"createscalingpolicy":       "autoscaling",
 	"createsecuritygroup":       "ec2",
 	"createsnapshot":            "ec2",
-	"createstack":               "cloudformation",
 	"createsubnet":              "ec2",
 	"createsubscription":        "sns",
 	"createtag":                 "ec2",
@@ -134,7 +133,6 @@ var APIPerTemplateDefName = map[string]string{
 	"deletescalingpolicy":       "autoscaling",
 	"deletesecuritygroup":       "ec2",
 	"deletesnapshot":            "ec2",
-	"deletestack":               "cloudformation",
 	"deletesubnet":              "ec2",
 	"deletesubscription":        "sns",
 	"deletetag":                 "ec2",
@@ -182,7 +180,6 @@ var APIPerTemplateDefName = map[string]string{
 	"updates3object":            "s3",
 	"updatescalinggroup":        "autoscaling",
 	"updatesecuritygroup":       "ec2",
-	"updatestack":               "cloudformation",
 	"updatesubnet":              "ec2",
 	"updatetargetgroup":         "elbv2",
 }
@@ -590,12 +587,6 @@ var AWSTemplatesDefinitions = map[string]Definition{
 		Api:    "ec2",
 		Params: new(CreateSnapshot).ParamsSpec().Rule(),
 	},
-	"createstack": {
-		Action: "create",
-		Entity: "stack",
-		Api:    "cloudformation",
-		Params: new(CreateStack).ParamsSpec().Rule(),
-	},
 	"createsubnet": {
 		Action: "create",
 		Entity: "subnet",
@@ -884,12 +875,6 @@ var AWSTemplatesDefinitions = map[string]Definition{
 		Api:    "ec2",
 		Params: new(DeleteSnapshot).ParamsSpec().Rule(),
 	},
-	"deletestack": {
-		Action: "delete",
-		Entity: "stack",
-		Api:    "cloudformation",
-		Params: new(DeleteStack).ParamsSpec().Rule(),
-	},
 	"deletesubnet": {
 		Action: "delete",
 		Entity: "subnet",
@@ -1172,12 +1157,6 @@ var AWSTemplatesDefinitions = map[string]Definition{
 		Api:    "ec2",
 		Params: new(UpdateSecuritygroup).ParamsSpec().Rule(),
 	},
-	"updatestack": {
-		Action: "update",
-		Entity: "stack",
-		Api:    "cloudformation",
-		Params: new(UpdateStack).ParamsSpec().Rule(),
-	},
 	"updatesubnet": {
 		Action: "update",
 		Entity: "subnet",
@@ -1197,12 +1176,12 @@ var DriverSupportedActions = map[string][]string{
 	"authenticate": {"registry"},
 	"check":        {"certificate", "database", "distribution", "instance", "loadbalancer", "natgateway", "networkinterface", "scalinggroup", "securitygroup", "volume"},
 	"copy":         {"image", "snapshot"},
-	"create":       {"accesskey", "alarm", "appscalingpolicy", "appscalingtarget", "bucket", "certificate", "classicloadbalancer", "containercluster", "database", "dbsubnetgroup", "distribution", "elasticip", "function", "group", "image", "instance", "instanceprofile", "internetgateway", "keypair", "launchconfiguration", "listener", "loadbalancer", "loginprofile", "mfadevice", "natgateway", "networkinterface", "policy", "queue", "record", "repository", "role", "route", "routetable", "s3object", "scalinggroup", "scalingpolicy", "securitygroup", "snapshot", "stack", "subnet", "subscription", "tag", "targetgroup", "topic", "user", "volume", "vpc", "zone"},
-	"delete":       {"accesskey", "alarm", "appscalingpolicy", "appscalingtarget", "bucket", "certificate", "classicloadbalancer", "containercluster", "containertask", "database", "dbsubnetgroup", "distribution", "elasticip", "function", "group", "image", "instance", "instanceprofile", "internetgateway", "keypair", "launchconfiguration", "listener", "loadbalancer", "loginprofile", "mfadevice", "natgateway", "networkinterface", "policy", "queue", "record", "repository", "role", "route", "routetable", "s3object", "scalinggroup", "scalingpolicy", "securitygroup", "snapshot", "stack", "subnet", "subscription", "tag", "targetgroup", "topic", "user", "volume", "vpc", "zone"},
+	"create":       {"accesskey", "alarm", "appscalingpolicy", "appscalingtarget", "bucket", "certificate", "classicloadbalancer", "containercluster", "database", "dbsubnetgroup", "distribution", "elasticip", "function", "group", "image", "instance", "instanceprofile", "internetgateway", "keypair", "launchconfiguration", "listener", "loadbalancer", "loginprofile", "mfadevice", "natgateway", "networkinterface", "policy", "queue", "record", "repository", "role", "route", "routetable", "s3object", "scalinggroup", "scalingpolicy", "securitygroup", "snapshot", "subnet", "subscription", "tag", "targetgroup", "topic", "user", "volume", "vpc", "zone"},
+	"delete":       {"accesskey", "alarm", "appscalingpolicy", "appscalingtarget", "bucket", "certificate", "classicloadbalancer", "containercluster", "containertask", "database", "dbsubnetgroup", "distribution", "elasticip", "function", "group", "image", "instance", "instanceprofile", "internetgateway", "keypair", "launchconfiguration", "listener", "loadbalancer", "loginprofile", "mfadevice", "natgateway", "networkinterface", "policy", "queue", "record", "repository", "role", "route", "routetable", "s3object", "scalinggroup", "scalingpolicy", "securitygroup", "snapshot", "subnet", "subscription", "tag", "targetgroup", "topic", "user", "volume", "vpc", "zone"},
 	"detach":       {"alarm", "classicloadbalancer", "containertask", "elasticip", "instance", "instanceprofile", "internetgateway", "mfadevice", "networkinterface", "policy", "role", "routetable", "securitygroup", "user", "volume"},
 	"import":       {"image"},
 	"restart":      {"database", "instance"},
 	"start":        {"alarm", "containertask", "database", "instance"},
 	"stop":         {"alarm", "containertask", "database", "instance"},
-	"update":       {"bucket", "classicloadbalancer", "containertask", "distribution", "image", "instance", "loginprofile", "policy", "record", "s3object", "scalinggroup", "securitygroup", "stack", "subnet", "targetgroup"},
+	"update":       {"bucket", "classicloadbalancer", "containertask", "distribution", "image", "instance", "loginprofile", "policy", "record", "s3object", "scalinggroup", "securitygroup", "subnet", "targetgroup"},
 }

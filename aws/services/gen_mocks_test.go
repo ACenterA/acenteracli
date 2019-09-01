@@ -28,7 +28,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/autoscaling"
 	"github.com/aws/aws-sdk-go/service/autoscaling/autoscalingiface"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
 	"github.com/aws/aws-sdk-go/service/cloudfront"
 	"github.com/aws/aws-sdk-go/service/cloudfront/cloudfrontiface"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
@@ -1050,7 +1049,7 @@ func (m *mockCloudfront) FetchByType(context.Context, string) (cloud.GraphAPI, e
 }
 
 type mockCloudformation struct {
-	cloudformationiface.CloudFormationAPI
+	cloudformationiface.CLOUDFORMATIONAPI
 	stacks []*cloudformation.Stack
 }
 

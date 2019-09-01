@@ -30,8 +30,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/applicationautoscaling/applicationautoscalingiface"
 	"github.com/aws/aws-sdk-go/service/autoscaling"
 	"github.com/aws/aws-sdk-go/service/autoscaling/autoscalingiface"
-	"github.com/aws/aws-sdk-go/service/cloudformation"
-	"github.com/aws/aws-sdk-go/service/cloudformation/cloudformationiface"
 	"github.com/aws/aws-sdk-go/service/cloudfront"
 	"github.com/aws/aws-sdk-go/service/cloudfront/cloudfrontiface"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
@@ -5552,85 +5550,6 @@ func (cmd *CreateSnapshot) inject(params map[string]interface{}) error {
 	return structSetter(cmd, params)
 }
 
-func NewCreateStack(sess *session.Session, g cloud.GraphAPI, l ...*logger.Logger) *CreateStack {
-	cmd := new(CreateStack)
-	if len(l) > 0 {
-		cmd.logger = l[0]
-	} else {
-		cmd.logger = logger.DiscardLogger
-	}
-	if sess != nil {
-		cmd.api = cloudformation.New(sess)
-	}
-	cmd.graph = g
-	return cmd
-}
-
-func (cmd *CreateStack) SetApi(api cloudformationiface.CloudFormationAPI) {
-	cmd.api = api
-}
-
-func (cmd *CreateStack) Run(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	if renv.IsDryRun() {
-		return cmd.dryRun(renv, params)
-	}
-	return cmd.run(renv, params)
-}
-
-func (cmd *CreateStack) run(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	if err := cmd.inject(params); err != nil {
-		return nil, fmt.Errorf("cannot set params on command struct: %s", err)
-	}
-
-	if v, ok := implementsBeforeRun(cmd); ok {
-		if brErr := v.BeforeRun(renv); brErr != nil {
-			return nil, fmt.Errorf("before run: %s", brErr)
-		}
-	}
-
-	input := &cloudformation.CreateStackInput{}
-	if err := structInjector(cmd, input, renv.Context()); err != nil {
-		return nil, fmt.Errorf("cannot inject in cloudformation.CreateStackInput: %s", err)
-	}
-	start := time.Now()
-	output, err := cmd.api.CreateStack(input)
-	renv.Log().ExtraVerbosef("cloudformation.CreateStack call took %s", time.Since(start))
-	if err != nil {
-		return nil, decorateAWSError(err)
-	}
-
-	var extracted interface{}
-	if v, ok := implementsResultExtractor(cmd); ok {
-		if output != nil {
-			extracted = v.ExtractResult(output)
-		} else {
-			renv.Log().Warning("create stack: AWS command returned nil output")
-		}
-	}
-
-	if extracted != nil {
-		renv.Log().Verbosef("create stack '%s' done", extracted)
-	} else {
-		renv.Log().Verbose("create stack done")
-	}
-
-	if v, ok := implementsAfterRun(cmd); ok {
-		if brErr := v.AfterRun(renv, output); brErr != nil {
-			return nil, fmt.Errorf("after run: %s", brErr)
-		}
-	}
-
-	return extracted, nil
-}
-
-func (cmd *CreateStack) dryRun(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	return fakeDryRunId("stack"), nil
-}
-
-func (cmd *CreateStack) inject(params map[string]interface{}) error {
-	return structSetter(cmd, params)
-}
-
 func NewCreateSubnet(sess *session.Session, g cloud.GraphAPI, l ...*logger.Logger) *CreateSubnet {
 	cmd := new(CreateSubnet)
 	if len(l) > 0 {
@@ -9627,85 +9546,6 @@ func (cmd *DeleteSnapshot) inject(params map[string]interface{}) error {
 	return structSetter(cmd, params)
 }
 
-func NewDeleteStack(sess *session.Session, g cloud.GraphAPI, l ...*logger.Logger) *DeleteStack {
-	cmd := new(DeleteStack)
-	if len(l) > 0 {
-		cmd.logger = l[0]
-	} else {
-		cmd.logger = logger.DiscardLogger
-	}
-	if sess != nil {
-		cmd.api = cloudformation.New(sess)
-	}
-	cmd.graph = g
-	return cmd
-}
-
-func (cmd *DeleteStack) SetApi(api cloudformationiface.CloudFormationAPI) {
-	cmd.api = api
-}
-
-func (cmd *DeleteStack) Run(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	if renv.IsDryRun() {
-		return cmd.dryRun(renv, params)
-	}
-	return cmd.run(renv, params)
-}
-
-func (cmd *DeleteStack) run(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	if err := cmd.inject(params); err != nil {
-		return nil, fmt.Errorf("cannot set params on command struct: %s", err)
-	}
-
-	if v, ok := implementsBeforeRun(cmd); ok {
-		if brErr := v.BeforeRun(renv); brErr != nil {
-			return nil, fmt.Errorf("before run: %s", brErr)
-		}
-	}
-
-	input := &cloudformation.DeleteStackInput{}
-	if err := structInjector(cmd, input, renv.Context()); err != nil {
-		return nil, fmt.Errorf("cannot inject in cloudformation.DeleteStackInput: %s", err)
-	}
-	start := time.Now()
-	output, err := cmd.api.DeleteStack(input)
-	renv.Log().ExtraVerbosef("cloudformation.DeleteStack call took %s", time.Since(start))
-	if err != nil {
-		return nil, decorateAWSError(err)
-	}
-
-	var extracted interface{}
-	if v, ok := implementsResultExtractor(cmd); ok {
-		if output != nil {
-			extracted = v.ExtractResult(output)
-		} else {
-			renv.Log().Warning("delete stack: AWS command returned nil output")
-		}
-	}
-
-	if extracted != nil {
-		renv.Log().Verbosef("delete stack '%s' done", extracted)
-	} else {
-		renv.Log().Verbose("delete stack done")
-	}
-
-	if v, ok := implementsAfterRun(cmd); ok {
-		if brErr := v.AfterRun(renv, output); brErr != nil {
-			return nil, fmt.Errorf("after run: %s", brErr)
-		}
-	}
-
-	return extracted, nil
-}
-
-func (cmd *DeleteStack) dryRun(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	return fakeDryRunId("stack"), nil
-}
-
-func (cmd *DeleteStack) inject(params map[string]interface{}) error {
-	return structSetter(cmd, params)
-}
-
 func NewDeleteSubnet(sess *session.Session, g cloud.GraphAPI, l ...*logger.Logger) *DeleteSubnet {
 	cmd := new(DeleteSubnet)
 	if len(l) > 0 {
@@ -13568,85 +13408,6 @@ func (cmd *UpdateSecuritygroup) run(renv env.Running, params map[string]interfac
 }
 
 func (cmd *UpdateSecuritygroup) inject(params map[string]interface{}) error {
-	return structSetter(cmd, params)
-}
-
-func NewUpdateStack(sess *session.Session, g cloud.GraphAPI, l ...*logger.Logger) *UpdateStack {
-	cmd := new(UpdateStack)
-	if len(l) > 0 {
-		cmd.logger = l[0]
-	} else {
-		cmd.logger = logger.DiscardLogger
-	}
-	if sess != nil {
-		cmd.api = cloudformation.New(sess)
-	}
-	cmd.graph = g
-	return cmd
-}
-
-func (cmd *UpdateStack) SetApi(api cloudformationiface.CloudFormationAPI) {
-	cmd.api = api
-}
-
-func (cmd *UpdateStack) Run(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	if renv.IsDryRun() {
-		return cmd.dryRun(renv, params)
-	}
-	return cmd.run(renv, params)
-}
-
-func (cmd *UpdateStack) run(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	if err := cmd.inject(params); err != nil {
-		return nil, fmt.Errorf("cannot set params on command struct: %s", err)
-	}
-
-	if v, ok := implementsBeforeRun(cmd); ok {
-		if brErr := v.BeforeRun(renv); brErr != nil {
-			return nil, fmt.Errorf("before run: %s", brErr)
-		}
-	}
-
-	input := &cloudformation.UpdateStackInput{}
-	if err := structInjector(cmd, input, renv.Context()); err != nil {
-		return nil, fmt.Errorf("cannot inject in cloudformation.UpdateStackInput: %s", err)
-	}
-	start := time.Now()
-	output, err := cmd.api.UpdateStack(input)
-	renv.Log().ExtraVerbosef("cloudformation.UpdateStack call took %s", time.Since(start))
-	if err != nil {
-		return nil, decorateAWSError(err)
-	}
-
-	var extracted interface{}
-	if v, ok := implementsResultExtractor(cmd); ok {
-		if output != nil {
-			extracted = v.ExtractResult(output)
-		} else {
-			renv.Log().Warning("update stack: AWS command returned nil output")
-		}
-	}
-
-	if extracted != nil {
-		renv.Log().Verbosef("update stack '%s' done", extracted)
-	} else {
-		renv.Log().Verbose("update stack done")
-	}
-
-	if v, ok := implementsAfterRun(cmd); ok {
-		if brErr := v.AfterRun(renv, output); brErr != nil {
-			return nil, fmt.Errorf("after run: %s", brErr)
-		}
-	}
-
-	return extracted, nil
-}
-
-func (cmd *UpdateStack) dryRun(renv env.Running, params map[string]interface{}) (interface{}, error) {
-	return fakeDryRunId("stack"), nil
-}
-
-func (cmd *UpdateStack) inject(params map[string]interface{}) error {
 	return structSetter(cmd, params)
 }
 

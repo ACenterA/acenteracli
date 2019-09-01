@@ -18,6 +18,7 @@ package awsservices
 
 import (
 	"errors"
+	"fmt"
 
 	awsspec "github.com/wallix/awless/aws/spec"
 	"github.com/wallix/awless/cloud"
@@ -34,6 +35,7 @@ func Init(profile, region string, extraConf map[string]interface{}, log *logger.
 	if region == "" {
 		return errors.New("empty AWS region. Set it with `awless config set aws.region`")
 	}
+	fmt.Println("IN INIT HERE")
 
 	sb := newSessionResolver().withRegion(region).withProfile(profile).withNetworkMonitor(enableNetworkMonitor)
 	sb = sb.withProfileSetter(profileSetterCallback).withLogger(log).withCredentialResolvers()
@@ -44,24 +46,28 @@ func Init(profile, region string, extraConf map[string]interface{}, log *logger.
 	}
 
 	AccessService = NewAccess(sess, profile, extraConf, log)
-	InfraService = NewInfra(sess, profile, extraConf, log)
-	StorageService = NewStorage(sess, profile, extraConf, log)
-	MessagingService = NewMessaging(sess, profile, extraConf, log)
-	DnsService = NewDns(sess, profile, extraConf, log)
-	LambdaService = NewLambda(sess, profile, extraConf, log)
-	MonitoringService = NewMonitoring(sess, profile, extraConf, log)
-	CdnService = NewCdn(sess, profile, extraConf, log)
-	CloudformationService = NewCloudformation(sess, profile, extraConf, log)
+	// WELL WELL WELL ..
+	/*
+		InfraService = NewInfra(sess, profile, extraConf, log)
+		StorageService = NewStorage(sess, profile, extraConf, log)
+		MessagingService = NewMessaging(sess, profile, extraConf, log)
+		DnsService = NewDns(sess, profile, extraConf, log)
+		LambdaService = NewLambda(sess, profile, extraConf, log)
+		MonitoringService = NewMonitoring(sess, profile, extraConf, log)
+		// CdnService = NewCdn(sess, profile, extraConf, log)
+		// CloudformationService = NewCloudformation(sess, profile, extraConf, log)
 
-	cloud.ServiceRegistry[InfraService.Name()] = InfraService
+		cloud.ServiceRegistry[InfraService.Name()] = InfraService
+		cloud.ServiceRegistry[AccessService.Name()] = AccessService
+		cloud.ServiceRegistry[StorageService.Name()] = StorageService
+		cloud.ServiceRegistry[MessagingService.Name()] = MessagingService
+		cloud.ServiceRegistry[DnsService.Name()] = DnsService
+		cloud.ServiceRegistry[LambdaService.Name()] = LambdaService
+		cloud.ServiceRegistry[MonitoringService.Name()] = MonitoringService
+	*/
 	cloud.ServiceRegistry[AccessService.Name()] = AccessService
-	cloud.ServiceRegistry[StorageService.Name()] = StorageService
-	cloud.ServiceRegistry[MessagingService.Name()] = MessagingService
-	cloud.ServiceRegistry[DnsService.Name()] = DnsService
-	cloud.ServiceRegistry[LambdaService.Name()] = LambdaService
-	cloud.ServiceRegistry[MonitoringService.Name()] = MonitoringService
-	cloud.ServiceRegistry[CdnService.Name()] = CdnService
-	cloud.ServiceRegistry[CloudformationService.Name()] = CloudformationService
+	// ACENTERA cloud.ServiceRegistry[CdnService.Name()] = CdnService
+	// cloud.ServiceRegistry[CloudformationService.Name()] = CloudformationService
 
 	awsspec.CommandFactory = &awsspec.AWSFactory{
 		Log:  log,

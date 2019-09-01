@@ -27,7 +27,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/service/autoscaling"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
-	"github.com/aws/aws-sdk-go/service/elbv2"
 	"github.com/aws/aws-sdk-go/service/iam"
 	awsconv "github.com/wallix/awless/aws/conv"
 	"github.com/wallix/awless/cloud"
@@ -108,11 +107,13 @@ var addParentsFns = map[string][]addParentFn{
 	cloud.Listener: {
 		funcBuilder{parent: cloud.LoadBalancer, fieldName: "LoadBalancerArn"}.build(),
 	},
-	cloud.TargetGroup: {
-		funcBuilder{parent: cloud.Vpc, fieldName: "VpcId"}.build(),
-		funcBuilder{parent: cloud.LoadBalancer, stringListName: "LoadBalancerArns", relation: APPLIES_ON}.build(),
-		fetchTargetsAndAddRelations,
-	},
+	/*
+		cloud.TargetGroup: {
+			funcBuilder{parent: cloud.Vpc, fieldName: "VpcId"}.build(),
+			funcBuilder{parent: cloud.LoadBalancer, stringListName: "LoadBalancerArns", relation: APPLIES_ON}.build(),
+			fetchTargetsAndAddRelations,
+		},
+	*/
 	// Database
 	cloud.Database: {
 		funcBuilder{parent: cloud.AvailabilityZone, fieldName: "AvailabilityZone"}.build(),
@@ -391,6 +392,8 @@ func userAddGroupsRelations(g *graph.Graph, snap tstore.RDFGraph, region string,
 	return nil
 }
 
+/*
+// ACenterA 
 func fetchTargetsAndAddRelations(g *graph.Graph, snap tstore.RDFGraph, region string, i interface{}) error {
 	group, ok := i.(*elbv2.TargetGroup)
 	if !ok {
@@ -415,7 +418,7 @@ func fetchTargetsAndAddRelations(g *graph.Graph, snap tstore.RDFGraph, region st
 	}
 	return nil
 }
-
+*/
 func addScalingGroupSubnets(g *graph.Graph, snap tstore.RDFGraph, region string, i interface{}) error {
 	group, ok := i.(*autoscaling.Group)
 	if !ok {

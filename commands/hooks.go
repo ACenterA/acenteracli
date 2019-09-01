@@ -20,13 +20,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
+	// "strings"
 
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/spf13/cobra"
 	"github.com/wallix/awless/aws/services"
-	"github.com/wallix/awless/cloud"
+	// "github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/config"
 	"github.com/wallix/awless/database"
 	"github.com/wallix/awless/logger"
@@ -123,10 +123,12 @@ func initCloudServicesHook(cmd *cobra.Command, args []string) error {
 
 	logger.Verbosef("awless %s - loading AWS session with profile '%s' and region '%s'", config.Version, profile, region)
 
+	fmt.Println("Init cloudervice hook here")
 	if err := awsservices.Init(profile, region, config.GetConfigWithPrefix("aws."), logger.DefaultLogger, config.SetProfileCallback, networkMonitorFlag); err != nil {
 		return err
 	}
 
+	/*
 	if config.TriggerSyncOnConfigUpdate && !strings.HasPrefix(cmd.Name(), "sync") {
 		var services []cloud.Service
 		for _, s := range cloud.ServiceRegistry {
@@ -137,6 +139,7 @@ func initCloudServicesHook(cmd *cobra.Command, args []string) error {
 			sync.NewSyncer(logger.DefaultLogger).Sync(services...)
 		}
 	}
+	*/
 
 	return nil
 }

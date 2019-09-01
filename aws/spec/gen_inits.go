@@ -177,8 +177,6 @@ func (f *AWSFactory) Build(key string) func() interface{} {
 		return func() interface{} { return NewCreateSecuritygroup(f.Sess, f.Graph, f.Log) }
 	case "createsnapshot":
 		return func() interface{} { return NewCreateSnapshot(f.Sess, f.Graph, f.Log) }
-	case "createstack":
-		return func() interface{} { return NewCreateStack(f.Sess, f.Graph, f.Log) }
 	case "createsubnet":
 		return func() interface{} { return NewCreateSubnet(f.Sess, f.Graph, f.Log) }
 	case "createsubscription":
@@ -275,8 +273,6 @@ func (f *AWSFactory) Build(key string) func() interface{} {
 		return func() interface{} { return NewDeleteSecuritygroup(f.Sess, f.Graph, f.Log) }
 	case "deletesnapshot":
 		return func() interface{} { return NewDeleteSnapshot(f.Sess, f.Graph, f.Log) }
-	case "deletestack":
-		return func() interface{} { return NewDeleteStack(f.Sess, f.Graph, f.Log) }
 	case "deletesubnet":
 		return func() interface{} { return NewDeleteSubnet(f.Sess, f.Graph, f.Log) }
 	case "deletesubscription":
@@ -371,8 +367,6 @@ func (f *AWSFactory) Build(key string) func() interface{} {
 		return func() interface{} { return NewUpdateScalinggroup(f.Sess, f.Graph, f.Log) }
 	case "updatesecuritygroup":
 		return func() interface{} { return NewUpdateSecuritygroup(f.Sess, f.Graph, f.Log) }
-	case "updatestack":
-		return func() interface{} { return NewUpdateStack(f.Sess, f.Graph, f.Log) }
 	case "updatesubnet":
 		return func() interface{} { return NewUpdateSubnet(f.Sess, f.Graph, f.Log) }
 	case "updatetargetgroup":
@@ -449,7 +443,6 @@ var (
 	_ command = &CreateScalingpolicy{}
 	_ command = &CreateSecuritygroup{}
 	_ command = &CreateSnapshot{}
-	_ command = &CreateStack{}
 	_ command = &CreateSubnet{}
 	_ command = &CreateSubscription{}
 	_ command = &CreateTag{}
@@ -498,7 +491,6 @@ var (
 	_ command = &DeleteScalingpolicy{}
 	_ command = &DeleteSecuritygroup{}
 	_ command = &DeleteSnapshot{}
-	_ command = &DeleteStack{}
 	_ command = &DeleteSubnet{}
 	_ command = &DeleteSubscription{}
 	_ command = &DeleteTag{}
@@ -546,7 +538,6 @@ var (
 	_ command = &UpdateS3object{}
 	_ command = &UpdateScalinggroup{}
 	_ command = &UpdateSecuritygroup{}
-	_ command = &UpdateStack{}
 	_ command = &UpdateSubnet{}
 	_ command = &UpdateTargetgroup{}
 )
