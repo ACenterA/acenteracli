@@ -21,12 +21,16 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/spf13/cobra"
-	"github.com/wallix/awless/aws/services"
+	awsservices "github.com/wallix/awless/aws/services"
+	"github.com/wallix/awless/console"
+	"github.com/wallix/awless/graph"
+	"github.com/wallix/awless/graph/resourcetest"
 	"github.com/wallix/awless/logger"
 )
 
@@ -52,7 +56,35 @@ var whoamiCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		if onlyMyIPFlag {
-			fmt.Println(getMyIP())
+			z := getMyIP()
+			// fmt.Println(getMyIP())
+
+			g := graph.NewGraph()
+
+			res1 := resourcetest.New("ff", "inst_1").Prop("ID", "inst_1").Prop("Name", fmt.Sprintf("%v", z)).Build()
+			res2 := resourcetest.New("ff", "inst_2").Prop("ID", "inst_2").Prop("Name", "instance 2").Build()
+
+			g.AddResource(
+				res1,
+				res2,
+			)
+
+			// r, err := g.GetResource("sub_1", fmt.Sprintf("%v", z))
+			// fmt.Println(r)
+			// exitOn(err)
+
+			columns := []string{"Name", "ID"}
+
+			displayer, er := console.BuildOptions(
+				console.WithRdfType("ff"),
+				console.WithColumns(columns),
+				console.WithFormat("table"),
+				// console.WithNoHeaders(false),
+			).SetSource(g).Build()
+
+			exitOn(er)
+			exitOn(displayer.Print(os.Stdout))
+
 			return
 		}
 

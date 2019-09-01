@@ -18,6 +18,11 @@ func new(typ, id string) *rBuilder {
 	return r.Prop(properties.ID, id)
 }
 
+func New(typ, id string) *rBuilder {
+	r := &rBuilder{id: id, typ: typ, props: make(map[string]interface{})}
+	return r.Prop(properties.ID, id)
+}
+
 func Region(id string) *rBuilder {
 	return new("region", id)
 }

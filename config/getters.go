@@ -29,19 +29,15 @@ func GetAWSProfile() string {
 }
 
 func GetAutosync() bool {
-	if autoSync, ok := Config[autosyncConfigKey].(bool); ok {
-		return autoSync
-	}
-	if autoSync, ok := Defaults["sync.auto"].(bool); ok { //Compatibility with old key
-		return autoSync
-	}
-	return true
+	return false
 }
 
 func GetSchedulerURL() string {
+	/*
 	if u, ok := Config[schedulerURL].(string); ok {
 		return u
 	}
+	*/
 	return ""
 }
 

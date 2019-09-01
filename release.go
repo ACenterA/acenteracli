@@ -98,9 +98,9 @@ func buildAndZip(osname, arch string) error {
 
 	switch osname {
 	case "windows":
-		binName = "awless.exe"
+		binName = "acentera.exe"
 	default:
-		binName = "awless"
+		binName = "acentera"
 	}
 
 	artefactPath := filepath.Join(builddir, binName)
@@ -141,8 +141,8 @@ func buildAndZip(osname, arch string) error {
 
 	switch buildFor {
 	case "brew": //No zipping
-		fmt.Println("DO NOT forget to update the brew bottles and formula (see homebrew-awless Github repo)!")
-		return os.Rename(artefactPath, "awless")
+		fmt.Println("DO NOT forget to update the brew bottles and formula (see homebrew-acentera Github repo)!")
+		return os.Rename(artefactPath, "acentera")
 	case "zip":
 		zipFile, err := os.OpenFile(fmt.Sprintf("%s-%s-%s.zip", strings.Split(binName, ".")[0], osname, arch), os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0600)
 		if err != nil {

@@ -23,12 +23,12 @@ import (
 
 	"strconv"
 
-	"github.com/wallix/awless/aws/services"
+	awsservices "github.com/wallix/awless/aws/services"
 	"github.com/wallix/awless/database"
 )
 
 var (
-	AwlessHome         = filepath.Join(os.Getenv("HOME"), ".awless")
+	AwlessHome         = filepath.Join(os.Getenv("HOME"), ".acentera")
 	DBPath             = filepath.Join(AwlessHome, database.Filename)
 	Dir                = filepath.Join(AwlessHome, "aws")
 	KeysDir            = filepath.Join(AwlessHome, "keys")

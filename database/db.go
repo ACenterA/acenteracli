@@ -28,8 +28,8 @@ import (
 )
 
 const (
-	Filename     = "awless.db"
-	awlessBucket = "awless"
+	Filename     = "acentera.db"
+	awlessBucket = "acentera"
 )
 
 type DB struct {
@@ -49,7 +49,7 @@ func Execute(fn func(*DB) error) error {
 func current() (*DB, error) {
 	awlessHome := os.Getenv("__AWLESS_HOME")
 	if awlessHome == "" {
-		return nil, errors.New("database: awless home is not set")
+		return nil, errors.New("database: home is not set")
 	}
 
 	path := filepath.Join(awlessHome, Filename)
@@ -68,7 +68,7 @@ func current() (*DB, error) {
 func open(path string) (*DB, error) {
 	boltdb, err := bolt.Open(path, 0600, &bolt.Options{Timeout: 2 * time.Second})
 	if err != nil {
-		return nil, fmt.Errorf("opening db at %s: %s (any awless existing process running?)", path, err)
+		return nil, fmt.Errorf("opening db at %s: %s (any existing process running?)", path, err)
 	}
 
 	return &DB{bolt: boltdb}, nil

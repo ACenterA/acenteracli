@@ -154,7 +154,8 @@ func initSyncerHook(cmd *cobra.Command, args []string) error {
 	if noSyncGlobalFlag {
 		sync.DefaultSyncer = sync.NoOpSyncer()
 	} else {
-		sync.DefaultSyncer = sync.NewSyncer(logger.DefaultLogger)
+		sync.DefaultSyncer = sync.NoOpSyncer()
+		// sync.DefaultSyncer = sync.NewSyncer(logger.DefaultLogger)
 	}
 	return nil
 }

@@ -6,6 +6,6 @@ generate:
 	@echo Generating commands code: runtime, doc, etc.
 	@go generate gen/aws/generators/main.go
 
-build: generate test
+build: generate
 	@echo Building application binary
-	@go build
+	@go build -o acentera

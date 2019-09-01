@@ -8,8 +8,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/wallix/awless/aws/config"
-	"github.com/wallix/awless/aws/spec"
+	awsconfig "github.com/wallix/awless/aws/config"
+	awsspec "github.com/wallix/awless/aws/spec"
 	"github.com/wallix/awless/database"
 )
 
@@ -23,34 +23,34 @@ const (
 	defaultsDatabaseKey = "defaults"
 
 	//Config
-	autosyncConfigKey              = "autosync"
+	// autosyncConfigKey              = "autosync"
 	checkUpgradeFrequencyConfigKey = "upgrade.checkfrequency"
-	schedulerURL                   = "scheduler.url"
-	RegionConfigKey                = "aws.region"
-	ProfileConfigKey               = "aws.profile"
+	// schedulerURL     = "scheduler.url"
+	RegionConfigKey  = "aws.region"
+	ProfileConfigKey = "aws.profile"
 
 	//Config prefix
 	awsCloudPrefix = "aws."
 )
 
 var configDefinitions = map[string]*Definition{
-	autosyncConfigKey:              {help: "Automatically synchronize your cloud locally", defaultValue: "true", parseParamFn: parseBool},
-	RegionConfigKey:                {help: "AWS region", parseParamFn: awsconfig.ParseRegion, stdinParamProviderFn: awsconfig.StdinRegionSelector, onUpdateFns: []onUpdateFunc{runSyncWithUpdatedRegion}},
-	ProfileConfigKey:               {help: "AWS profile", defaultValue: "default"},
-	"aws.infra.sync":               {help: "Enable/disable sync of infra services (EC2, RDS, etc.) (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.access.sync":              {help: "Enable/disable sync of IAM service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.storage.sync":             {help: "Enable/disable sync of S3 service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.storage.s3object.sync":    {help: "Enable/disable sync of S3/s3object (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
-	"aws.dns.sync":                 {help: "Enable/disable sync of DNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.dns.record.sync":          {help: "Enable/disable sync of DNS/record (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
-	"aws.notification.sync":        {help: "Enable/disable sync of SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.monitoring.sync":          {help: "Enable/disable sync of CloudWatch service (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
-	"aws.lambda.sync":              {help: "Enable/disable sync of Lambda service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.messaging.sync":           {help: "Enable/disable sync of SQS/SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.cdn.sync":                 {help: "Enable/disable sync of CloudFront service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.cloudformation.sync":      {help: "Enable/disable sync of CloudFormation service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	// autosyncConfigKey:              {help: "Automatically synchronize your cloud locally", defaultValue: "true", parseParamFn: parseBool},
+	RegionConfigKey:             {help: "AWS region", parseParamFn: awsconfig.ParseRegion, stdinParamProviderFn: awsconfig.StdinRegionSelector, onUpdateFns: []onUpdateFunc{runSyncWithUpdatedRegion}},
+	ProfileConfigKey:            {help: "AWS profile", defaultValue: "default"},
+	"aws.infra.sync":            {help: "Enable/disable sync of infra services (EC2, RDS, etc.) (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"aws.access.sync":           {help: "Enable/disable sync of IAM service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"aws.storage.sync":          {help: "Enable/disable sync of S3 service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"aws.storage.s3object.sync": {help: "Enable/disable sync of S3/s3object (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
+	"aws.dns.sync":              {help: "Enable/disable sync of DNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"aws.dns.record.sync":       {help: "Enable/disable sync of DNS/record (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
+	"aws.notification.sync":     {help: "Enable/disable sync of SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"aws.monitoring.sync":       {help: "Enable/disable sync of CloudWatch service (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
+	"aws.lambda.sync":           {help: "Enable/disable sync of Lambda service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"aws.messaging.sync":        {help: "Enable/disable sync of SQS/SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"aws.cdn.sync":              {help: "Enable/disable sync of CloudFront service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"aws.cloudformation.sync":   {help: "Enable/disable sync of CloudFormation service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
 	checkUpgradeFrequencyConfigKey: {help: "Upgrade check frequency (hours); a negative value disables check", defaultValue: "8", parseParamFn: parseInt},
-	schedulerURL:                   {help: "URL used by awless CLI to interact with pre-installed https://github.com/wallix/awless-scheduler", defaultValue: "http://localhost:8082"},
+	// schedulerURL: {help: "URL used by awless CLI to interact with pre-installed https://github.com/wallix/awless-scheduler", defaultValue: "http://localhost:8082"},
 }
 
 var defaultsDefinitions = map[string]*Definition{
@@ -66,8 +66,8 @@ var defaultsDefinitions = map[string]*Definition{
 }
 
 var deprecated = map[string]string{
-	"sync.auto": autosyncConfigKey,
-	"region":    RegionConfigKey,
+	// "sync.auto": autosyncConfigKey,
+	"region": RegionConfigKey,
 }
 
 var TriggerSyncOnConfigUpdate bool

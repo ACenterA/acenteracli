@@ -37,7 +37,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
-	"github.com/wallix/awless-scheduler/client"
+	// "github.com/wallix/awless-scheduler/client"
 	"github.com/wallix/awless/aws/doc"
 	"github.com/wallix/awless/aws/services"
 	"github.com/wallix/awless/aws/spec"
@@ -597,6 +597,8 @@ func isCSV(s string) bool {
 }
 
 func scheduleTemplate(t *template.Template, runIn, revertIn string) error {
+	return nil
+	/*
 	schedClient, err := client.New(config.GetSchedulerURL())
 	if err != nil {
 		return fmt.Errorf("cannot connect to scheduler: %s", err)
@@ -615,6 +617,7 @@ func scheduleTemplate(t *template.Template, runIn, revertIn string) error {
 	logger.Info("template scheduled successfully")
 
 	return nil
+	*/
 }
 
 func suggestFixParsingError(def awsspec.Definition, args []string, matchingProperty string, defaultErr error) (*template.Template, error) {

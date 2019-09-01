@@ -146,9 +146,17 @@ func (c *credentialsPrompterProvider) Retrieve() (credentials.Value, error) {
 	c.retrieved = false
 	fmt.Fprintf(c.out, "Cannot resolve AWS credentials for profile '%s' (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY)", c.profile)
 	creds := awsspec.NewCredsPrompter(c.profile)
+
+	// Add based on env variables ..
+	creds.Val.AccessKeyID = os.Getenv("AWS_ACCESS_KEY_ID")
+	creds.Val.SecretAccessKey = os.Getenv("AWS_SECRET_ACCESS_KEY")
+	creds.Val.SessionToken = os.Getenv("SESSION_TOKEN")
+
 	creds.ProfileSetterCallback = c.profileSetterCallback
-	if err := creds.Prompt(); err != nil {
-		return credentials.Value{}, fmt.Errorf("prompting credentials: %s", err)
+	if creds.Val.AccessKeyID == "" || creds.Val.SecretAccessKey == "" {
+		if err := creds.Prompt(); err != nil {
+			return credentials.Value{}, fmt.Errorf("prompting credentials: %s", err)
+		}
 	}
 	created, err := creds.Store()
 	if err != nil {

@@ -43,20 +43,22 @@ var (
 
 func init() {
 	RootCmd.PersistentFlags().BoolVarP(&verboseGlobalFlag, "verbose", "v", false, "Turn on verbose mode for all commands")
-	RootCmd.PersistentFlags().BoolVarP(&extraVerboseGlobalFlag, "extra-verbose", "e", false, "Turn on extra verbose mode (including regular verbose) for all commands")
-	RootCmd.PersistentFlags().BoolVar(&silentGlobalFlag, "silent", false, "Turn on silent mode for all commands: disable logging, etc...")
-	RootCmd.PersistentFlags().BoolVarP(&localGlobalFlag, "local", "l", false, "Work offline only using locally synced resources")
-	RootCmd.PersistentFlags().BoolVarP(&forceGlobalFlag, "force", "f", false, "Force the command and bypass confirmation prompts")
-	RootCmd.PersistentFlags().BoolVar(&noSyncGlobalFlag, "no-sync", false, "Do not run any sync on command")
-	RootCmd.PersistentFlags().StringVarP(&awsRegionGlobalFlag, "aws-region", "r", "", "Override AWS region temporarily for the current command")
-	RootCmd.PersistentFlags().SetAnnotation("aws-region", cobra.BashCompCustom, []string{"__awless_region_list"})
-	RootCmd.PersistentFlags().StringVarP(&awsProfileGlobalFlag, "aws-profile", "p", "", "Override AWS profile temporarily for the current command")
-	RootCmd.PersistentFlags().SetAnnotation("aws-profile", cobra.BashCompCustom, []string{"__awless_profile_list"})
-	RootCmd.PersistentFlags().StringVar(&awsColorGlobalFlag, "color", "auto", "Force enabling/disabling colors in display (auto, never, always)")
-	RootCmd.PersistentFlags().BoolVar(&networkMonitorFlag, "network-monitor", false, "Debug requests with network monitor")
-	RootCmd.PersistentFlags().MarkHidden("network-monitor")
+	/*
+		RootCmd.PersistentFlags().BoolVarP(&extraVerboseGlobalFlag, "extra-verbose", "e", false, "Turn on extra verbose mode (including regular verbose) for all commands")
+		RootCmd.PersistentFlags().BoolVar(&silentGlobalFlag, "silent", false, "Turn on silent mode for all commands: disable logging, etc...")
+		RootCmd.PersistentFlags().BoolVarP(&localGlobalFlag, "local", "l", false, "Work offline only using locally synced resources")
+		RootCmd.PersistentFlags().BoolVarP(&forceGlobalFlag, "force", "f", false, "Force the command and bypass confirmation prompts")
+		RootCmd.PersistentFlags().BoolVar(&noSyncGlobalFlag, "no-sync", false, "Do not run any sync on command")
+		RootCmd.PersistentFlags().StringVarP(&awsRegionGlobalFlag, "aws-region", "r", "", "Override AWS region temporarily for the current command")
+		RootCmd.PersistentFlags().SetAnnotation("aws-region", cobra.BashCompCustom, []string{"__acentera_region_list"})
+		RootCmd.PersistentFlags().StringVarP(&awsProfileGlobalFlag, "aws-profile", "p", "", "Override AWS profile temporarily for the current command")
+		RootCmd.PersistentFlags().SetAnnotation("aws-profile", cobra.BashCompCustom, []string{"__acentera_profile_list"})
+		RootCmd.PersistentFlags().StringVar(&awsColorGlobalFlag, "color", "auto", "Force enabling/disabling colors in display (auto, never, always)")
+		RootCmd.PersistentFlags().BoolVar(&networkMonitorFlag, "network-monitor", false, "Debug requests with network monitor")
+		RootCmd.PersistentFlags().MarkHidden("network-monitor")
+	*/
 
-	RootCmd.Flags().BoolVar(&versionGlobalFlag, "version", false, "Print awless version")
+	RootCmd.Flags().BoolVar(&versionGlobalFlag, "version", false, "Print acentera version")
 
 	cobra.AddTemplateFunc("IsCmdAnnotatedOneliner", IsCmdAnnotatedOneliner)
 	cobra.AddTemplateFunc("HasCmdOnelinerChilds", HasCmdOnelinerChilds)
@@ -74,9 +76,9 @@ func init() {
 }
 
 var RootCmd = &cobra.Command{
-	Use:   "awless COMMAND",
-	Short: "Manage  and explore your cloud",
-	Long:  "awless is a powerful CLI to explore, sync and manage your cloud infrastructure",
+	Use:                    "acentera COMMAND",
+	Short:                  "Manage  and explore your cloud",
+	Long:                   "acentera is a powerful CLI to explore, sync and manage your cloud infrastructure",
 	BashCompletionFunction: bash_completion_func,
 	RunE: func(c *cobra.Command, args []string) error {
 		if versionGlobalFlag {
@@ -135,52 +137,45 @@ func HasCmdOnelinerChilds(cmd *cobra.Command) bool {
 
 const (
 	bash_completion_func = `
-__awless_get_all_ids()
+__acentera_get_all_ids()
 {
 		local all_ids_output
-		if all_ids_output=$(awless list infra --local --ids 2>/dev/null; awless list access --local --ids 2>/dev/null); then
+		if all_ids_output=$(acentera list infra --local --ids 2>/dev/null; acentera list access --local --ids 2>/dev/null); then
 		COMPREPLY=( $( compgen -W "${all_ids_output[*]}" -- "$cur" ) )
 		fi
 }
-__awless_get_instances_ids()
-{
-		local all_ids_output
-		if all_ids_output=$(awless list instances --local --ids 2>/dev/null); then
-		COMPREPLY=( $( compgen -W "${all_ids_output[*]}" -- "$cur" ) )
-		fi
-}
-__awless_get_conf_keys()
+__acentera_get_conf_keys()
 {
 		local all_keys_output
-		if all_keys_output=$(awless config list --keys 2>/dev/null); then
+		if all_keys_output=$(acentera config list --keys 2>/dev/null); then
 		COMPREPLY=( $( compgen -W "${all_keys_output[*]}" -- "$cur" ) )
 		fi
 }
 
 __custom_func() {
     case ${last_command} in
-				awless_ssh )
-            __awless_get_instances_ids
+				acentera_ssh )
+            __acentera_get_instances_ids
             return
             ;;
-				awless_show )
-            __awless_get_all_ids
+				acentera_show )
+            __acentera_get_all_ids
             return
             ;;
-				awless_config_set )
-						__awless_get_conf_keys
+				acentera_config_set )
+						__acentera_get_conf_keys
 						return
 						;;
-				awless_config_get )
-						__awless_get_conf_keys
+				acentera_config_get )
+						__acentera_get_conf_keys
 						return
 						;;
-				awless_config_unset )
-						__awless_get_conf_keys
+				acentera_config_unset )
+						__acentera_get_conf_keys
 						return
 						;;
-				awless_switch )
-						__awless_profile_region_list
+				acentera_switch )
+						__acentera_profile_region_list
 						return
 						;;
         *)
@@ -188,21 +183,21 @@ __custom_func() {
     esac
 }
 
-__awless_region_list()
+__acentera_region_list()
 {
     cur="${COMP_WORDS[COMP_CWORD]#*=}"
     regions="us-east-1 us-east-2 us-west-1 us-west-2 ca-central-1 eu-west-1 eu-central-1 eu-west-2 eu-west-3 ap-northeast-1 ap-northeast-2 ap-southeast-1 ap-southeast-2 ap-south-1 sa-east-1"
     COMPREPLY=( $(compgen -W "${regions}" -- ${cur}) )
 }
 
-__awless_profile_list()
+__acentera_profile_list()
 {
     cur="${COMP_WORDS[COMP_CWORD]#*=}"
     profiles="$((egrep '^\[ *[a-zA-Z0-9_-]+ *\]$' ~/.aws/credentials 2>/dev/null; grep '\[profile' ~/.aws/config 2>/dev/null | sed 's|\[profile ||g') | tr -d '[]' | sort | uniq)"
     COMPREPLY=( $(compgen -W "${profiles}" -- ${cur}) )
 }
 
-__awless_profile_region_list()
+__acentera_profile_region_list()
 {
     cur="${COMP_WORDS[COMP_CWORD]#*=}"
 		regions="us-east-1 us-east-2 us-west-1 us-west-2 ca-central-1 eu-west-1 eu-central-1 eu-west-2 eu-west-3 ap-northeast-1 ap-northeast-2 ap-southeast-1 ap-southeast-2 ap-south-1 sa-east-1"
