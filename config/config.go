@@ -35,21 +35,24 @@ const (
 
 var configDefinitions = map[string]*Definition{
 	// autosyncConfigKey:              {help: "Automatically synchronize your cloud locally", defaultValue: "true", parseParamFn: parseBool},
+	"user.store.password": {help: "Enable/disable password of encrypted password (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	"user.username":       {help: "Current username", defaultValue: ""},
+	"_enc":                {help: "", defaultValue: ""}, // Empty help prevnet to display it.
 	/*
-	RegionConfigKey:             {help: "AWS region", parseParamFn: awsconfig.ParseRegion, stdinParamProviderFn: awsconfig.StdinRegionSelector, onUpdateFns: []onUpdateFunc{runSyncWithUpdatedRegion}},
-	ProfileConfigKey:            {help: "AWS profile", defaultValue: "default"},
-	"aws.infra.sync":            {help: "Enable/disable sync of infra services (EC2, RDS, etc.) (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.access.sync":           {help: "Enable/disable sync of IAM service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.storage.sync":          {help: "Enable/disable sync of S3 service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.storage.s3object.sync": {help: "Enable/disable sync of S3/s3object (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
-	"aws.dns.sync":              {help: "Enable/disable sync of DNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.dns.record.sync":       {help: "Enable/disable sync of DNS/record (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
-	"aws.notification.sync":     {help: "Enable/disable sync of SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.monitoring.sync":       {help: "Enable/disable sync of CloudWatch service (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
-	"aws.lambda.sync":           {help: "Enable/disable sync of Lambda service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.messaging.sync":        {help: "Enable/disable sync of SQS/SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.cdn.sync":              {help: "Enable/disable sync of CloudFront service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
-	"aws.cloudformation.sync":   {help: "Enable/disable sync of CloudFormation service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		RegionConfigKey:             {help: "AWS region", parseParamFn: awsconfig.ParseRegion, stdinParamProviderFn: awsconfig.StdinRegionSelector, onUpdateFns: []onUpdateFunc{runSyncWithUpdatedRegion}},
+		ProfileConfigKey:            {help: "AWS profile", defaultValue: "default"},
+		"aws.infra.sync":            {help: "Enable/disable sync of infra services (EC2, RDS, etc.) (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		"aws.access.sync":           {help: "Enable/disable sync of IAM service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		"aws.storage.sync":          {help: "Enable/disable sync of S3 service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		"aws.storage.s3object.sync": {help: "Enable/disable sync of S3/s3object (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
+		"aws.dns.sync":              {help: "Enable/disable sync of DNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		"aws.dns.record.sync":       {help: "Enable/disable sync of DNS/record (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
+		"aws.notification.sync":     {help: "Enable/disable sync of SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		"aws.monitoring.sync":       {help: "Enable/disable sync of CloudWatch service (when empty: true)", defaultValue: "false", parseParamFn: parseBool},
+		"aws.lambda.sync":           {help: "Enable/disable sync of Lambda service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		"aws.messaging.sync":        {help: "Enable/disable sync of SQS/SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		"aws.cdn.sync":              {help: "Enable/disable sync of CloudFront service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+		"aws.cloudformation.sync":   {help: "Enable/disable sync of CloudFormation service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
 	*/
 	checkUpgradeFrequencyConfigKey: {help: "Upgrade check frequency (hours); a negative value disables check", defaultValue: "8", parseParamFn: parseInt},
 	// schedulerURL: {help: "URL used by awless CLI to interact with pre-installed https://github.com/wallix/awless-scheduler", defaultValue: "http://localhost:8082"},
@@ -57,15 +60,15 @@ var configDefinitions = map[string]*Definition{
 
 var defaultsDefinitions = map[string]*Definition{
 	/*
-	"instance.type":          {defaultValue: "t2.micro", help: "AWS EC2 instance type", stdinParamProviderFn: awsconfig.StdinInstanceTypeSelector, parseParamFn: awsconfig.ParseInstanceType},
-	"instance.distro":        {defaultValue: "amazonlinux", help: "Query to fetch latest community bare distro image id (see awless search images -h)", parseParamFn: parseDistroQuery},
-	"instance.count":         {defaultValue: "1", help: "Number of instances to create on AWS EC2", parseParamFn: parseInt},
-	"instance.timeout":       {defaultValue: "180", help: "Time to wait when checking instance states on AWS EC2", parseParamFn: parseInt},
-	"securitygroup.protocol": {defaultValue: "tcp", help: "The IP protocol to authorize on the security group"},
-	"volume.device":          {defaultValue: "/dev/sdh", help: "Device name to expose to an EC2 instance"},
-	"elasticip.domain":       {defaultValue: "vpc", help: "The domain of elastic IP addresses (standard or vpc)"},
-	"image.delete-snapshots": {defaultValue: "true", help: "Delete linked snapshots when deleting an image"},
-	"database.type":          {defaultValue: "db.t2.micro", help: "Default RDS database type"},
+		"instance.type":          {defaultValue: "t2.micro", help: "AWS EC2 instance type", stdinParamProviderFn: awsconfig.StdinInstanceTypeSelector, parseParamFn: awsconfig.ParseInstanceType},
+		"instance.distro":        {defaultValue: "amazonlinux", help: "Query to fetch latest community bare distro image id (see awless search images -h)", parseParamFn: parseDistroQuery},
+		"instance.count":         {defaultValue: "1", help: "Number of instances to create on AWS EC2", parseParamFn: parseInt},
+		"instance.timeout":       {defaultValue: "180", help: "Time to wait when checking instance states on AWS EC2", parseParamFn: parseInt},
+		"securitygroup.protocol": {defaultValue: "tcp", help: "The IP protocol to authorize on the security group"},
+		"volume.device":          {defaultValue: "/dev/sdh", help: "Device name to expose to an EC2 instance"},
+		"elasticip.domain":       {defaultValue: "vpc", help: "The domain of elastic IP addresses (standard or vpc)"},
+		"image.delete-snapshots": {defaultValue: "true", help: "Delete linked snapshots when deleting an image"},
+		"database.type":          {defaultValue: "db.t2.micro", help: "Default RDS database type"},
 	*/
 }
 
@@ -293,20 +296,27 @@ func displayConfig() string {
 	}
 	sort.Strings(keys)
 	for _, k := range keys {
-		fmt.Fprintf(t, "\t%s:\t%v\t(%[2]T)", k, Config[k])
-		if def, ok := configDefinitions[k]; ok && def.help != "" {
-			fmt.Fprintf(t, "\t# %s\n", def.help)
+		if strings.HasPrefix(k, "_") {
+			// Do not display
 		} else {
-			fmt.Fprintln(t)
-		}
-	}
-	for k := range configDefinitions {
-		if _, ok := Config[k]; !ok {
-			fmt.Fprintf(t, "\t%s:\t\t", k)
+			fmt.Fprintf(t, "\t%s:\t%v\t(%[2]T)", k, Config[k])
 			if def, ok := configDefinitions[k]; ok && def.help != "" {
 				fmt.Fprintf(t, "\t# %s\n", def.help)
 			} else {
 				fmt.Fprintln(t)
+			}
+		}
+	}
+	for k := range configDefinitions {
+		if _, ok := Config[k]; !ok {
+			if strings.HasPrefix(k, "_") {
+			} else {
+				fmt.Fprintf(t, "\t%s:\t\t", k)
+				if def, ok := configDefinitions[k]; ok && def.help != "" {
+					fmt.Fprintf(t, "\t# %s\n", def.help)
+				} else {
+					fmt.Fprintln(t)
+				}
 			}
 		}
 	}
@@ -316,8 +326,8 @@ func displayConfig() string {
 
 func displayDefaults() string {
 	var b bytes.Buffer
-	b.WriteString("# Template defaults\n")
-	b.WriteString("   ## Predefined\n")
+	// b.WriteString("# Template defaults\n")
+	// b.WriteString("   ## Predefined\n")
 	t := tabwriter.NewWriter(&b, 0, 0, 3, ' ', 0)
 	var keys []string
 	for k := range Defaults {
@@ -344,6 +354,7 @@ func displayDefaults() string {
 		}
 	}
 	t.Flush()
+	/*
 	count := 0
 	t = tabwriter.NewWriter(&b, 0, 0, 3, ' ', 0)
 	for _, k := range keys {
@@ -360,6 +371,7 @@ func displayDefaults() string {
 		b.WriteString("\n   ## User defined\n")
 		t.Flush()
 	}
+	*/
 	return b.String()
 }
 

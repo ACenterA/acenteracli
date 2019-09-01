@@ -393,7 +393,7 @@ func userAddGroupsRelations(g *graph.Graph, snap tstore.RDFGraph, region string,
 }
 
 /*
-// ACenterA 
+// ACenterA
 func fetchTargetsAndAddRelations(g *graph.Graph, snap tstore.RDFGraph, region string, i interface{}) error {
 	group, ok := i.(*elbv2.TargetGroup)
 	if !ok {

@@ -1,4 +1,4 @@
-//go:generate go run $GOFILE properties.go paramsdoc.go mocks.go fetchers.go services.go commands.go acceptance_mocks.go
+//go:generate go run $GOFILE properties.go paramsdoc.go mocks.go fetchers.go services.go commands.go acceptance_mocks.go global.go
 
 //go:generate gofmt -s -w ../../../aws
 //go:generate goimports -w ../../../aws
@@ -11,6 +11,9 @@
 
 //go:generate gofmt -s -w ../../../cloud/properties
 //go:generate goimports -w ../../../cloud/properties
+
+//go:generate gofmt -s -w ../../../global
+//go:generate goimports -w ../../../global
 
 //go:generate gofmt -s -w ../../../cloud/rdf
 //go:generate goimports -w ../../../cloud/rdf
@@ -42,6 +45,7 @@ var (
 	AWSAT_DIR            = filepath.Join(ROOT_DIR, "acceptance", "aws")
 	DOC_DIR              = filepath.Join(ROOT_DIR, "aws", "doc")
 	CLOUD_PROPERTIES_DIR = filepath.Join(ROOT_DIR, "cloud", "properties")
+	GLOBAL_DIR           = filepath.Join(ROOT_DIR, "global")
 	CLOUD_RDF_DIR        = filepath.Join(ROOT_DIR, "cloud", "rdf")
 )
 
@@ -66,6 +70,8 @@ func main() {
 	generateProperties()
 	generateRDFProperties()
 
+	// Global objects?
+	generateGlobal()
 	// doc
 	generateParamsDocLookup()
 }

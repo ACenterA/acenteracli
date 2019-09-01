@@ -16,6 +16,20 @@ func GetAWSRegion() string {
 	return ""
 }
 
+func GetUsername() string {
+	if reg, ok := Config["user.username"]; ok && reg != "" {
+		return fmt.Sprint(reg)
+	}
+	return ""
+}
+
+func GetPassword() string {
+	if reg, ok := Config["_enc"]; ok && reg != "" {
+		return fmt.Sprint(reg)
+	}
+	return ""
+}
+
 const defaultAWSSessionProfile = "default"
 
 func GetAWSProfile() string {
@@ -34,9 +48,9 @@ func GetAutosync() bool {
 
 func GetSchedulerURL() string {
 	/*
-	if u, ok := Config[schedulerURL].(string); ok {
-		return u
-	}
+		if u, ok := Config[schedulerURL].(string); ok {
+			return u
+		}
 	*/
 	return ""
 }

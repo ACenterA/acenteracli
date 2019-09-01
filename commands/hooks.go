@@ -31,6 +31,7 @@ import (
 	"github.com/wallix/awless/database"
 	"github.com/wallix/awless/logger"
 	"github.com/wallix/awless/sync"
+	"github.com/wallix/awless/global"
 )
 
 func applyHooks(funcs ...func(*cobra.Command, []string) error) func(*cobra.Command, []string) {
@@ -167,9 +168,11 @@ func initLoggerHook(cmd *cobra.Command, args []string) error {
 	var flag int
 	if verboseGlobalFlag {
 		flag = logger.VerboseF
+		global.Verbose = "verbose"
 	}
 	if extraVerboseGlobalFlag {
 		flag = flag | logger.ExtraVerboseF
+		global.Verbose = "extra"
 	}
 
 	logger.DefaultLogger.SetVerbose(flag)

@@ -6,3 +6,4 @@ awless
 *.zip
 .idea
 acentera
+global/gen_global.go

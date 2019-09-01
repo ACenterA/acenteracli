@@ -19,30 +19,41 @@ package config
 import (
 	"fmt"
 	os "os"
-        syscall "syscall"
 	"path/filepath"
+	syscall "syscall"
+
 	// "bufio"
 	"regexp"
+
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/md5"
+	"crypto/rand"
+	"encoding/hex"
+	"io"
+
+	// "io/ioutil"
 
 	// "errors"
 	"strconv"
 	"strings"
 
 	"os/signal"
+
 	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/howeyc/gopass"
 
-
 	awsservices "github.com/wallix/awless/aws/services"
+	"github.com/wallix/awless/global"
 	"github.com/wallix/awless/database"
 )
 
 var (
-	AwlessHome         = filepath.Join(os.Getenv("HOME"), ".acentera")
-	DBPath             = filepath.Join(AwlessHome, database.Filename)
-	Dir                = filepath.Join(AwlessHome, "aws")
-	KeysDir            = filepath.Join(AwlessHome, "keys")
+	AwlessHome = filepath.Join(os.Getenv("HOME"), ".acentera")
+	DBPath     = filepath.Join(AwlessHome, database.Filename)
+	Dir        = filepath.Join(AwlessHome, "aws")
+	KeysDir    = filepath.Join(AwlessHome, "keys")
 
 	emailRe            = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	AwlessFirstInstall bool
@@ -62,23 +73,13 @@ func InitAwlessEnv() error {
 
 	os.MkdirAll(KeysDir, 0700)
 
+	var username string
+	var pass string
+	var enc []byte
+
 	if AwlessFirstInstall {
 		// fmt.Fprintln(os.Stderr, AWLESS_ASCII_LOGO)
 		// fmt.Fprintln(os.Stderr, "Welcome! Resolving environment data...")
-
-		fmt.Printf("\nPlease enter you credentials.\n")
-
-		var username string
-		var pass string
-		username = os.Getenv("ACENTERA_USERNAME")
-		if (username == "") {
-			promptUntilNonEmpty("\nUsername: ", &username)
-		}
-		pass = os.Getenv("ACENTERA_PASSWORD")
-		if (pass == "") {
-			promptUntilNonEmptySecure("Password: ", &pass)
-		}
-		fmt.Println("Got :" + username + " and pass :" + pass)
 
 		if err = InitConfig(resolveRequiredConfigFromEnv()); err != nil {
 			return err
@@ -90,12 +91,43 @@ func InitAwlessEnv() error {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "cannot store current version in db: %s\n", err)
 		}
+		/*
+			err = database.Execute(func(db *database.DB) error {
+				return db.SetStringValue("_enc", string(enc))
+			})
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "cannot store password in db: %s\n", err)
+			}
+			err = database.Execute(func(db *database.DB) error {
+				return db.SetStringValue("user.username", username)
+			})
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "cannot store username in db: %s\n", err)
+			}
+		*/
 	}
 
 	if err = LoadConfig(); err != nil {
 		return err
 	}
 
+	enc = []byte(GetPassword())
+	username = GetUsername()
+        pass = string(decrypt(enc, global.ENC_PWD))
+
+	if (askUserPassword(&username, &pass)) {
+		if username != "" {
+			Set("user.username", username)
+		}
+		if string(pass) != "" {
+			enc = encrypt([]byte(pass), global.ENC_PWD)
+			Set("_enc", string(enc))
+		}
+	}
+        if (pass == "") {
+		// ?? No passwords? exit with errors?
+		fmt.Printf("Error: No password for user: [%s].\n", username)
+	}
 	return nil
 }
 
@@ -108,7 +140,7 @@ func resolveRequiredConfigFromEnv() map[string]string {
 	} else {
 		// Force default to us-east-1
 		resolved[RegionConfigKey] = "us-east-1"
-        }
+	}
 
 	return resolved
 }
@@ -118,7 +150,7 @@ func promptUntilNonEmpty(question string, v *string) {
 		fmt.Print(question)
 		_, err := fmt.Scanln(v)
 		if err == nil && strings.TrimSpace(*v) != "" {
-			if (emailRe.MatchString(*v)) {
+			if emailRe.MatchString(*v) {
 				return false
 			} else {
 				fmt.Printf("Error: %s. Retry please...\n", "Invalid email address")
@@ -144,6 +176,10 @@ func promptUntilNonEmptySecure(question string, v *string) {
 			return false
 		}
 		if err != nil {
+			if (strings.Contains(fmt.Sprintf("%s", err),"interrup")) {
+				fmt.Printf("Error: %s. ...\n", err)
+				return false
+			}
 			fmt.Printf("Error: %s. Retry please...\n", err)
 		}
 		return true
@@ -185,4 +221,70 @@ func getPassword(prompt string) string {
 
 	// Return the password as a string.
 	return string(p)
+}
+
+func createHash(key string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(key))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+func encrypt(data []byte, passphrase string) []byte {
+	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		panic(err.Error())
+	}
+	ciphertext := gcm.Seal(nonce, nonce, data, nil)
+	return ciphertext
+}
+
+func decrypt(data []byte, passphrase string) []byte {
+	if (len(data) <= 0) {
+		return nil
+        }
+	key := []byte(createHash(passphrase))
+	block, err := aes.NewCipher(key)
+	if err != nil {
+                return []byte(string(""))
+		// panic(err.Error())
+	}
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+                return []byte(string(""))
+		// panic(err.Error())
+	}
+	nonceSize := gcm.NonceSize()
+	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
+	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+                return []byte(string(""))
+		// panic(err.Error())
+	}
+	return plaintext
+}
+
+func askUserPassword(username *string, pass *string) bool {
+	fmt.Printf("\nPlease enter you credentials.\n")
+
+	prompted := false
+	if *username == "" {
+	    *username = os.Getenv("ACENTERA_USERNAME")
+	    if *username == "" {
+		prompted = true
+		promptUntilNonEmpty("\nUsername: ", username)
+            }
+	}
+	if *pass == "" {
+	  *pass = os.Getenv("ACENTERA_PASSWORD")
+	  if *pass == "" {
+		prompted = true
+		promptUntilNonEmptySecure("Password: ", pass)
+	  }
+        }
+	return prompted
 }

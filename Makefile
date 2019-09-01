@@ -9,3 +9,6 @@ generate:
 build: generate
 	@echo Building application binary
 	@go build -o acentera
+build-only:
+	@echo Building application binary
+	@go build -o acentera
