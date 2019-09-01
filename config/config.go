@@ -35,6 +35,7 @@ const (
 
 var configDefinitions = map[string]*Definition{
 	// autosyncConfigKey:              {help: "Automatically synchronize your cloud locally", defaultValue: "true", parseParamFn: parseBool},
+	/*
 	RegionConfigKey:             {help: "AWS region", parseParamFn: awsconfig.ParseRegion, stdinParamProviderFn: awsconfig.StdinRegionSelector, onUpdateFns: []onUpdateFunc{runSyncWithUpdatedRegion}},
 	ProfileConfigKey:            {help: "AWS profile", defaultValue: "default"},
 	"aws.infra.sync":            {help: "Enable/disable sync of infra services (EC2, RDS, etc.) (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
@@ -49,11 +50,13 @@ var configDefinitions = map[string]*Definition{
 	"aws.messaging.sync":        {help: "Enable/disable sync of SQS/SNS service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
 	"aws.cdn.sync":              {help: "Enable/disable sync of CloudFront service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
 	"aws.cloudformation.sync":   {help: "Enable/disable sync of CloudFormation service (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
+	*/
 	checkUpgradeFrequencyConfigKey: {help: "Upgrade check frequency (hours); a negative value disables check", defaultValue: "8", parseParamFn: parseInt},
 	// schedulerURL: {help: "URL used by awless CLI to interact with pre-installed https://github.com/wallix/awless-scheduler", defaultValue: "http://localhost:8082"},
 }
 
 var defaultsDefinitions = map[string]*Definition{
+	/*
 	"instance.type":          {defaultValue: "t2.micro", help: "AWS EC2 instance type", stdinParamProviderFn: awsconfig.StdinInstanceTypeSelector, parseParamFn: awsconfig.ParseInstanceType},
 	"instance.distro":        {defaultValue: "amazonlinux", help: "Query to fetch latest community bare distro image id (see awless search images -h)", parseParamFn: parseDistroQuery},
 	"instance.count":         {defaultValue: "1", help: "Number of instances to create on AWS EC2", parseParamFn: parseInt},
@@ -63,6 +66,7 @@ var defaultsDefinitions = map[string]*Definition{
 	"elasticip.domain":       {defaultValue: "vpc", help: "The domain of elastic IP addresses (standard or vpc)"},
 	"image.delete-snapshots": {defaultValue: "true", help: "Delete linked snapshots when deleting an image"},
 	"database.type":          {defaultValue: "db.t2.micro", help: "Default RDS database type"},
+	*/
 }
 
 var deprecated = map[string]string{
