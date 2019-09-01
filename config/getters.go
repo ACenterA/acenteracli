@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"github.com/wallix/awless/global"
 )
 
 func GetAWSRegion() string {
@@ -23,11 +24,31 @@ func GetUsername() string {
 	return ""
 }
 
+func GetUserId() string {
+	if reg, ok := Config["user.id"]; ok && reg != "" {
+		return fmt.Sprint(reg)
+	}
+	return ""
+}
+
+func GetToken() string {
+	if reg, ok := Config["_token"]; ok && reg != "" {
+		return fmt.Sprint(reg)
+	}
+	return ""
+}
+
 func GetPassword() string {
 	if reg, ok := Config["_enc"]; ok && reg != "" {
 		return fmt.Sprint(reg)
 	}
 	return ""
+}
+
+func GetPasswordPlainText() string {
+	enc := []byte(GetPassword())
+        pass := string(Decrypt(enc, global.ENC_PWD))
+	return pass
 }
 
 const defaultAWSSessionProfile = "default"

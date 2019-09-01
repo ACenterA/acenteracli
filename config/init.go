@@ -20,7 +20,7 @@ import (
 	"fmt"
 	os "os"
 	"path/filepath"
-	syscall "syscall"
+	// syscall "syscall"
 
 	// "bufio"
 	"regexp"
@@ -38,9 +38,9 @@ import (
 	"strconv"
 	"strings"
 
-	"os/signal"
+	// "os/signal"
 
-	"golang.org/x/crypto/ssh/terminal"
+	// "golang.org/x/crypto/ssh/terminal"
 
 	"github.com/howeyc/gopass"
 
@@ -113,16 +113,13 @@ func InitAwlessEnv() error {
 
 	enc = []byte(GetPassword())
 	username = GetUsername()
-        pass = string(decrypt(enc, global.ENC_PWD))
+        pass = string(Decrypt(enc, global.ENC_PWD))
 
-	if (askUserPassword(&username, &pass)) {
-		if username != "" {
-			Set("user.username", username)
-		}
-		if string(pass) != "" {
-			enc = encrypt([]byte(pass), global.ENC_PWD)
-			Set("_enc", string(enc))
-		}
+	if (AskUserPassword(&username, &pass)) {
+		// Ok got new user/pass?
+	}
+        if (username == "") {
+		fmt.Printf("Error: Usernamei s no  valid email address or is empty\n")
 	}
         if (pass == "") {
 		// ?? No passwords? exit with errors?
@@ -189,7 +186,8 @@ func promptUntilNonEmptySecure(question string, v *string) {
 	return
 }
 
-// Unused for now
+// Unused for now also not valid for cross compilation
+/*
 func getPassword(prompt string) string {
 	// Get the initial state of the terminal.
 	fmt.Println(prompt)
@@ -222,6 +220,7 @@ func getPassword(prompt string) string {
 	// Return the password as a string.
 	return string(p)
 }
+*/
 
 func createHash(key string) string {
 	hasher := md5.New()
@@ -243,7 +242,7 @@ func encrypt(data []byte, passphrase string) []byte {
 	return ciphertext
 }
 
-func decrypt(data []byte, passphrase string) []byte {
+func Decrypt(data []byte, passphrase string) []byte {
 	if (len(data) <= 0) {
 		return nil
         }
@@ -268,7 +267,7 @@ func decrypt(data []byte, passphrase string) []byte {
 	return plaintext
 }
 
-func askUserPassword(username *string, pass *string) bool {
+func AskUserPassword(username *string, pass *string) bool {
 	fmt.Printf("\nPlease enter you credentials.\n")
 
 	prompted := false
@@ -277,6 +276,7 @@ func askUserPassword(username *string, pass *string) bool {
 	    if *username == "" {
 		prompted = true
 		promptUntilNonEmpty("\nUsername: ", username)
+		Set("user.username", *username)
             }
 	}
 	if *pass == "" {
@@ -284,7 +284,12 @@ func askUserPassword(username *string, pass *string) bool {
 	  if *pass == "" {
 		prompted = true
 		promptUntilNonEmptySecure("Password: ", pass)
+		enc := encrypt([]byte(*pass), global.ENC_PWD)
+		Set("_enc", string(enc))
 	  }
         }
+	if (prompted) {
+		Set("_token", string(""))
+	}
 	return prompted
 }

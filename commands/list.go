@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	listingFormat              string
+	// listingFormat              string
 	listingFiltersFlag         []string
 	listingTagFiltersFlag      []string
 	listingTagKeyFiltersFlag   []string
@@ -67,7 +67,7 @@ func init() {
 		}
 	}
 
-	listCmd.PersistentFlags().StringVar(&listingFormat, "format", "table", "Output format: table, csv, tsv, json (default to table)")
+	// listCmd.PersistentFlags().StringVar(&listingFormat, "format", "table", "Output format: table, csv, tsv, json (default to table)")
 	/* ACENTERA
 	listCmd.PersistentFlags().StringSliceVar(&listingFiltersFlag, "filter", []string{}, "Filter resources given key/values fields (case insensitive). Ex: --filter type=t2.micro")
 	listCmd.PersistentFlags().StringSliceVar(&listingTagFiltersFlag, "tag", []string{}, "Filter EC2 resources given tags (case sensitive!). Ex: --tag Env=Production")

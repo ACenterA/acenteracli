@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"github.com/pkg/errors"
 	"net/http"
 	"os"
 	"strings"
@@ -32,6 +33,7 @@ import (
 	"github.com/wallix/awless/graph"
 	"github.com/wallix/awless/graph/resourcetest"
 	"github.com/wallix/awless/logger"
+	cli "github.com/wallix/awless/cli"
 )
 
 var onlyMyIPFlag, onlyMyNameFlag, onlyMyTypeFlag, onlyMyIDFlag, onlyMyAccountFlag, onlyMyResourcePathFlag bool
@@ -50,11 +52,40 @@ func init() {
 var whoamiCmd = &cobra.Command{
 	Use:               "whoami",
 	Aliases:           []string{"who"},
-	PersistentPreRun:  applyHooks(initAwlessEnvHook, initLoggerHook, initCloudServicesHook, firstInstallDoneHook),
+	PersistentPreRun:  applyHooks(initAwlessEnvHook, initLoggerHook, initCloudServicesHook, firstInstallDoneHook, cli.InitCliEnv),
 	PersistentPostRun: applyHooks(verifyNewVersionHook, onVersionUpgrade, networkMonitorHook),
 	Short:             "Show your account, attached (i.e. managed) and inlined policies",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		url := "/customer/v1/websites/me"
+		req := cli.Client.Get().Path(url)
+		// cli.HandleBefore(handlerPath, params, req)
+		resp, err := req.Do()
+		if err != nil {
+			fmt.Println(errors.Wrap(err, "Request failed"))
+		}
+		var decoded map[string]interface{}
+		if resp.StatusCode < 400 {
+			if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
+				fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
+			}
+		} else {
+			fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
+		}
+
+                fmt.Println("GOT ID OF ", decoded["id"])
+                fmt.Println("GOT DECOEDED OF")
+                fmt.Println(decoded["projects"])
+
+
+		/*
+		after := cli.HandleAfter(handlerPath, params, resp, decoded)
+		if after != nil {
+			decoded = after.(map[string]interface{})
+		}
+		*/
+
+
 		if onlyMyIPFlag {
 			z := getMyIP()
 			// fmt.Println(getMyIP())
@@ -75,10 +106,12 @@ var whoamiCmd = &cobra.Command{
 
 			columns := []string{"Name", "ID"}
 
+			fmt.Println("FORMT IS SET TO ", listingFormat)
 			displayer, er := console.BuildOptions(
+                                console.WithMaxWidth(console.GetTerminalWidth()),
 				console.WithRdfType("ff"),
 				console.WithColumns(columns),
-				console.WithFormat("table"),
+                                console.WithFormat(listingFormat),
 				// console.WithNoHeaders(false),
 			).SetSource(g).Build()
 
@@ -98,8 +131,6 @@ var whoamiCmd = &cobra.Command{
 
 		if me.IsRoot() {
 			logger.Warning("You are currently root")
-			logger.Warning("Best practices suggest to create a new user and affecting it roles of access")
-			logger.Warning("awless official templates might help https://github.com/wallix/awless-templates\n")
 		}
 
 		switch {

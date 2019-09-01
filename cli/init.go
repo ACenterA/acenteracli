@@ -17,29 +17,51 @@ limitations under the License.
 package cli
 
 import (
+	// "fmt"
+        "github.com/spf13/cobra"
 	gentleman "gopkg.in/h2non/gentleman.v2"
+	"gopkg.in/h2non/gentleman.v2/plugins/url"
 
 //	awsservices "github.com/wallix/awless/aws/services"
-//	"github.com/wallix/awless/global"
-	config "github.com/wallix/awless/config"
+	global "github.com/wallix/awless/global"
+	// config "github.com/wallix/awless/config"
 )
 
 var (
 	// Client makes HTTP requests and parses the responses.
 	Client *gentleman.Client
+	AnonClient *gentleman.Client
+	GitClient *gentleman.Client
 )
 
 func init() {
 	Client = gentleman.New()
-	UserAgentMiddleware()
-	LogMiddleware()
+	AnonClient = gentleman.New()
+	GitClient = gentleman.New()
 }
 
-func InitCliEnv() error {
+func InitCliEnv(cmd *cobra.Command, args []string) error {
+	/*
+        if localGlobalFlag {
+                return nil
+        }
+	*/
+	// Define the server url (must be first)
+	Client.Use(url.URL(global.API_ENDPOINT))
+	AnonClient.Use(url.URL(global.API_ENDPOINT))
+	UserAgentMiddleware(Client)
+	UserAgentMiddleware(AnonClient)
+	AuthorizationMiddleware(Client)
+	// LogMiddleware(Client, false)
+	LogMiddleware(AnonClient, false)
+	// LogMiddleware(AnonClient, false)
+
+	// fmt.Println("User pwd :" + config.GetPasswordPlainText())
 	/*
 	Client = gentleman.New()
 	UserAgentMiddleware()
 	LogMiddleware()
 	*/
+	return nil
 }
 

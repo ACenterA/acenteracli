@@ -7,3 +7,5 @@ awless
 .idea
 acentera
 global/gen_global.go
+awless_*
+acentera_*

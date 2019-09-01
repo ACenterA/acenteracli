@@ -24,16 +24,46 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/wallix/awless/config"
 )
+var (
+	performUpgrade bool
+)
 
 func init() {
 	RootCmd.AddCommand(versionCmd)
+
+	// versionExtraCmd.Flags().BoolVar(&performUpgrade, "upgrade", false, "Update the Client to the latest version")
+
+	versionCmd.AddCommand(versionUpgradCmd)
+	versionCmd.AddCommand(versionExtraCmd)
 }
 
 var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Show awless version",
+        Hidden: true,
+        Use:    "version",
+        Short:  "Show / Upgrade client version",
+}
 
-	Run: printVersion,
+var versionExtraCmd = &cobra.Command{
+	Use:   "show",
+	Short: "Show client version",
+
+        Run: func(cmd *cobra.Command, args []string) {
+                if performUpgrade {
+			config.ConfirmAndSelfUpdate()
+			return
+		}
+		printVersion(cmd, args)
+		return
+	},
+}
+var versionUpgradCmd = &cobra.Command{
+	Use:   "upgrade",
+	Short: "Upgrade client version",
+
+        Run: func(cmd *cobra.Command, args []string) {
+		config.ConfirmAndSelfUpdate()
+		return
+	},
 }
 
 func printVersion(*cobra.Command, []string) {

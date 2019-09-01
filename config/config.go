@@ -37,7 +37,9 @@ var configDefinitions = map[string]*Definition{
 	// autosyncConfigKey:              {help: "Automatically synchronize your cloud locally", defaultValue: "true", parseParamFn: parseBool},
 	"user.store.password": {help: "Enable/disable password of encrypted password (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
 	"user.username":       {help: "Current username", defaultValue: ""},
+	"user.id":             {help: "Current userid", defaultValue: "", onUpdateFns: []onUpdateFunc{}},
 	"_enc":                {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"_token":              {help: "", defaultValue: ""}, // Empty help prevnet to display it.
 	/*
 		RegionConfigKey:             {help: "AWS region", parseParamFn: awsconfig.ParseRegion, stdinParamProviderFn: awsconfig.StdinRegionSelector, onUpdateFns: []onUpdateFunc{runSyncWithUpdatedRegion}},
 		ProfileConfigKey:            {help: "AWS profile", defaultValue: "default"},

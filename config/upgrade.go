@@ -16,15 +16,22 @@ limitations under the License.
 package config
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
-	"runtime"
+	"os"
+	"bufio"
+	// "net/http"
+	// "runtime"
 	"strconv"
 	"strings"
 	"time"
+
+        // "github.com/blang/semver"
+        "github.com/rhysd/go-github-selfupdate/selfupdate"
+
+        "github.com/wallix/awless/logger"
 
 	"github.com/wallix/awless/database"
 )
@@ -54,9 +61,11 @@ func VerifyNewVersionAvailable(url string, messaging io.Writer) error {
 }
 
 func notifyIfUpgrade(url string, messaging io.Writer) error {
+	ConfirmAndSelfUpdate()
+	/*
 	client := &http.Client{Timeout: 1500 * time.Millisecond}
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
-	req.Header.Set("User-Agent", "awless-client-"+Version)
+	req.Header.Set("User-Agent", "acentera-client-"+Version)
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
@@ -71,22 +80,12 @@ func notifyIfUpgrade(url string, messaging io.Writer) error {
 	if err := dec.Decode(&latest); err == nil {
 		if IsSemverUpgrade(Version, latest.Version) {
 			var install string
-			switch BuildFor {
-			case "brew":
-				install = "Run `brew upgrade awless`"
-			case "zip", "targz":
-				ext := "tar.gz"
-				if runtime.GOOS == "windows" {
-					ext = "zip"
-				}
-				install = fmt.Sprintf("Run `wget -O awless-%s.%s https://github.com/wallix/awless/releases/download/%s/awless-%s-%s.%s`", latest.Version, ext, latest.Version, runtime.GOOS, runtime.GOARCH, ext)
-			default:
-				install = "Run `go get -u github.com/wallix/awless`"
-			}
-			fmt.Fprintf(messaging, "New version %s available. Checkout the latest features at https://github.com/wallix/awless/blob/master/CHANGELOG.md\n%s\n", latest.Version, install)
+                        install = "Run `go get -u github.com/wallix/awless`"
+			fmt.Fprintf(messaging, "New version %s available. Checkout the latest features at https://github.com/ACenterA/acenteracli/blob/master/CHANGELOG.md\n%s\n", latest.Version, install)
 		}
 	}
 
+	*/
 	return nil
 }
 
@@ -148,4 +147,44 @@ func CompareSemver(current, latest string) (int, error) {
 	}
 
 	return 0, nil
+}
+
+func ConfirmAndSelfUpdate() {
+
+    selfupdate.EnableLog()
+
+    latest, found, err := selfupdate.DetectLatest("ACenterA/acenteracli")
+    if err != nil {
+        logger.Infof("Error occurred while detecting version:")
+        return
+    }
+
+
+    if (!found || !IsSemverUpgrade(Version, fmt.Sprintf("%v",latest.Version))) {
+        logger.Infof("Current version is the latest")
+        return
+    }
+
+    fmt.Print("Do you want to update to", latest.Version, "? (y/n): ")
+    input, err := bufio.NewReader(os.Stdin).ReadString('\n')
+    if (err != nil || (input != "y\n" && input != "n\n")) {
+        // logger.Infof("Invalid input")
+        return
+    }
+    if input == "n\n" {
+        return
+    }
+
+    exe, err := os.Executable()
+    if err != nil {
+        logger.Infof("Could not locate executable path")
+        return
+    }
+    fmt.Println("Will update using URL of " + latest.AssetURL)
+    fmt.Println(latest)
+    if err := selfupdate.UpdateTo(latest.AssetURL, exe); err != nil {
+        logger.Infof("Error occurred while updating binary:", err)
+        return
+    }
+    logger.Infof("Successfully updated to version", latest.Version)
 }

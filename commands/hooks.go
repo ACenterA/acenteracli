@@ -122,9 +122,8 @@ func initCloudServicesHook(cmd *cobra.Command, args []string) error {
 
 	profile, region := config.GetAWSProfile(), config.GetAWSRegion()
 
-	logger.Verbosef("awless %s - loading AWS session with profile '%s' and region '%s'", config.Version, profile, region)
+	// logger.Verbosef("awless %s - loading AWS session with profile '%s' and region '%s'", config.Version, profile, region)
 
-	fmt.Println("Init cloudervice hook here")
 	if err := awsservices.Init(profile, region, config.GetConfigWithPrefix("aws."), logger.DefaultLogger, config.SetProfileCallback, networkMonitorFlag); err != nil {
 		return err
 	}
@@ -198,8 +197,8 @@ func onVersionUpgrade(cmd *cobra.Command, args []string) error {
 			fmt.Printf("cannot store upgraded version in db: %s\n", err)
 		}
 		migrationActionsAndExtraMessages(config.Version)
-		logger.Infof("You have just upgraded awless from %s to %s", lastVersion, config.Version)
-		logger.Infof("Check out %s latest features at https://github.com/wallix/awless/blob/master/CHANGELOG.md", config.Version)
+		logger.Infof("You have just upgraded acentera from %s to %s", lastVersion, config.Version)
+		logger.Infof("Check out %s latest features at https://github.com/ACenterA/acenteracli/blob/master/CHANGELOG.md", config.Version)
 	}
 
 	return nil
@@ -209,7 +208,11 @@ func verifyNewVersionHook(cmd *cobra.Command, args []string) error {
 	if localGlobalFlag {
 		return nil
 	}
-	config.VerifyNewVersionAvailable("https://updates.awless.io", os.Stderr)
+	cliBranch := os.Getenv("ACENTERA_CLI_BRANCH")
+	if (cliBranch == "") {
+	   cliBranch = "master"
+        }
+	config.VerifyNewVersionAvailable(fmt.Sprintf("https://raw.githubusercontent.com/ACenterA/acenteracli/%v/VERSION", cliBranch), os.Stderr)
 	return nil
 }
 

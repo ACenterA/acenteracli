@@ -3,7 +3,6 @@ package cli
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -12,12 +11,15 @@ import (
 	"strings"
 	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"gopkg.in/yaml.v2"
+        errors "github.com/pkg/errors"
 
 	"github.com/alecthomas/chroma/quick"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/h2non/gentleman.v2"
+	"gopkg.in/h2non/gentleman.v2/plugins/auth"
 	config "github.com/wallix/awless/config"
 	global "github.com/wallix/awless/global"
 	"gopkg.in/h2non/gentleman.v2/context"
@@ -56,25 +58,74 @@ func getBody(r io.ReadCloser) (string, io.ReadCloser, error) {
 }
 
 // UserAgentMiddleware sets the user-agent header on requests.
-func UserAgentMiddleware() {
-	Client.UseRequest(func(ctx *context.Context, h context.Handler) {
-		ctx.Request.Header.Set("User-Agent", config.Get("app-name")+"-cli-"+Root.Version)
+func UserAgentMiddleware(c *gentleman.Client) {
+        ua, _ := config.Get("app-name")
+        if (ua == nil) {
+		ua = "ACenterA"
+	}
+	c.UseRequest(func(ctx *context.Context, h context.Handler) {
+		ctx.Request.Header.Set("User-Agent", fmt.Sprintf("%s-cli-%s", ua, config.Version))
+		h.Next(ctx)
+	})
+}
+//AuthorizationMiddleware
+
+func AuthorizationMiddleware(c *gentleman.Client) {
+        token := config.GetToken()
+        if (!(token == "")) {
+		if (isTokenExpired(token)) {
+			token = ""
+		} else {
+		}
+	}
+
+        if (token == "") {
+		// Ok we ua = "ACenterA"
+		req := AnonClient.Post().Path("/customer/v1/websites/login")
+		AnonClient.Use(auth.Basic(config.GetUsername(), config.GetPasswordPlainText()))
+		req = req.AddHeader("Content-Type", "application/json")
+
+                resp, err := req.Do()
+                if err != nil {
+                        fmt.Println(errors.Wrap(err, "Request failed"))
+                }
+                var decoded map[string]interface{}
+		fmt.Println(resp)
+                if resp.StatusCode < 400 {
+                        if err := UnmarshalResponse(resp, &decoded); err != nil {
+                                fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
+                        }
+                } else {
+                        fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
+                }
+		fmt.Println("GOT ID OF ", decoded["id"])
+		fmt.Println("GOT AccessToken OF ", decoded["accessToken"])
+		config.Set("_token", decoded["accessToken"].(string))
+		config.Set("user.id", decoded["id"].(string))
+	} else {
+		// Need to validate token ?
+	}
+	c.UseRequest(func(ctx *context.Context, h context.Handler) {
+		token :=  config.GetToken()
+		if (ctx.Request.Header.Get("Authorization") == "") {
+			ctx.Request.Header.Set("Authorization", token)
+		}
 		h.Next(ctx)
 	})
 }
 
 // LogMiddleware adds verbose log info to HTTP requests.
-func LogMiddleware(useColor bool) {
+func LogMiddleware(c *gentleman.Client, useColor bool) {
 	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	Client.UseRequest(func(ctx *context.Context, h context.Handler) {
+	c.UseRequest(func(ctx *context.Context, h context.Handler) {
 		l := log.With().Str("request-id", fmt.Sprintf("%x", rnd.Uint64())).Logger()
 		ctx.Set("log", &l)
 
 		h.Next(ctx)
 	})
 
-	Client.UseHandler("before dial", func(ctx *context.Context, h context.Handler) {
+	c.UseHandler("before dial", func(ctx *context.Context, h context.Handler) {
 		ctx.Set("start", time.Now())
 
 		log := ctx.Get("log").(*zerolog.Logger)
@@ -115,7 +166,7 @@ func LogMiddleware(useColor bool) {
 		h.Next(ctx)
 	})
 
-	Client.UseResponse(func(ctx *context.Context, h context.Handler) {
+	c.UseResponse(func(ctx *context.Context, h context.Handler) {
 		l := ctx.Get("log").(*zerolog.Logger)
 
 		if global.Verbose != "" {
@@ -186,3 +237,35 @@ func unmarshalBody(headers http.Header, data []byte, s interface{}) error {
 
 	return nil
 }
+
+func isTokenExpired(tokenString string) bool {
+        // fmt.Printf("The token is:\n%s\n", tokenString)
+	var p jwt.Parser
+
+	token, _, err := p.ParseUnverified(tokenString, &jwt.StandardClaims{})
+
+	/*
+        for _, p := range b {
+                fmt.Printf("%s\n", p)
+        }
+        */
+	if err = token.Claims.Valid(); err != nil {
+		//handle invalid token
+		// fmt.Println("INVALID TOKEN????")
+	}
+
+	switch err.(type) {
+	case *jwt.ValidationError:
+		vErr := err.(*jwt.ValidationError)
+		switch vErr.Errors {
+		case jwt.ValidationErrorExpired:
+			return true
+		default:
+			return false
+		}
+
+	default:
+		return false
+	}
+}
+
