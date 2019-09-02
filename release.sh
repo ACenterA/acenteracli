@@ -3,11 +3,11 @@ go get github.com/mitchellh/gox || true
 gox -osarch="linux/amd64"
 gox -osarch="windows/amd64"
 gox -osarch="darwin/amd64"
-mv awless_linux_amd64 acentera
+mv *_linux_amd64 acentera
 tar -czvf acentera-linux-amd64.tar.gz acentera 
-mv awless_darwin_amd64 acentera
+mv *_darwin_amd64 acentera
 tar -czvf acentera-darwin-amd64.tar.gz acentera 
-mv awless_windows_amd64 acentera
+mv *_windows_amd64 acentera
 tar -czvf acentera-windows-amd64.tar.gz acentera 
 [ -e acentera ] && rm -f acentera
 
