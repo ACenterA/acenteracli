@@ -32,7 +32,7 @@ const AWLESS_ASCII_LOGO = `
 `
 
 var (
-	Version  = "v0.0.2"
+	Version  = "v0.0.1"
 	BuildFor string
 
 	buildSha, buildDate, buildArch, buildOS string
