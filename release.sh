@@ -1,4 +1,6 @@
 #!/bin/sh
+VERSION=$(cat config/version.go  | grep 'Version.*=.*v[0-9]' | cut -d '"' -f 2)
+export VERSION
 go get github.com/mitchellh/gox || true
 gox -osarch="linux/amd64"
 gox -osarch="windows/amd64"
@@ -7,10 +9,10 @@ mv *_linux_amd64 acentera
 tar -czvf acentera-linux-amd64.tar.gz acentera 
 mv *_darwin_amd64 acentera
 tar -czvf acentera-darwin-amd64.tar.gz acentera 
-mv *_windows_amd64 acentera
-tar -czvf acentera-windows-amd64.tar.gz acentera 
+mv acenteracli_windows_amd64.exe acentera.exe
+tar -czvf acentera-windows-amd64.tar.gz acentera.exe 
 [ -e acentera ] && rm -f acentera
-
+[ -e acentera.exe ] && rm -f acentera.exe
 
 git tag v${VERSION}
 git push

@@ -1,6 +1,4 @@
 
-VERSION ?= $(shell stty echo; read -p "Version: " pwd; stty echo; echo $$pwd)
-
 test:
 	@echo Running tests (with -race flag on) 
 	@go test ./... -race
@@ -18,4 +16,4 @@ build-only:
 
 release:
 	@echo Release version
-	@echo export VERSION=$(VERSION) && sh ./release.sh
+	@sh ./release.sh
