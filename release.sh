@@ -1,5 +1,5 @@
 #!/bin/sh
-VERSION=$(cat config/version.go  | grep 'Version.*=.*v[0-9]' | cut -d '"' -f 2)
+VERSION=$(cat config/version.go  | grep 'Version.*=.*v[0-9]' | cut -d '"' -f 2 | sed -r 's/vv/v/g')
 export VERSION
 go get github.com/mitchellh/gox || true
 gox -osarch="linux/amd64"
