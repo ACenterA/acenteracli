@@ -10,7 +10,8 @@ tar -czvf acentera-linux-amd64.tar.gz acentera
 mv *_darwin_amd64 acentera
 tar -czvf acentera-darwin-amd64.tar.gz acentera 
 mv acenteracli_windows_amd64.exe acentera.exe
-tar -czvf acentera-windows-amd64.tar.gz acentera.exe 
+zip -y acentera-windows-amd64.zip acentera.exe
+
 [ -e acentera ] && rm -f acentera
 [ -e acentera.exe ] && rm -f acentera.exe
 
@@ -27,4 +28,4 @@ github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo ac
     --tag v${VERSION} --name acentera-darwin-amd64.tar.gz --file acentera-darwin-amd64.tar.gz
 
 github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
-    --tag v${VERSION} --name acentera-windows-amd64.tar.gz --file acentera-windows-amd64.tar.gz
+    --tag v${VERSION} --name acentera-windows-amd64.zip --file acentera-windows-amd64.zip

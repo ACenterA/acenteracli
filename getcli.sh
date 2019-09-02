@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Download latest awless binary from Github
+# Download latest binary from Github
 
 ARCH_UNAME=`uname -m`
 if [[ "$ARCH_UNAME" == "x86_64" ]]; then
@@ -24,11 +24,11 @@ else
   exit
 fi
 
-LATEST_VERSION=`curl -fs https://updates.awless.io | grep -oE "v[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}"`
+LATEST_VERSION=`curl -s 'https://github.com/ACenterA/acenteracli/releases' | grep ".tar.gz" | grep 'href.*\/v' | head -n 1  | cut -d '"' -f 2 | sed -E 's~^.*download/v(.*)/.*tar.gz~\1~g'`
 
-FILENAME=awless-$OS-$ARCH.$EXT
+FILENAME=acentera-$OS-$ARCH.$EXT
 
-DOWNLOAD_URL="https://github.com/wallix/awless/releases/download/$LATEST_VERSION/$FILENAME"
+DOWNLOAD_URL="https://github.com/ACenterA/acenteracli/releases/download/$LATEST_VERSION/$FILENAME"
 
 echo "Downloading awless from $DOWNLOAD_URL"
 
@@ -37,7 +37,7 @@ if ! curl --fail -o $FILENAME -L $DOWNLOAD_URL; then
 fi
 
 echo ""
-echo "extracting $FILENAME to ./awless"
+echo "extracting $FILENAME to ./acentera"
 
 if [[ "$OS" == "windows" ]]; then
 	echo 'y' | unzip $FILENAME 2>&1 > /dev/null
@@ -47,14 +47,14 @@ fi
 
 echo "removing $FILENAME"
 rm $FILENAME
-chmod +x ./awless
+chmod +x ./acentera
 
 echo ""
-echo "awless successfully installed to ./awless"
+echo "acentera successfully installed to ./acentera"
 echo ""
 echo "don't forget to add it to your path, with, for example, 'sudo mv awless /usr/local/bin/' "
 echo ""
 echo "then, for autocompletion, run:"
-echo "    [bash] echo 'source <(awless completion bash)' >> ~/.bashrc"
+echo "    [bash] echo 'source <(acentera completion bash)' >> ~/.bashrc"
 echo "    OR"
-echo "    [zsh]  echo 'source <(awless completion zsh)' >> ~/.zshrc"
+echo "    [zsh]  echo 'source <(acentera completion zsh)' >> ~/.zshrc"

@@ -177,7 +177,7 @@ func ConfirmAndSelfUpdate() {
     }
     */
     logger.Infof("Performing client upgrade to version %s",latest.Version)
-    logger.Infof("Checkout the latest features at https://github.com/ACenterA/acenteracli/blob/master/CHANGELOG.md#%s", latest.Version)
+    logger.Infof("Checkout the latest features at https://github.com/ACenterA/acenteracli/blob/master/CHANGELOG.md#%s", strings.ReplaceAll(fmt.Sprintf("%s",latest.Version),".",""))
 
     exe, err := os.Executable()
     if err != nil {
