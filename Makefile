@@ -1,3 +1,6 @@
+
+VERSION ?= $(shell stty echo; read -p "Version: " pwd; stty echo; echo $$pwd)
+
 test:
 	@echo Running tests (with -race flag on) 
 	@go test ./... -race
@@ -12,3 +15,7 @@ build: generate
 build-only:
 	@echo Building application binary
 	@go build -o acentera
+
+release:
+	@echo Release version
+	@echo export VERSION=$(VERSION) && sh ./release.sh

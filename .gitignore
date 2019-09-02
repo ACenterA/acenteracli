@@ -9,3 +9,9 @@ acentera
 global/gen_global.go
 awless_*
 acentera_*
+.envrc
+.env
+.env*
+.env.*
+acentera-*
+awless-*

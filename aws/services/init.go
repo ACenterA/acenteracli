@@ -18,7 +18,7 @@ package awsservices
 
 import (
 	"errors"
-	"fmt"
+	// "fmt"
 
 	awsspec "github.com/wallix/awless/aws/spec"
 	"github.com/wallix/awless/cloud"
@@ -35,7 +35,6 @@ func Init(profile, region string, extraConf map[string]interface{}, log *logger.
 	if region == "" {
 		return errors.New("empty AWS region. Set it with `awless config set aws.region`")
 	}
-	fmt.Println("IN INIT HERE")
 
 	sb := newSessionResolver().withRegion(region).withProfile(profile).withNetworkMonitor(enableNetworkMonitor)
 	sb = sb.withProfileSetter(profileSetterCallback).withLogger(log).withCredentialResolvers()

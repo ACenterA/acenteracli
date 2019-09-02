@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"bufio"
+	// "bufio"
 	// "net/http"
 	// "runtime"
 	"strconv"
@@ -151,7 +151,7 @@ func CompareSemver(current, latest string) (int, error) {
 
 func ConfirmAndSelfUpdate() {
 
-    selfupdate.EnableLog()
+    // selfupdate.EnableLog()
 
     latest, found, err := selfupdate.DetectLatest("ACenterA/acenteracli")
     if err != nil {
@@ -165,6 +165,7 @@ func ConfirmAndSelfUpdate() {
         return
     }
 
+    /*
     fmt.Print("Do you want to update to", latest.Version, "? (y/n): ")
     input, err := bufio.NewReader(os.Stdin).ReadString('\n')
     if (err != nil || (input != "y\n" && input != "n\n")) {
@@ -174,17 +175,55 @@ func ConfirmAndSelfUpdate() {
     if input == "n\n" {
         return
     }
+    */
+    logger.Infof("Performing client upgrade to version %s",latest.Version)
+    logger.Infof("Checkout the latest features at https://github.com/ACenterA/acenteracli/blob/master/CHANGELOG.md#%s", latest.Version)
 
     exe, err := os.Executable()
     if err != nil {
         logger.Infof("Could not locate executable path")
         return
     }
-    fmt.Println("Will update using URL of " + latest.AssetURL)
-    fmt.Println(latest)
+    //fmt.Println("Will update using URL of " + latest.AssetURL)
+    //fmt.Println(latest)
     if err := selfupdate.UpdateTo(latest.AssetURL, exe); err != nil {
         logger.Infof("Error occurred while updating binary:", err)
         return
     }
-    logger.Infof("Successfully updated to version", latest.Version)
+    logger.Infof("Successfully updated to version %s", latest.Version)
+}
+func CheckForUpdate() {
+
+    // selfupdate.EnableLog()
+    latest, found, err := selfupdate.DetectLatest("ACenterA/acenteracli")
+    if err != nil {
+        logger.Infof("Error occurred while detecting version:")
+        return
+    }
+
+
+    if (!found || !IsSemverUpgrade(Version, fmt.Sprintf("%v",latest.Version))) {
+        logger.Infof("No updates availablle")
+        return
+    }
+    logger.Infof("Found newer version %s", latest.Version)
+    logger.Infof("To upgrade your client please run the following command:\n\nacentera version upgrade\n")
+}
+func CheckForUpdateExists() int {
+
+    // selfupdate.EnableLog()
+    latest, found, err := selfupdate.DetectLatest("ACenterA/acenteracli")
+    if err != nil {
+        logger.Infof("Error occurred while detecting version:")
+        return -1
+    }
+
+
+    if (!found || !IsSemverUpgrade(Version, fmt.Sprintf("%v",latest.Version))) {
+        logger.Infof("No updates availablle")
+        return 0
+    }
+    logger.Infof("Found newer version %s", latest.Version)
+    logger.Infof("To upgrade your client please run the following command:\n\nacentera version upgrade")
+    return 1
 }

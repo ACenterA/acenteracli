@@ -22,6 +22,7 @@ import (
 	"gopkg.in/h2non/gentleman.v2/plugins/auth"
 	config "github.com/wallix/awless/config"
 	global "github.com/wallix/awless/global"
+	logger "github.com/wallix/awless/logger"
 	"gopkg.in/h2non/gentleman.v2/context"
 )
 
@@ -90,7 +91,7 @@ func AuthorizationMiddleware(c *gentleman.Client) {
                         fmt.Println(errors.Wrap(err, "Request failed"))
                 }
                 var decoded map[string]interface{}
-		fmt.Println(resp)
+		// fmt.Println(resp)
                 if resp.StatusCode < 400 {
                         if err := UnmarshalResponse(resp, &decoded); err != nil {
                                 fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
@@ -98,10 +99,10 @@ func AuthorizationMiddleware(c *gentleman.Client) {
                 } else {
                         fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
                 }
-		fmt.Println("GOT ID OF ", decoded["id"])
-		fmt.Println("GOT AccessToken OF ", decoded["accessToken"])
-		config.Set("_token", decoded["accessToken"].(string))
-		config.Set("user.id", decoded["id"].(string))
+	        if _, ok := decoded["accessToken"]; ok {
+		  config.Set("_token", decoded["accessToken"].(string))
+		  config.Set("user.id", decoded["id"].(string))
+                }
 	} else {
 		// Need to validate token ?
 	}
@@ -232,7 +233,9 @@ func unmarshalBody(headers http.Header, data []byte, s interface{}) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("Not sure how to unmarshal %s", ct)
+		// return fmt.Errorf("Not sure how to unmarshal %s", ct)
+		logger.Errorf("Not sure how to unmarshal %s", ct)
+		return nil
 	}
 
 	return nil

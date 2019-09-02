@@ -23,6 +23,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/wallix/awless/config"
+	"github.com/wallix/awless/logger"
 )
 var (
 	performUpgrade bool
@@ -33,6 +34,7 @@ func init() {
 
 	// versionExtraCmd.Flags().BoolVar(&performUpgrade, "upgrade", false, "Update the Client to the latest version")
 
+	versionCmd.AddCommand(versionCheckCmd)
 	versionCmd.AddCommand(versionUpgradCmd)
 	versionCmd.AddCommand(versionExtraCmd)
 }
@@ -53,6 +55,7 @@ var versionExtraCmd = &cobra.Command{
 			return
 		}
 		printVersion(cmd, args)
+		// Do not check for updates ... config.CheckForUpdate()
 		return
 	},
 }
@@ -61,12 +64,24 @@ var versionUpgradCmd = &cobra.Command{
 	Short: "Upgrade client version",
 
         Run: func(cmd *cobra.Command, args []string) {
+		fmt.Fprint(os.Stderr, config.AWLESS_ASCII_LOGO)
 		config.ConfirmAndSelfUpdate()
+		return
+	},
+}
+var versionCheckCmd = &cobra.Command{
+	Use:   "check",
+	Short: "Check cliet Upgrade",
+
+        Run: func(cmd *cobra.Command, args []string) {
+		fmt.Fprint(os.Stderr, config.AWLESS_ASCII_LOGO)
+		os.Exit(config.CheckForUpdateExists())
 		return
 	},
 }
 
 func printVersion(*cobra.Command, []string) {
 	fmt.Fprint(os.Stderr, config.AWLESS_ASCII_LOGO)
-	fmt.Println(config.CurrentBuildInfo)
+        logger.Infof("Current version %s", config.Version)
+	// fmt.Println(config.CurrentBuildInfo)
 }

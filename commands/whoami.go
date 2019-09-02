@@ -22,16 +22,18 @@ import (
 	"net"
 	"github.com/pkg/errors"
 	"net/http"
-	"os"
+	// "os"
 	"strings"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
+	// "github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/spf13/cobra"
+	/*
 	awsservices "github.com/wallix/awless/aws/services"
-	"github.com/wallix/awless/console"
-	"github.com/wallix/awless/graph"
-	"github.com/wallix/awless/graph/resourcetest"
+	*/
+	// "github.com/wallix/awless/console"
+	// "github.com/wallix/awless/graph"
+	// "github.com/wallix/awless/graph/resourcetest"
 	"github.com/wallix/awless/logger"
 	cli "github.com/wallix/awless/cli"
 )
@@ -72,122 +74,13 @@ var whoamiCmd = &cobra.Command{
 		} else {
 			fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
 		}
-
-                fmt.Println("GOT ID OF ", decoded["id"])
-                fmt.Println("GOT DECOEDED OF")
-                fmt.Println(decoded["projects"])
-
-
-		/*
-		after := cli.HandleAfter(handlerPath, params, resp, decoded)
-		if after != nil {
-			decoded = after.(map[string]interface{})
-		}
-		*/
-
-
-		if onlyMyIPFlag {
-			z := getMyIP()
-			// fmt.Println(getMyIP())
-
-			g := graph.NewGraph()
-
-			res1 := resourcetest.New("ff", "inst_1").Prop("ID", "inst_1").Prop("Name", fmt.Sprintf("%v", z)).Build()
-			res2 := resourcetest.New("ff", "inst_2").Prop("ID", "inst_2").Prop("Name", "instance 2").Build()
-
-			g.AddResource(
-				res1,
-				res2,
-			)
-
-			// r, err := g.GetResource("sub_1", fmt.Sprintf("%v", z))
-			// fmt.Println(r)
-			// exitOn(err)
-
-			columns := []string{"Name", "ID"}
-
-			fmt.Println("FORMT IS SET TO ", listingFormat)
-			displayer, er := console.BuildOptions(
-                                console.WithMaxWidth(console.GetTerminalWidth()),
-				console.WithRdfType("ff"),
-				console.WithColumns(columns),
-                                console.WithFormat(listingFormat),
-				// console.WithNoHeaders(false),
-			).SetSource(g).Build()
-
-			exitOn(er)
-			exitOn(displayer.Print(os.Stdout))
-
-			return
-		}
-
-		if localGlobalFlag {
-			logger.Warning("`--local` flag prevent the command from fetching remote information")
-			return
-		}
-
-		me, err := awsservices.AccessService.(*awsservices.Access).GetIdentity()
-		exitOn(err)
-
-		if me.IsRoot() {
-			logger.Warning("You are currently root")
-		}
-
-		switch {
-		case onlyMyAccountFlag:
-			fmt.Println(me.Account)
-			return
-		case onlyMyIDFlag:
-			fmt.Println(me.UserId)
-			return
-		case onlyMyNameFlag:
-			fmt.Println(me.Resource)
-			return
-		case onlyMyTypeFlag:
-			fmt.Println(me.ResourceType)
-			return
-		case onlyMyResourcePathFlag:
-			fmt.Println(me.ResourcePath)
-			return
-		}
-
-		if !me.IsUserType() {
-			fmt.Printf("ResourceType: %s, Resource: %s, Id: %s, Account: %s\n", me.ResourceType, me.Resource, me.UserId, me.Account)
-			return
-		}
-
-		fmt.Printf("Username: %s, Id: %s, Account: %s\n", me.Resource, me.UserId, me.Account)
-
-		policies, err := awsservices.AccessService.(*awsservices.Access).GetUserPolicies(me.Resource)
-		if err != nil {
-			if aerr, ok := err.(awserr.RequestFailure); ok && aerr.Code() == "AccessDenied" {
-				logger.Warningf("user '%s' is not authorized to list its policies", me.Resource)
-			} else {
-				logger.Error(err)
-			}
-			return
-		}
-
-		if attached := policies.Attached; len(attached) > 0 {
-			fmt.Println("\nAttached policies (i.e. managed):")
-			for _, name := range attached {
-				fmt.Printf("\t- %s\n", name)
-			}
+		if resp.StatusCode <= 208 && resp.StatusCode >= 200 {
+		  logger.Verbosef("Got decoded of %s", decoded)
+		  if _, ok := decoded["contactEmail"]; ok {
+		    fmt.Printf("Username: %s, Id: %s\n", decoded["contactEmail"], decoded["accountId"])
+                  }
 		} else {
-			fmt.Println("\nAttached policies (i.e. managed): none")
-		}
-		if inlined := policies.Inlined; len(inlined) > 0 {
-			fmt.Println("\nInlined policies:")
-			for _, name := range inlined {
-				fmt.Printf("\t- %s\n", name)
-			}
-		} else {
-			fmt.Println("\nInlined policies: none")
-		}
-		if byGroup := policies.ByGroup; len(byGroup) > 0 {
-			for g, pol := range byGroup {
-				fmt.Printf("\nPolicies from group '%s': %s\n", g, strings.Join(pol, ", "))
-			}
+		  logger.Error("Invalid access token.")
 		}
 	},
 }

@@ -268,12 +268,14 @@ func Decrypt(data []byte, passphrase string) []byte {
 }
 
 func AskUserPassword(username *string, pass *string) bool {
-	fmt.Printf("\nPlease enter you credentials.\n")
 
 	prompted := false
 	if *username == "" {
 	    *username = os.Getenv("ACENTERA_USERNAME")
 	    if *username == "" {
+		if (!prompted) {
+                  fmt.Printf("\nPlease enter you credentials.\n")
+		}
 		prompted = true
 		promptUntilNonEmpty("\nUsername: ", username)
 		Set("user.username", *username)
@@ -282,6 +284,9 @@ func AskUserPassword(username *string, pass *string) bool {
 	if *pass == "" {
 	  *pass = os.Getenv("ACENTERA_PASSWORD")
 	  if *pass == "" {
+		if (!prompted) {
+		  fmt.Printf("\nPlease enter you credentials.\n")
+		}
 		prompted = true
 		promptUntilNonEmptySecure("Password: ", pass)
 		enc := encrypt([]byte(*pass), global.ENC_PWD)
