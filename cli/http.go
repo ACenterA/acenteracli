@@ -37,6 +37,42 @@ func indent(value string) string {
 	return "  ╎ " + strings.Replace(trimmed, "\n", "\n  ╎ ", -1) + "\n"
 }
 
+type APIInternal struct {
+  client *gentleman.Client
+}
+func API() *APIInternal {
+   v := &APIInternal{
+      client: Client,
+   }
+   return v
+}
+func (api *APIInternal) Path(url string) *gentleman.Client {
+    if ((strings.HasSuffix(APIPrefix,"/")) && (strings.HasPrefix(url, "/"))) {
+       url = strings.TrimPrefix(url, "/")
+    }
+    return Client.Path(APIPrefix + url)
+}
+func APIAnon() *APIInternal {
+   v := &APIInternal{
+      client: AnonClient,
+   }
+   return v
+}
+/*
+func (api *APIInternal) Get(url string) *gentleman.Request {
+    return Client.Path(url).Get()
+}
+func (api *APIInternal) Post(url string) *gentleman.Request {
+    return Client.Path(.url)Post(url)
+}
+func (api *APIInternal) Put(url string) *gentleman.Request {
+    return Client.Put(url)
+}
+func (api *APIInternal) Delete(url string) *gentleman.Request {
+    return Client.Delete(url)
+}
+*/
+
 // getBody returns and wraps the request/response body in a new reader, which
 // is useful for logging purposes.
 func getBody(r io.ReadCloser) (string, io.ReadCloser, error) {
@@ -69,6 +105,19 @@ func UserAgentMiddleware(c *gentleman.Client) {
 		h.Next(ctx)
 	})
 }
+
+func PathMiddleware(c *gentleman.Client) {
+        HostPath := global.API_ENDPOINT
+	c.UseRequest(func(ctx *context.Context, h context.Handler) {
+		// fmt.Println("Ned to append path to xisting path?" + HostPath)
+		if (strings.HasSuffix(HostPath,".com/")) {
+	        } else {
+			// fmt.Println("ctx.Request.URL is ...", ctx.Request.URL)
+			// fmt.Println(ctx.Request.URL)
+		}
+		h.Next(ctx)
+	})
+}
 //AuthorizationMiddleware
 
 func AuthorizationMiddleware(c *gentleman.Client) {
@@ -80,10 +129,12 @@ func AuthorizationMiddleware(c *gentleman.Client) {
 		}
 	}
 
-        if (token == "") {
+	// fmt.Printf("TOKEN IS TEST ? %s", token)
+        if (len(token) <= 0) {
 		// Ok we ua = "ACenterA"
-		req := AnonClient.Post().Path("/customer/v1/websites/login")
-		AnonClient.Use(auth.Basic(config.GetUsername(), config.GetPasswordPlainText()))
+		c := APIAnon().Path("/customer/v1/websites/login")
+		c.Use(auth.Basic(config.GetUsername(), config.GetPasswordPlainText()))
+		req := c.Post()
 		req = req.AddHeader("Content-Type", "application/json")
 
                 resp, err := req.Do()
@@ -101,17 +152,23 @@ func AuthorizationMiddleware(c *gentleman.Client) {
                 }
 	        if _, ok := decoded["accessToken"]; ok {
 		  config.Set("_token", decoded["accessToken"].(string))
+		  token = decoded["accessToken"].(string)
 		  config.Set("user.id", decoded["id"].(string))
                 }
 	} else {
 		// Need to validate token ?
 	}
 	c.UseRequest(func(ctx *context.Context, h context.Handler) {
-		token :=  config.GetToken()
-		if (ctx.Request.Header.Get("Authorization") == "") {
-			ctx.Request.Header.Set("Authorization", token)
+		// alwasy cleanit up 
+		if (token == "") {
+			h.Error(ctx, errors.New("Invalid Username / Password. Please login and try again."))
+		} else {
+	                ctx.Request.Header.Del("Authorization")
+			// if (ctx.Request.Header.Get("Authorization") == "") {
+				ctx.Request.Header.Set("Authorization", token)
+			// }
+			h.Next(ctx)
 		}
-		h.Next(ctx)
 	})
 }
 
@@ -141,6 +198,7 @@ func LogMiddleware(c *gentleman.Client, useColor bool) {
 		ctx.Set("request-body", body)
 		ctx.Request.Body = newReader
 
+		fmt.Println("VERBOSE IS :", global.Verbose)
 		if global.Verbose != "" {
 			headers := ""
 			for key, val := range ctx.Request.Header {

@@ -60,7 +60,7 @@ var whoamiCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		url := "/customer/v1/websites/me"
-		req := cli.Client.Get().Path(url)
+		req := cli.API().Path(url).Get()
 		// cli.HandleBefore(handlerPath, params, req)
 		resp, err := req.Do()
 		if err != nil {

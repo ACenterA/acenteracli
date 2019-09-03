@@ -15,3 +15,10 @@ limitations under the License.
 
 // DO NOT EDIT
 package global
+
+func IfThenElse(condition bool, a string, b string) string {
+	if condition {
+		return a
+	}
+	return b
+}

@@ -18,6 +18,7 @@ package cli
 
 import (
 	// "fmt"
+	"strings"
         "github.com/spf13/cobra"
 	gentleman "gopkg.in/h2non/gentleman.v2"
 	"gopkg.in/h2non/gentleman.v2/plugins/url"
@@ -32,6 +33,7 @@ var (
 	Client *gentleman.Client
 	AnonClient *gentleman.Client
 	GitClient *gentleman.Client
+	APIPrefix string
 )
 
 func init() {
@@ -49,11 +51,18 @@ func InitCliEnv(cmd *cobra.Command, args []string) error {
 	// Define the server url (must be first)
 	Client.Use(url.URL(global.API_ENDPOINT))
 	AnonClient.Use(url.URL(global.API_ENDPOINT))
+	tmpEndpoint := strings.Split(global.API_ENDPOINT,".")
+        idx := strings.Index(tmpEndpoint[len(tmpEndpoint)-1],"/")
+        endpointPrefix := tmpEndpoint[len(tmpEndpoint)-1][idx:]
+	APIPrefix = endpointPrefix
+
 	UserAgentMiddleware(Client)
-	UserAgentMiddleware(AnonClient)
+	// UserAgentMiddleware(AnonClient)
+	// PathMiddleware(Client)
+	// PathMiddleware(AnonClient)
 	AuthorizationMiddleware(Client)
-	// LogMiddleware(Client, false)
-	LogMiddleware(AnonClient, false)
+	LogMiddleware(Client, false)
+	// LogMiddleware(AnonClient, false)
 	// LogMiddleware(AnonClient, false)
 
 	// fmt.Println("User pwd :" + config.GetPasswordPlainText())
