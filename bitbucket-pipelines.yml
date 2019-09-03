@@ -12,7 +12,7 @@ pipelines:
           - BITBUCKET_REPO_FULL_NAME="wallix/awless"
           - PACKAGE_PATH="${GOPATH}/src/github.com/${BITBUCKET_REPO_FULL_NAME}"
           - mkdir -pv "${PACKAGE_PATH}"
-          - tar -cO --exclude-vcs --exclude=bitbucket-pipelines.yml . | tar -xv -C "${PACKAGE_PATH}"
+          - tar -cO --exclude=bitbucket-pipelines.yml . | tar -xv -C "${PACKAGE_PATH}"
           - cd "${PACKAGE_PATH}"
           - cp -Rfp vendor/* ${GOPATH}/src/.
           - go get -v || true
