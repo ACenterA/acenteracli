@@ -22,6 +22,16 @@ import (
 )
 
 var (
+	listingFiltersFlag         []string
+	listingTagFiltersFlag      []string
+	listingTagKeyFiltersFlag   []string
+	listingTagValueFiltersFlag []string
+	listingColumnsFlag         []string
+	listOnlyIDs                bool
+	noHeadersFlag              bool
+	sortBy                     []string
+	reverseFlag                bool
+
 	verboseGlobalFlag      bool
 	extraVerboseGlobalFlag bool
 	silentGlobalFlag       bool
