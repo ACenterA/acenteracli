@@ -10,9 +10,14 @@ generate:
 build: generate
 	@echo Building application binary
 	@go build -o acentera
+
 build-only:
 	@echo Building application binary
 	@go build -o acentera
+
+build-watch:
+	@echo Watch/Build application binary
+	@exec watchexec -e go -r -- go build -o .acentera
 
 release:
 	@echo Release version
