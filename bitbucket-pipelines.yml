@@ -9,6 +9,8 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
+          - ls -latrh .git
+          - export CURRFOLDER=$(pwd)
           - BITBUCKET_REPO_FULL_NAME="wallix/awless"
           - PACKAGE_PATH="${GOPATH}/src/github.com/${BITBUCKET_REPO_FULL_NAME}"
           - mkdir -pv "${PACKAGE_PATH}"
@@ -21,6 +23,7 @@ pipelines:
           - go generate gen/aws/generators/main.go
           - cd ${GOPATH}/src/golang.org/x/net/proxy && go get -u -v && cd -
           - go build -o acentera -v
+          - cp -Rfp ${CURRFOLDER}/.git .
           - git remote add github-origin https://${GITHUB_TOKEN}@github.com/ACenterA/acenteracli.git
           - git push -u github-origin master
           - ./release.sh
