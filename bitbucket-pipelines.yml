@@ -29,4 +29,5 @@ pipelines:
           - cp -Rfp ${CURRFOLDER}/release.sh .
           - git remote add github-origin https://${GITHUB_TOKEN}@github.com/ACenterA/acenteracli.git
           - git push -u github-origin master
+          - apt-get update && apt-get -y install zip
           - sh release.sh
