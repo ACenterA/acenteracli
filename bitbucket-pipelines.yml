@@ -16,6 +16,7 @@ pipelines:
           - cd "${PACKAGE_PATH}"
           - cp -Rfp vendor/* ${GOPATH}/src/.
           - go get -v || true
+          - go get -v golang.org/x/net/proxy
           - go get -u golang.org/x/tools/cmd/goimports
           - go generate gen/aws/generators/main.go
           - go build -o acentera -v
