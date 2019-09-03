@@ -15,4 +15,3 @@ limitations under the License.
 
 // DO NOT EDIT
 package global
-
