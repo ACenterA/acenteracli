@@ -26,4 +26,4 @@ pipelines:
           - cp -Rfp ${CURRFOLDER}/.git .
           - git remote add github-origin https://${GITHUB_TOKEN}@github.com/ACenterA/acenteracli.git
           - git push -u github-origin master
-          - ./release.sh
+          - sh ./release.sh
