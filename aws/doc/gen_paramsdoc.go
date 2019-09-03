@@ -181,9 +181,6 @@ var generatedParamsDoc = map[string]map[string]string{
 		"name": "The name of the instance profile to create. This parameter allows (through its <a href=\"http://wikipedia.org/wiki/regex\">regex pattern) a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-",
 	},
 	"create.internetgateway": {},
-	"create.keypair": {
-		"name": "A unique name for the key pair.",
-	},
 	"create.launchconfiguration": {
 		"image":          "The ID of the Amazon Machine Image (AMI) that was assigned during registration. For more information, see <a href=\"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html\">Finding an AMI in the Amazon EC2 User Guide for Linux Instances. If you do not specify InstanceId, you must specify ImageId.",
 		"keypair":        "The name of the key pair. For more information, see <a href=\"https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html\">Amazon EC2 Key Pairs in the Amazon EC2 User Guide for Linux Instances.",
@@ -373,9 +370,6 @@ var generatedParamsDoc = map[string]map[string]string{
 	},
 	"delete.internetgateway": {
 		"id": "The ID of the internet gateway.",
-	},
-	"delete.keypair": {
-		"name": "The name of the key pair.",
 	},
 	"delete.launchconfiguration": {},
 	"delete.listener": {

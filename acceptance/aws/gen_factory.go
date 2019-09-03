@@ -338,12 +338,6 @@ func (f *AcceptanceFactory) Build(key string) func() interface{} {
 			cmd.SetApi(f.Mock.(ec2iface.EC2API))
 			return cmd
 		}
-	case "createkeypair":
-		return func() interface{} {
-			cmd := awsspec.NewCreateKeypair(nil, f.Graph, f.Logger)
-			cmd.SetApi(f.Mock.(ec2iface.EC2API))
-			return cmd
-		}
 	case "createlaunchconfiguration":
 		return func() interface{} {
 			cmd := awsspec.NewCreateLaunchconfiguration(nil, f.Graph, f.Logger)
@@ -623,12 +617,6 @@ func (f *AcceptanceFactory) Build(key string) func() interface{} {
 	case "deleteinternetgateway":
 		return func() interface{} {
 			cmd := awsspec.NewDeleteInternetgateway(nil, f.Graph, f.Logger)
-			cmd.SetApi(f.Mock.(ec2iface.EC2API))
-			return cmd
-		}
-	case "deletekeypair":
-		return func() interface{} {
-			cmd := awsspec.NewDeleteKeypair(nil, f.Graph, f.Logger)
 			cmd.SetApi(f.Mock.(ec2iface.EC2API))
 			return cmd
 		}

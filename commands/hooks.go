@@ -217,9 +217,6 @@ func verifyNewVersionHook(cmd *cobra.Command, args []string) error {
 }
 
 func networkMonitorHook(cmd *cobra.Command, args []string) error {
-	if networkMonitorFlag {
-		awsservices.DefaultNetworkMonitor.DisplayStats(os.Stderr)
-	}
 	return nil
 }
 

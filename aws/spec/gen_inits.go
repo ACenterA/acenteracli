@@ -137,8 +137,6 @@ func (f *AWSFactory) Build(key string) func() interface{} {
 		return func() interface{} { return NewCreateInstanceprofile(f.Sess, f.Graph, f.Log) }
 	case "createinternetgateway":
 		return func() interface{} { return NewCreateInternetgateway(f.Sess, f.Graph, f.Log) }
-	case "createkeypair":
-		return func() interface{} { return NewCreateKeypair(f.Sess, f.Graph, f.Log) }
 	case "createlaunchconfiguration":
 		return func() interface{} { return NewCreateLaunchconfiguration(f.Sess, f.Graph, f.Log) }
 	case "createlistener":
@@ -233,8 +231,6 @@ func (f *AWSFactory) Build(key string) func() interface{} {
 		return func() interface{} { return NewDeleteInstanceprofile(f.Sess, f.Graph, f.Log) }
 	case "deleteinternetgateway":
 		return func() interface{} { return NewDeleteInternetgateway(f.Sess, f.Graph, f.Log) }
-	case "deletekeypair":
-		return func() interface{} { return NewDeleteKeypair(f.Sess, f.Graph, f.Log) }
 	case "deletelaunchconfiguration":
 		return func() interface{} { return NewDeleteLaunchconfiguration(f.Sess, f.Graph, f.Log) }
 	case "deletelistener":
@@ -423,7 +419,6 @@ var (
 	_ command = &CreateInstance{}
 	_ command = &CreateInstanceprofile{}
 	_ command = &CreateInternetgateway{}
-	_ command = &CreateKeypair{}
 	_ command = &CreateLaunchconfiguration{}
 	_ command = &CreateListener{}
 	_ command = &CreateLoadbalancer{}
@@ -471,7 +466,6 @@ var (
 	_ command = &DeleteInstance{}
 	_ command = &DeleteInstanceprofile{}
 	_ command = &DeleteInternetgateway{}
-	_ command = &DeleteKeypair{}
 	_ command = &DeleteLaunchconfiguration{}
 	_ command = &DeleteListener{}
 	_ command = &DeleteLoadbalancer{}
