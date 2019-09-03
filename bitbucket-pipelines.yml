@@ -6,10 +6,9 @@
 image: golang:1.12
 
 pipelines:
-  default:
+  master:
     - step:
         script: # Modify the commands below to build your repository.
-          - ls -latrh .git
           - export CURRFOLDER=$(pwd)
           - BITBUCKET_REPO_FULL_NAME="wallix/awless"
           - PACKAGE_PATH="${GOPATH}/src/github.com/${BITBUCKET_REPO_FULL_NAME}"
@@ -22,7 +21,6 @@ pipelines:
           - go get -u golang.org/x/tools/cmd/goimports
           - go generate gen/aws/generators/main.go
           - cd ${GOPATH}/src/golang.org/x/net/proxy && go get -u -v && cd -
-          - echo ${PACKAGE_PATH}
           - go build -o acentera -v
           - cd ${PACKAGE_PATH}
           - cp -Rfp ${CURRFOLDER}/.git .
