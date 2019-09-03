@@ -20,8 +20,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
-	"github.com/pkg/errors"
 	"net/http"
+
+	"github.com/pkg/errors"
+
 	// "os"
 	"strings"
 	"time"
@@ -29,13 +31,13 @@ import (
 	// "github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/spf13/cobra"
 	/*
-	awsservices "github.com/wallix/awless/aws/services"
+		awsservices "github.com/wallix/awless/aws/services"
 	*/
 	// "github.com/wallix/awless/console"
 	// "github.com/wallix/awless/graph"
 	// "github.com/wallix/awless/graph/resourcetest"
-	"github.com/wallix/awless/logger"
 	cli "github.com/wallix/awless/cli"
+	"github.com/wallix/awless/logger"
 )
 
 var onlyMyIPFlag, onlyMyNameFlag, onlyMyTypeFlag, onlyMyIDFlag, onlyMyAccountFlag, onlyMyResourcePathFlag bool
@@ -52,10 +54,10 @@ func init() {
 }
 
 var whoamiCmd = &cobra.Command{
-	Use:               "whoami",
-	Aliases:           []string{"who"},
-	PersistentPreRun:  applyHooks(initAwlessEnvHook, initLoggerHook, initCloudServicesHook, firstInstallDoneHook, cli.InitCliEnv),
-	PersistentPostRun: applyHooks(verifyNewVersionHook, onVersionUpgrade, networkMonitorHook),
+	Use:     "whoami",
+	Aliases: []string{"who"},
+	// PersistentPreRun:  applyHooks(initAwlessEnvHook, initLoggerHook, initCloudServicesHook, firstInstallDoneHook),
+	PersistentPostRun: applyHooks(verifyNewVersionHook, onVersionUpgrade),
 	Short:             "Show your account, attached (i.e. managed) and inlined policies",
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -75,14 +77,43 @@ var whoamiCmd = &cobra.Command{
 			fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
 		}
 		if resp.StatusCode <= 208 && resp.StatusCode >= 200 {
-		  logger.Verbosef("Got decoded of %s", decoded)
-		  if _, ok := decoded["contactEmail"]; ok {
-		    fmt.Printf("Username: %s, Id: %s\n", decoded["contactEmail"], decoded["accountId"])
-                  }
+			logger.Verbosef("Got decoded of %s", decoded)
+			if _, ok := decoded["contactEmail"]; ok {
+				fmt.Printf("Username: %s, Id: %s\n", decoded["contactEmail"], decoded["accountId"])
+			}
 		} else {
-		  logger.Error("Invalid access token.")
+			logger.Error("Invalid access token.")
 		}
 	},
+}
+
+func validateToken() bool {
+	url := "/customer/v1/websites/me"
+	req := cli.API().Path(url).Get()
+	resp, err := req.Do()
+	if err != nil {
+		fmt.Println("ERR", err)
+		return false
+	} else {
+		var decoded map[string]interface{}
+		if resp.StatusCode < 400 {
+			if err := cli.UnmarshalResponse(resp, &decoded); err != nil {
+				fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
+			}
+		} else {
+			fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
+		}
+		if resp.StatusCode <= 208 && resp.StatusCode >= 200 {
+			logger.Verbosef("Successfully retreived account from server")
+			if _, ok := decoded["contactEmail"]; ok {
+				return true
+			}
+			return false
+		} else {
+			logger.Error("Invalid access token.")
+			return false
+		}
+	}
 }
 
 func getMyIP() net.IP {
