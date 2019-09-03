@@ -12,18 +12,18 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	errors "github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
-        errors "github.com/pkg/errors"
 
 	"github.com/alecthomas/chroma/quick"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"gopkg.in/h2non/gentleman.v2"
-	"gopkg.in/h2non/gentleman.v2/plugins/auth"
 	config "github.com/wallix/awless/config"
 	global "github.com/wallix/awless/global"
 	logger "github.com/wallix/awless/logger"
+	"gopkg.in/h2non/gentleman.v2"
 	"gopkg.in/h2non/gentleman.v2/context"
+	"gopkg.in/h2non/gentleman.v2/plugins/auth"
 )
 
 // HTTP Client Errors
@@ -38,26 +38,93 @@ func indent(value string) string {
 }
 
 type APIInternal struct {
-  client *gentleman.Client
+	client *gentleman.Client
 }
+
 func API() *APIInternal {
-   v := &APIInternal{
-      client: Client,
-   }
-   return v
+	v := &APIInternal{
+		client: Client,
+	}
+	return v
 }
 func (api *APIInternal) Path(url string) *gentleman.Client {
-    if ((strings.HasSuffix(APIPrefix,"/")) && (strings.HasPrefix(url, "/"))) {
-       url = strings.TrimPrefix(url, "/")
-    }
-    return Client.Path(APIPrefix + url)
+	if (strings.HasSuffix(APIPrefix, "/")) && (strings.HasPrefix(url, "/")) {
+		url = strings.TrimPrefix(url, "/")
+	}
+	return api.client.Path(APIPrefix + url)
 }
 func APIAnon() *APIInternal {
-   v := &APIInternal{
-      client: AnonClient,
-   }
-   return v
+	v := &APIInternal{
+		client: AnonClient,
+	}
+	return v
 }
+
+func (api *APIInternal) Projects() *ProjectApi {
+	return &ProjectApi{}
+}
+
+func (api *APIInternal) Get(url string) (map[string]interface{}, error) {
+	req := API().Path(url).Get()
+	resp, err := req.Do()
+	if err != nil {
+		// fmt.Println(err)
+		fmt.Println(errors.Wrap(err, "Request failed"))
+	}
+	var decoded map[string]interface{}
+	if resp.StatusCode < 400 {
+		//fmt.Println(err)
+		if err := UnmarshalResponse(resp, &decoded); err != nil {
+			fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
+		}
+	} else {
+		//fmt.Println(err)
+		fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
+	}
+	if resp.StatusCode <= 208 && resp.StatusCode >= 200 {
+		logger.Verbosef("Got decoded of %s", decoded)
+		if _, ok := decoded["id"]; ok {
+			// fmt.Printf("Username: %s, Id: %s\n", decoded["contactEmail"], decoded["accountId"])
+			return decoded, nil
+		}
+		return decoded, errors.New("Could not decode response.")
+	} else {
+		//fmt.Println(resp.StatusCode)
+		logger.Error("Invalid access token.")
+	}
+	return nil, errors.New(fmt.Sprintf("Invalid response from server %d", resp.StatusCode))
+}
+
+func (api *APIInternal) GetRawData(url string) (string, error) {
+	req := API().Path(url).Get()
+	resp, err := req.Do()
+	if err != nil {
+		// fmt.Println(err)
+		fmt.Println(errors.Wrap(err, "Request failed"))
+	}
+
+	data := resp.Bytes()
+	if len(data) == 0 {
+		return "", errors.New("Empty data")
+	}
+	return string(data), nil
+}
+
+func (api *APIInternal) GetByKey(url string, key string) (map[string]interface{}, error) {
+	tmpData, err := api.GetRawData(url)
+	if err != nil {
+		return nil, err
+	}
+	var tmpObj map[string]interface{}
+	if err := json.Unmarshal([]byte(tmpData), &tmpObj); err != nil {
+		return nil, err
+	}
+	if tmpItems, ok := tmpObj[key]; ok {
+		return tmpItems.(map[string]interface{}), nil
+	}
+	return nil, err
+}
+
 /*
 func (api *APIInternal) Get(url string) *gentleman.Request {
     return Client.Path(url).Get()
@@ -96,8 +163,8 @@ func getBody(r io.ReadCloser) (string, io.ReadCloser, error) {
 
 // UserAgentMiddleware sets the user-agent header on requests.
 func UserAgentMiddleware(c *gentleman.Client) {
-        ua, _ := config.Get("app-name")
-        if (ua == nil) {
+	ua, _ := config.Get("app-name")
+	if ua == nil {
 		ua = "ACenterA"
 	}
 	c.UseRequest(func(ctx *context.Context, h context.Handler) {
@@ -107,65 +174,62 @@ func UserAgentMiddleware(c *gentleman.Client) {
 }
 
 func PathMiddleware(c *gentleman.Client) {
-        HostPath := global.API_ENDPOINT
+	HostPath := global.API_ENDPOINT
 	c.UseRequest(func(ctx *context.Context, h context.Handler) {
 		// fmt.Println("Ned to append path to xisting path?" + HostPath)
-		if (strings.HasSuffix(HostPath,".com/")) {
-	        } else {
+		if strings.HasSuffix(HostPath, ".com/") {
+		} else {
 			// fmt.Println("ctx.Request.URL is ...", ctx.Request.URL)
 			// fmt.Println(ctx.Request.URL)
 		}
 		h.Next(ctx)
 	})
 }
+
 //AuthorizationMiddleware
 
 func AuthorizationMiddleware(c *gentleman.Client) {
-        token := config.GetToken()
-        if (!(token == "")) {
-		if (isTokenExpired(token)) {
-			token = ""
-		} else {
-		}
-	}
-
-	// fmt.Printf("TOKEN IS TEST ? %s", token)
-        if (len(token) <= 0) {
-		// Ok we ua = "ACenterA"
-		c := APIAnon().Path("/customer/v1/websites/login")
-		c.Use(auth.Basic(config.GetUsername(), config.GetPasswordPlainText()))
-		req := c.Post()
-		req = req.AddHeader("Content-Type", "application/json")
-
-                resp, err := req.Do()
-                if err != nil {
-                        fmt.Println(errors.Wrap(err, "Request failed"))
-                }
-                var decoded map[string]interface{}
-		// fmt.Println(resp)
-                if resp.StatusCode < 400 {
-                        if err := UnmarshalResponse(resp, &decoded); err != nil {
-                                fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
-                        }
-                } else {
-                        fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
-                }
-	        if _, ok := decoded["accessToken"]; ok {
-		  config.Set("_token", decoded["accessToken"].(string))
-		  token = decoded["accessToken"].(string)
-		  config.Set("user.id", decoded["id"].(string))
-                }
-	} else {
-		// Need to validate token ?
-	}
 	c.UseRequest(func(ctx *context.Context, h context.Handler) {
-		// alwasy cleanit up 
-		if (token == "") {
+		token := config.GetToken()
+		if !(token == "") {
+			if isTokenExpired(token) {
+				token = ""
+			} else {
+			}
+		}
+		if len(token) <= 0 {
+			// Ok we ua = "ACenterA"
+			c := APIAnon().Path("/customer/v1/websites/login")
+			c.Use(auth.Basic(config.GetUsername(), config.GetPasswordPlainText()))
+			req := c.Post()
+			req = req.AddHeader("Content-Type", "application/json")
+			resp, err := req.Do()
+			if err != nil {
+				// fmt.Println(errors.Wrap(err, "Request failed"))
+			}
+			var decoded map[string]interface{}
+			if resp.StatusCode < 400 {
+				if err := UnmarshalResponse(resp, &decoded); err != nil {
+					// fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
+				}
+			} else {
+				logger.ExtraVerbosef("HTTP %d: %s", resp.StatusCode, resp.String())
+			}
+			if _, ok := decoded["accessToken"]; ok {
+				config.Set("_token", decoded["accessToken"].(string))
+				token = decoded["accessToken"].(string)
+				config.Set("user.id", decoded["id"].(string))
+			}
+		} else {
+			// Need to validate token ?
+		}
+		// alwasy cleanit up
+		if token == "" {
 			h.Error(ctx, errors.New("Invalid Username / Password. Please login and try again."))
 		} else {
-	                ctx.Request.Header.Del("Authorization")
+			ctx.Request.Header.Del("Authorization")
 			// if (ctx.Request.Header.Get("Authorization") == "") {
-				ctx.Request.Header.Set("Authorization", token)
+			ctx.Request.Header.Set("Authorization", token)
 			// }
 			h.Next(ctx)
 		}
@@ -198,7 +262,6 @@ func LogMiddleware(c *gentleman.Client, useColor bool) {
 		ctx.Set("request-body", body)
 		ctx.Request.Body = newReader
 
-		fmt.Println("VERBOSE IS :", global.Verbose)
 		if global.Verbose != "" {
 			headers := ""
 			for key, val := range ctx.Request.Header {
@@ -300,16 +363,16 @@ func unmarshalBody(headers http.Header, data []byte, s interface{}) error {
 }
 
 func isTokenExpired(tokenString string) bool {
-        // fmt.Printf("The token is:\n%s\n", tokenString)
+	// fmt.Printf("The token is:\n%s\n", tokenString)
 	var p jwt.Parser
 
 	token, _, err := p.ParseUnverified(tokenString, &jwt.StandardClaims{})
 
 	/*
-        for _, p := range b {
-                fmt.Printf("%s\n", p)
-        }
-        */
+	   for _, p := range b {
+	           fmt.Printf("%s\n", p)
+	   }
+	*/
 	if err = token.Claims.Valid(); err != nil {
 		//handle invalid token
 		// fmt.Println("INVALID TOKEN????")
@@ -329,4 +392,3 @@ func isTokenExpired(tokenString string) bool {
 		return false
 	}
 }
-
