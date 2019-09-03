@@ -22,6 +22,8 @@ pipelines:
           - go get -u golang.org/x/tools/cmd/goimports
           - go generate gen/aws/generators/main.go
           - cd ${GOPATH}/src/golang.org/x/net/proxy && go get -u -v && cd -
+          - echo ${PACKAGE_PATH}
+          - cd ${PACKAGE_PATH}
           - go build -o acentera -v
           - cp -Rfp ${CURRFOLDER}/.git .
           - cp -Rfp ${CURRFOLDER}/release.sh .

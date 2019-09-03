@@ -1,8 +1,10 @@
 #!/bin/sh
+set -x
 VERSION=$(cat config/version.go  | grep 'Version.*=.*v[0-9]' | cut -d '"' -f 2 | sed -r 's/v//g')
 export VERSION
 echo "Creating release v${VERSION}"
 go get github.com/mitchellh/gox || true
+go get -u -v github.com/aktau/github-release || true
 gox -osarch="linux/amd64"
 gox -osarch="windows/amd64"
 gox -osarch="darwin/amd64"
