@@ -19,4 +19,6 @@ pipelines:
           - go get -u golang.org/x/tools/cmd/goimports
           - go generate gen/aws/generators/main.go
           - go build -o acentera -v
+          - git remote add github-origin https://${GITHUB_TOKEN}@github.com/ACenterA/acenteracli.git
+          - git push -u github-origin master
           - ./release.sh
