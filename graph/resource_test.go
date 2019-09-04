@@ -69,10 +69,10 @@ func TestPrintResource(t *testing.T) {
 		exp string
 	}{
 		{res: &Resource{id: "inst_1", kind: "instance"}, exp: "inst_1[instance]"},
-		{res: &Resource{id: "inst_1", kind: "instance", properties: map[string]interface{}{"ID": "notthis"}}, exp: "inst_1[instance]"},
-		{res: &Resource{id: "inst_1", kind: "instance", properties: map[string]interface{}{"ID": "notthis", "Name": "to-display"}}, exp: "@to-display[instance]"},
+		{res: &Resource{id: "inst_1", kind: "instance", properties: map[string]interface{}{"id": "notthis"}}, exp: "inst_1[instance]"},
+		{res: &Resource{id: "inst_1", kind: "instance", properties: map[string]interface{}{"id": "notthis", "Name": "to-display"}}, exp: "@to-display[instance]"},
 		{res: &Resource{id: "inst_1", kind: "instance", properties: map[string]interface{}{"Name": ""}}, exp: "inst_1[instance]"},
-		{res: &Resource{kind: "instance", properties: map[string]interface{}{"ID": "notthis", "Name": "to-display"}}, exp: "@to-display[instance]"},
+		{res: &Resource{kind: "instance", properties: map[string]interface{}{"id": "notthis", "Name": "to-display"}}, exp: "@to-display[instance]"},
 		{res: &Resource{}, exp: "[<none>]"},
 		{res: nil, exp: "[<none>]"},
 	}
@@ -139,9 +139,9 @@ func TestCompareProperties(t *testing.T) {
 
 func TestMarshalUnmarshalFullRdf(t *testing.T) {
 	res := []*Resource{
-		instResource("inst1").prop(properties.ID, "inst1").prop(properties.Name, "inst1_name").prop(properties.Subnet, "sub1").prop(properties.Vpc, "vpc1").prop(properties.Launched, time.Now().UTC()).build(),
-		subResource("sub1").prop(properties.ID, "sub1").prop(properties.Vpc, "vpc1").prop(properties.Default, true).build(),
-		vpcResource("vpc1").prop(properties.ID, "vpc1").build(),
+		instResource("inst1").prop(properties.Id, "inst1").prop(properties.Name, "inst1_name").prop(properties.Subnet, "sub1").prop(properties.Vpc, "vpc1").prop(properties.Launched, time.Now().UTC()).build(),
+		subResource("sub1").prop(properties.Id, "sub1").prop(properties.Vpc, "vpc1").prop(properties.Default, true).build(),
+		vpcResource("vpc1").prop(properties.Id, "vpc1").build(),
 	}
 	for _, r := range res {
 		g := NewGraph()
@@ -163,13 +163,13 @@ func TestMarshalUnmarshalFullRdf(t *testing.T) {
 
 func TestResourceMarshalWithoutProps(t *testing.T) {
 	res := InitResource("mytype", "myid")
-	if got, want := res.Properties(), map[string]interface{}{properties.ID: "myid"}; !reflect.DeepEqual(got, want) {
+	if got, want := res.Properties(), map[string]interface{}{properties.Id: "myid"}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("got\n%#v\nwant\n%#v\n", got, want)
 	}
 }
 
 func TestResourceMarshalUnmarshalHandlesNilValues(t *testing.T) {
-	r := instResource("inst1").prop(properties.ID, "inst1").prop(properties.Host, nil).prop(properties.Name, "any").build()
+	r := instResource("inst1").prop(properties.Id, "inst1").prop(properties.Host, nil).prop(properties.Name, "any").build()
 	g := NewGraph()
 	triples, err := r.marshalFullRDF()
 	if err != nil {
@@ -182,14 +182,14 @@ func TestResourceMarshalUnmarshalHandlesNilValues(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expectedNoNil := instResource("inst1").prop(properties.ID, "inst1").prop(properties.Name, "any").build()
+	expectedNoNil := instResource("inst1").prop(properties.Id, "inst1").prop(properties.Name, "any").build()
 	if got, want := rawRes, expectedNoNil; !reflect.DeepEqual(got, want) {
 		t.Fatalf("got\n%#v\nwant\n%#v\n", got, want)
 	}
 }
 
 func TestMarshalUnmarshalList(t *testing.T) {
-	r := instResource("inst1").prop(properties.ID, "inst1").prop(properties.SecurityGroups, []string{"sgroup1", "sgroup2", "sgroup3"}).prop(properties.Actions, []string{"start", "stop", "delete"}).build()
+	r := instResource("inst1").prop(properties.Id, "inst1").prop(properties.SecurityGroups, []string{"sgroup1", "sgroup2", "sgroup3"}).prop(properties.Actions, []string{"start", "stop", "delete"}).build()
 	g := NewGraph()
 	triples, err := r.marshalFullRDF()
 	if err != nil {
@@ -216,7 +216,7 @@ func TestMarshalUnmarshalList(t *testing.T) {
 func TestMarshalUnmarshalFirewallRules(t *testing.T) {
 	_, localhost, _ := net.ParseCIDR("127.0.0.1/32")
 	_, subnetcidr, _ := net.ParseCIDR("10.192.24.0/24")
-	r := sGrpResource("sgroup1").prop(properties.ID, "sgroup1").prop(
+	r := sGrpResource("sgroup1").prop(properties.Id, "sgroup1").prop(
 		"InboundRules", []*FirewallRule{
 			{PortRange: PortRange{FromPort: 80, ToPort: 80}, Protocol: "tcp"},
 			{PortRange: PortRange{FromPort: 1, ToPort: 1024}, Protocol: "udp", IPRanges: []*net.IPNet{subnetcidr}},
@@ -249,7 +249,7 @@ func TestMarshalUnmarshalRouteTables(t *testing.T) {
 	_, subnet1cidr, _ := net.ParseCIDR("10.192.24.0/24")
 	_, subnet2cidr, _ := net.ParseCIDR("10.20.24.0/24")
 	_, subnet2ipv6, _ := net.ParseCIDR("2001:db8::/110")
-	r := testResource("rt1", "routetable").prop(properties.ID, "rt1").prop(
+	r := testResource("rt1", "routetable").prop(properties.Id, "rt1").prop(
 		"Routes", []*Route{
 			{Destination: subnet1cidr, DestinationPrefixListId: "toto", Targets: []*RouteTarget{{Type: InstanceTarget, Ref: "ref_1", Owner: "me"}, {Type: GatewayTarget, Ref: "ref_2"}}},
 			{Destination: subnet2cidr, DestinationIPv6: subnet2ipv6, DestinationPrefixListId: "tata", Targets: []*RouteTarget{{Type: NetworkInterfaceTarget, Ref: "ref_3"}}},
@@ -275,7 +275,7 @@ func TestMarshalUnmarshalRouteTables(t *testing.T) {
 }
 
 func TestMarshalUnmarshalGrants(t *testing.T) {
-	r := testResource("bck1", "bucket").prop(properties.ID, "bck1").prop(
+	r := testResource("bck1", "bucket").prop(properties.Id, "bck1").prop(
 		"Grants", []*Grant{
 			{Permission: "denied"},
 			{Permission: "granted", Grantee: Grantee{GranteeID: "123", GranteeDisplayName: "John Smith", GranteeType: "user"}},
@@ -371,23 +371,23 @@ func buildBenchmarkData() (data []*Resource) {
 	}
 	for i := 0; i < 10; i++ {
 		vpcId := fmt.Sprintf("vpc%d", i)
-		data = append(data, vpcResource(vpcId).prop(properties.ID, vpcId).build())
+		data = append(data, vpcResource(vpcId).prop(properties.Id, vpcId).build())
 
 		routeId := fmt.Sprintf("%s_route", vpcId)
-		data = append(data, testResource(routeId, "routetable").prop(properties.ID, routeId).prop(properties.Vpc, vpcId).prop("Routes", routes).build())
+		data = append(data, testResource(routeId, "routetable").prop(properties.Id, routeId).prop(properties.Vpc, vpcId).prop("Routes", routes).build())
 
 		for j := 0; j < 10; j++ {
 			subId := fmt.Sprintf("%ssub%d", vpcId, j)
-			data = append(data, subResource(subId).prop(properties.ID, subId).prop(properties.Vpc, vpcId).prop(properties.Default, true).build())
+			data = append(data, subResource(subId).prop(properties.Id, subId).prop(properties.Vpc, vpcId).prop(properties.Default, true).build())
 			for k := 0; k < 10; k++ {
 				instId := fmt.Sprintf("%sinst%d", subId, k)
 
 				secGroup1Id := fmt.Sprintf("%s_securitygroup1", instId)
-				data = append(data, sGrpResource(secGroup1Id).prop(properties.ID, secGroup1Id).prop("InboundRules", rules).prop("OutboundRules", rules).prop(properties.Vpc, vpcId).prop(properties.Launched, time.Now()).build())
+				data = append(data, sGrpResource(secGroup1Id).prop(properties.Id, secGroup1Id).prop("InboundRules", rules).prop("OutboundRules", rules).prop(properties.Vpc, vpcId).prop(properties.Launched, time.Now()).build())
 				secGroup2Id := fmt.Sprintf("%s_securitygroup2", instId)
-				data = append(data, sGrpResource(secGroup2Id).prop(properties.ID, secGroup2Id).prop("InboundRules", rules).prop("OutboundRules", rules).prop(properties.Vpc, vpcId).prop(properties.Launched, time.Now()).build())
+				data = append(data, sGrpResource(secGroup2Id).prop(properties.Id, secGroup2Id).prop("InboundRules", rules).prop("OutboundRules", rules).prop(properties.Vpc, vpcId).prop(properties.Launched, time.Now()).build())
 
-				data = append(data, instResource(instId).prop(properties.ID, instId).prop("Name", instId+"name").prop(properties.Subnet, subId).prop(properties.Vpc, vpcId).prop(properties.Launched, time.Now()).prop(properties.SecurityGroups, []string{secGroup1Id, secGroup2Id}).build())
+				data = append(data, instResource(instId).prop(properties.Id, instId).prop("Name", instId+"name").prop(properties.Subnet, subId).prop(properties.Vpc, vpcId).prop(properties.Launched, time.Now()).prop(properties.SecurityGroups, []string{secGroup1Id, secGroup2Id}).build())
 			}
 		}
 	}

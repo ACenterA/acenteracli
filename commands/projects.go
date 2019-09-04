@@ -22,30 +22,45 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/wallix/awless/cli"
+	"github.com/wallix/awless/config"
 	"github.com/wallix/awless/console"
 	"github.com/wallix/awless/graph"
 	"github.com/wallix/awless/graph/outputs"
 	"github.com/wallix/awless/logger"
 )
 
-var ()
+var (
+	defaultProjectsColumns = []string{"Id", "Name"}
+)
 
 func init() {
 	RootCmd.AddCommand(projectCmd)
-	projectCmd.AddCommand(listProjectCobraCmd)
 
-	projectCmd.PersistentFlags().StringSliceVar(&listingColumnsFlag, "columns", []string{}, "Select the properties to display in the columns. Ex: --columns id,name")
+	listProjectCobraCmd.PersistentFlags().StringSliceVar(&listingColumnsFlag, "columns", []string{}, "Select the properties to display in the columns. Ex: --columns id,name")
+	listProjectCobraCmd.PersistentFlags().BoolVar(&noHeadersFlag, "no-headers", false, "Do not display headers")
+	listProjectCobraCmd.PersistentFlags().BoolVar(&reverseFlag, "reverse", false, "Use in conjunction with --sort to reverse sort")
+	listProjectCobraCmd.PersistentFlags().StringSliceVar(&sortBy, "sort", []string{"Id"}, "Sort tables by column(s) name(s)")
 
 	cobra.EnableCommandSorting = false
+
+	// Global parametes
+	projectCmd.PersistentFlags().StringSliceVar(&listingFiltersFlag, "filter", []string{}, "Filter resources given key/values fields (case insensitive). Ex: --filter name='Projct 1'")
+	projectCmd.AddCommand(listProjectCobraCmd)
+	projectCmd.AddCommand(selectCobraCmd)
 }
 
 var projectCmd = &cobra.Command{
 	Use:               "project",
 	Aliases:           []string{"prj"},
-	Example:           "  acentera project list --sort creation\n  acentera project list --format csv\n  acentera list project --filter state=active,type=xxxxx\n",
+	Example:           "  acentera project list --sort creation\n  acentera project list --output csv\n  acentera project list --filter state=active,type=xxxxx\n  \n  acentera project select --filter name='My Project 1'",
 	PersistentPreRun:  applyHooks(initAwlessEnvHook, initLoggerHook, initCloudServicesHook, firstInstallDoneHook, initCliEnvHook, normalizeColumns),
 	PersistentPostRun: applyHooks(verifyNewVersionHook, onVersionUpgrade, networkMonitorHook),
 	Short:             "Project resources: sorting, filtering via tag/properties, output formatting, etc...",
+}
+var selectCobraCmd = &cobra.Command{
+	Use:   "select",
+	Short: "Select an project",
+	Run:   projectSelectResource,
 }
 
 var listProjectCobraCmd = &cobra.Command{
@@ -57,34 +72,30 @@ var listProjectCobraCmd = &cobra.Command{
 func projctListResource(*cobra.Command, []string) {
 	projects, _ := cli.API().Projects().GetProjects()
 
-	logger.Infof("%s", projects)
-
-	columns := []string{"Name", "id"}
+	columns := defaultProjectsColumns
 	if len(listingColumnsFlag) >= 1 {
 		columns = listingColumnsFlag
 	}
-	fmt.Println(columns)
 	g := graph.NewGraph()
 	for id, r := range projects {
 		// projectInfo := r.(map[string]interface{})[id]
 		// fmt.Println("1 -- PRJ INFO:", r)
-		res1 := outputs.New("project", id).Prop("id", id).Prop("Name", fmt.Sprintf("%v", r.Name)).Build()
+		res1 := outputs.New("project", id).Prop("Id", id).Prop("Name", fmt.Sprintf("%v", r.Name)).Build()
 		g.AddResource(
 			res1,
 		)
 	}
-	// r, err := g.GetResource("sub_1", fmt.Sprintf("%v", z))
-	// fmt.Println(r)
-	// exitOn(err)
 	displayer, err := console.BuildOptions(
 		console.WithMaxWidth(console.GetTerminalWidth()),
 		console.WithRdfType("project"),
 		console.WithColumns(columns),
-		console.WithColumns(listingColumnsFlag),
 		console.WithFormat(listingFormat),
 		console.WithReverseSort(reverseFlag),
+		console.WithFilters(listingFiltersFlag),
 		console.WithMaxWidth(console.GetTerminalWidth()),
 		console.WithNoHeaders(noHeadersFlag),
+		console.WithIDsOnly(listOnlyIDs),
+		console.WithSortBy(sortBy...),
 		// console.WithNoHeaders(false),
 	).SetSource(g).Build()
 
@@ -119,24 +130,49 @@ func projctListResource(*cobra.Command, []string) {
 
 }
 
-/*
-func printResources(g cloud.GraphAPI, resType string) {
-	displayer, err := console.BuildOptions(
-		console.WithRdfType(resType),
-		console.WithColumns(listingColumnsFlag),
-		console.WithFilters(listingFiltersFlag),
-		console.WithTagFilters(listingTagFiltersFlag),
-		console.WithTagKeyFilters(listingTagKeyFiltersFlag),
-		console.WithTagValueFilters(listingTagValueFiltersFlag),
-		console.WithMaxWidth(console.GetTerminalWidth()),
-		console.WithFormat(listingFormat),
-		console.WithidsOnly(listOnlyids),
-		console.WithSortBy(sortBy...),
-		console.WithReverseSort(reverseFlag),
-		console.WithNoHeaders(noHeadersFlag),
-	).SetSource(g).Build()
-	exitOn(err)
+func projectSelectResource(*cobra.Command, []string) {
+	projects, _ := cli.API().Projects().GetProjects()
 
-	exitOn(displayer.Print(os.Stdout))
+	columns := defaultProjectsColumns
+
+	g := graph.NewGraph()
+	for id, r := range projects {
+		// projectInfo := r.(map[string]interface{})[id]
+		// fmt.Println("1 -- PRJ INFO:", r)
+		res1 := outputs.New("project", id).Prop("Id", id).Prop("Name", fmt.Sprintf("%v", r.Name)).Build()
+		g.AddResource(
+			res1,
+		)
+	}
+
+	// Build Query
+	buildQuery := console.BuildOptions(
+		console.WithRdfType("project"),
+		console.WithColumns(columns),
+		console.WithFilters(listingFiltersFlag),
+	)
+	a, _ := buildQuery.BuildQuery()
+	r, _ := g.Find(a)
+	nbItems := len(r)
+
+	// Reset
+	config.Set("user.project.id", "")
+	config.Set("user.project.name", "")
+	if nbItems > 1 {
+		displayer, err := buildQuery.SetSource(g).Build()
+		exitOn(err)
+		exitWithError(displayer.Print(os.Stdout), "Filters returned more than one record. Please refine query.")
+	} else if nbItems <= 0 {
+		exitWithError(nil, "Could not find any project that match filters. Please update your filter and try again.")
+	} else if nbItems == 1 {
+		// All Good
+		config.Set("user.project.id", r[0].Id())
+		config.Set("user.project.name", r[0].Name())
+		displayer, err := buildQuery.SetSource(g).Build()
+		exitOn(err)
+		exitOn(displayer.Print(os.Stdout))
+		logger.Infof("Successfully selected project") // , r[0].Name())
+	} else {
+		exitWithError(nil, "Invalid command ...")
+	}
 }
-*/

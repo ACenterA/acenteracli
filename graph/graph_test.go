@@ -130,7 +130,7 @@ func TestFind(t *testing.T) {
 			expectRes: []cloud.Resource{i1, i2},
 		},
 		{
-			query:     cloud.NewQuery("instance").Match(match.And(match.Property("Subnet", "s1"), match.Property(properties.ID, "i2"))),
+			query:     cloud.NewQuery("instance").Match(match.And(match.Property("Subnet", "s1"), match.Property(properties.id, "i2"))),
 			expectRes: []cloud.Resource{i2},
 		},
 		{
@@ -138,7 +138,7 @@ func TestFind(t *testing.T) {
 			expectRes: []cloud.Resource{s1, s2},
 		},
 		{
-			query:     cloud.NewQuery("subnet").Match(match.Property("ID", "s1")),
+			query:     cloud.NewQuery("subnet").Match(match.Property("id", "s1")),
 			expectRes: []cloud.Resource{s1},
 		},
 		{
@@ -146,11 +146,11 @@ func TestFind(t *testing.T) {
 			expectRes: nil,
 		},
 		{
-			query:     cloud.NewQuery("subnet").Match(match.Property("ID", "S1")),
+			query:     cloud.NewQuery("subnet").Match(match.Property("id", "S1")),
 			expectRes: nil,
 		},
 		{
-			query:     cloud.NewQuery("subnet").Match(match.Property("ID", "S1").IgnoreCase()),
+			query:     cloud.NewQuery("subnet").Match(match.Property("id", "S1").IgnoreCase()),
 			expectRes: []cloud.Resource{s1},
 		},
 		{
@@ -178,11 +178,11 @@ func TestFind(t *testing.T) {
 			expectRes: []cloud.Resource{s1, s2, v1},
 		},
 		{
-			query:     cloud.NewQuery("instance").Match(match.And(match.Property(properties.ID, "i2"), match.Property(properties.Name, "redis"))),
+			query:     cloud.NewQuery("instance").Match(match.And(match.Property(properties.id, "i2"), match.Property(properties.Name, "redis"))),
 			expectRes: nil,
 		},
 		{
-			query:     cloud.NewQuery("instance").Match(match.Or(match.Property(properties.ID, "i2"), match.Property(properties.Name, "redis"))),
+			query:     cloud.NewQuery("instance").Match(match.Or(match.Property(properties.id, "i2"), match.Property(properties.Name, "redis"))),
 			expectRes: []cloud.Resource{i1, i2},
 		},
 	}
@@ -270,7 +270,7 @@ func TestFindOne(t *testing.T) {
 			expectRes: s1,
 		},
 		{
-			query:     cloud.NewQuery("subnet").Match(match.Property("ID", "s1")),
+			query:     cloud.NewQuery("subnet").Match(match.Property("id", "s1")),
 			expectRes: s1,
 		},
 		{

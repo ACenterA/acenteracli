@@ -108,7 +108,7 @@ const (
 	Host                              = "Host"
 	HTTPVersion                       = "HTTPVersion"
 	Hypervisor                        = "Hypervisor"
-	ID                                = "ID"
+	Id                                = "Id"
 	Image                             = "Image"
 	InboundRules                      = "InboundRules"
 	InlinePolicies                    = "InlinePolicies"

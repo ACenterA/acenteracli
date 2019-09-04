@@ -20,18 +20,22 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+
 	// "strings"
 
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/spf13/cobra"
-	"github.com/wallix/awless/aws/services"
+	awsservices "github.com/wallix/awless/aws/services"
+	"github.com/wallix/awless/cli"
+
 	// "github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/config"
 	"github.com/wallix/awless/database"
+	"github.com/wallix/awless/global"
 	"github.com/wallix/awless/logger"
 	"github.com/wallix/awless/sync"
-	"github.com/wallix/awless/global"
 )
 
 func applyHooks(funcs ...func(*cobra.Command, []string) error) func(*cobra.Command, []string) {
@@ -50,6 +54,34 @@ func initAwlessEnvHook(cmd *cobra.Command, args []string) error {
 	}
 
 	return applyRegionAndProfilePrecedence()
+}
+
+func toUpper(item string) string {
+	return strings.ToUpper(item)
+}
+func toLower(item string) string {
+	return strings.ToLower(item)
+}
+
+func Normalize(item string) string {
+	return strings.Title(strings.ToLower(item))
+}
+
+func Map(vs []string, f func(string) string) []string {
+	vsm := make([]string, len(vs))
+	for i, v := range vs {
+		vsm[i] = f(v)
+	}
+	return vsm
+}
+
+func normalizeColumns(cmd *cobra.Command, args []string) error {
+	listingColumnsFlag = Map(listingColumnsFlag, Normalize)
+	return nil
+}
+func initCliEnvHook(cmd *cobra.Command, args []string) error {
+	cli.InitCliEnv()
+	return nil
 }
 
 var profileOverridenThrough, regionOverridenThrough string
@@ -129,16 +161,16 @@ func initCloudServicesHook(cmd *cobra.Command, args []string) error {
 	}
 
 	/*
-	if config.TriggerSyncOnConfigUpdate && !strings.HasPrefix(cmd.Name(), "sync") {
-		var services []cloud.Service
-		for _, s := range cloud.ServiceRegistry {
-			services = append(services, s)
+		if config.TriggerSyncOnConfigUpdate && !strings.HasPrefix(cmd.Name(), "sync") {
+			var services []cloud.Service
+			for _, s := range cloud.ServiceRegistry {
+				services = append(services, s)
+			}
+			if !noSyncGlobalFlag {
+				logger.Infof("Syncing new region '%s'... (disable with --no-sync global flag)", region)
+				sync.NewSyncer(logger.DefaultLogger).Sync(services...)
+			}
 		}
-		if !noSyncGlobalFlag {
-			logger.Infof("Syncing new region '%s'... (disable with --no-sync global flag)", region)
-			sync.NewSyncer(logger.DefaultLogger).Sync(services...)
-		}
-	}
 	*/
 
 	return nil
@@ -209,9 +241,9 @@ func verifyNewVersionHook(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 	cliBranch := os.Getenv("ACENTERA_CLI_BRANCH")
-	if (cliBranch == "") {
-	   cliBranch = "master"
-        }
+	if cliBranch == "" {
+		cliBranch = "master"
+	}
 	config.VerifyNewVersionAvailable(fmt.Sprintf("https://raw.githubusercontent.com/ACenterA/acenteracli/%v/VERSION", cliBranch), os.Stderr)
 	return nil
 }

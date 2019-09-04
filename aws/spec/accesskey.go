@@ -129,7 +129,7 @@ func (cmd *DeleteAccesskey) ParamsSpec() params.Spec {
 			user, hasUser := values["user"].(string)
 			id, hasId := values["id"].(string)
 			if !hasUser && hasId {
-				r, err := cmd.graph.FindOne(cloud.NewQuery(cloud.AccessKey).Match(match.Property(properties.ID, id)))
+				r, err := cmd.graph.FindOne(cloud.NewQuery(cloud.AccessKey).Match(match.Property(properties.Id, id)))
 				if err != nil || r == nil {
 					return values, nil
 				}

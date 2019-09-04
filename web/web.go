@@ -117,7 +117,7 @@ func (s *server) showResourceHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resId := mux.Vars(r)["id"]
-	res, err := s.gph.FindWithProperties(map[string]interface{}{properties.ID: resId})
+	res, err := s.gph.FindWithProperties(map[string]interface{}{properties.Id: resId})
 	if err != nil && len(res) != 1 {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

@@ -110,7 +110,7 @@ const (
 	Host                              = "cloud:host"
 	HTTPVersion                       = "cloud:httpVersion"
 	Hypervisor                        = "cloud:hypervisor"
-	ID                                = "cloud:id"
+	Id                                = "cloud:id"
 	Image                             = "cloud:image"
 	InboundRules                      = "net:inboundRules"
 	InlinePolicies                    = "cloud:inlinePolicies"
@@ -324,7 +324,7 @@ func init() {
 		properties.Host:                              Host,
 		properties.HTTPVersion:                       HTTPVersion,
 		properties.Hypervisor:                        Hypervisor,
-		properties.ID:                                ID,
+		properties.Id:                                Id,
 		properties.Image:                             Image,
 		properties.InboundRules:                      InboundRules,
 		properties.InlinePolicies:                    InlinePolicies,
@@ -538,7 +538,7 @@ var Properties = RDFProperties{
 	Host:                              {ID: Host, RdfType: "rdf:Property", RdfsLabel: "Host", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	HTTPVersion:                       {ID: HTTPVersion, RdfType: "rdf:Property", RdfsLabel: "HTTPVersion", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	Hypervisor:                        {ID: Hypervisor, RdfType: "rdf:Property", RdfsLabel: "Hypervisor", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
-	ID:                                {ID: ID, RdfType: "rdf:Property", RdfsLabel: "ID", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
+	Id:                                {ID: Id, RdfType: "rdf:Property", RdfsLabel: "Id", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	Image:                             {ID: Image, RdfType: "rdf:Property", RdfsLabel: "Image", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	InboundRules:                      {ID: InboundRules, RdfType: "rdf:Property", RdfsLabel: "InboundRules", RdfsDefinedBy: "rdfs:list", RdfsDataType: "net-owl:FirewallRule"},
 	InlinePolicies:                    {ID: InlinePolicies, RdfType: "rdf:Property", RdfsLabel: "InlinePolicies", RdfsDefinedBy: "rdfs:list", RdfsDataType: "rdfs:Class"},

@@ -70,7 +70,7 @@ func (b *Builder) SetSource(i interface{}) *Builder {
 	return b
 }
 
-func (b *Builder) buildQuery() (cloud.Query, error) {
+func (b *Builder) BuildQuery() (cloud.Query, error) {
 	var matchers []cloud.Matcher
 	for _, f := range b.filters {
 		splits := strings.SplitN(f, "=", 2)
@@ -142,7 +142,7 @@ func (b *Builder) Build() (Displayer, error) {
 		}
 
 		filteredGraph := b.dataSource.(cloud.GraphAPI)
-		q, err := b.buildQuery()
+		q, err := b.BuildQuery()
 		if err != nil {
 			return nil, err
 		}
@@ -292,7 +292,7 @@ func WithIDsOnly(only bool) optsFn {
 	return func(b *Builder) *Builder {
 		if only {
 			b.columnDefinitions = []ColumnDefinition{
-				&StringColumnDefinition{Prop: "ID"},
+				&StringColumnDefinition{Prop: "id"},
 				&StringColumnDefinition{Prop: "Name"},
 			}
 			b.format = "porcelain"
@@ -483,6 +483,7 @@ func (d *jsonDisplayer) Print(w io.Writer) error {
 	for _, res := range resources {
 		props = append(props, res.Properties())
 	}
+	// fmt.Println("aaaffa#ff")
 
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", " ")
@@ -545,7 +546,7 @@ func (d *tableDisplayer) Print(w io.Writer) error {
 	}
 
 	table := tablewriter.NewWriter(w)
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
 	table.SetCenterSeparator("|")
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.SetColWidth(tableColWidth)
@@ -593,6 +594,7 @@ func (d *tableDisplayer) Print(w io.Writer) error {
 			fmt.Fprint(w, color.New(color.FgRed).SprintfFunc()("Columns truncated to fit terminal: %s\n", strings.Join(hiddenColumns, ", ")))
 		}
 	}
+	// ACENTERA w.Write([]byte("\n"))
 	return nil
 }
 
@@ -688,7 +690,7 @@ func (d *multiResourcesTableDisplayer) Print(w io.Writer) error {
 	table.SetAutoMergeCells(true)
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.SetColWidth(tableColWidth)
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
 	table.SetCenterSeparator("|")
 	table.SetHeader([]string{"Type" + ds.symbol(), "Name/Id", "Property", "Value"})
 
@@ -729,6 +731,7 @@ func (d *multiResourcesJSONDisplayer) Print(w io.Writer) error {
 			all[cloud.PluralizeResource(t)] = props
 		}
 	}
+	//fmt.Println("aaaffa#")
 
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", " ")
@@ -815,7 +818,7 @@ func (d *diffTableDisplayer) Print(w io.Writer) error {
 	table := tablewriter.NewWriter(w)
 	table.SetAutoMergeCells(true)
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
 	table.SetCenterSeparator("|")
 	table.SetHeader([]string{"Type" + ds.symbol(), "Name/Id", "Property", "Value"})
 

@@ -20,6 +20,7 @@ import (
 	"fmt"
 	os "os"
 	"path/filepath"
+
 	// syscall "syscall"
 
 	// "bufio"
@@ -45,8 +46,8 @@ import (
 	"github.com/howeyc/gopass"
 
 	awsservices "github.com/wallix/awless/aws/services"
-	"github.com/wallix/awless/global"
 	"github.com/wallix/awless/database"
+	"github.com/wallix/awless/global"
 )
 
 var (
@@ -113,15 +114,15 @@ func InitAwlessEnv() error {
 
 	enc = []byte(GetPassword())
 	username = GetUsername()
-        pass = string(Decrypt(enc, global.ENC_PWD))
+	pass = string(Decrypt(enc, global.ENC_PWD))
 
-	if (AskUserPassword(&username, &pass)) {
+	if AskUserPassword(&username, &pass) {
 		// Ok got new user/pass?
 	}
-        if (username == "") {
+	if username == "" {
 		fmt.Printf("Error: Usernamei s no  valid email address or is empty\n")
 	}
-        if (pass == "") {
+	if pass == "" {
 		// ?? No passwords? exit with errors?
 		fmt.Printf("Error: No password for user: [%s].\n", username)
 	}
@@ -173,7 +174,7 @@ func promptUntilNonEmptySecure(question string, v *string) {
 			return false
 		}
 		if err != nil {
-			if (strings.Contains(fmt.Sprintf("%s", err),"interrup")) {
+			if strings.Contains(fmt.Sprintf("%s", err), "interrup") {
 				fmt.Printf("Error: %s. ...\n", err)
 				return false
 			}
@@ -243,25 +244,25 @@ func encrypt(data []byte, passphrase string) []byte {
 }
 
 func Decrypt(data []byte, passphrase string) []byte {
-	if (len(data) <= 0) {
+	if len(data) <= 0 {
 		return nil
-        }
+	}
 	key := []byte(createHash(passphrase))
 	block, err := aes.NewCipher(key)
 	if err != nil {
-                return []byte(string(""))
+		return []byte(string(""))
 		// panic(err.Error())
 	}
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-                return []byte(string(""))
+		return []byte(string(""))
 		// panic(err.Error())
 	}
 	nonceSize := gcm.NonceSize()
 	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-                return []byte(string(""))
+		return []byte(string(""))
 		// panic(err.Error())
 	}
 	return plaintext
@@ -270,30 +271,37 @@ func Decrypt(data []byte, passphrase string) []byte {
 func AskUserPassword(username *string, pass *string) bool {
 
 	prompted := false
+
+	oldUsername := GetUsername()
 	if *username == "" {
-	    *username = os.Getenv("ACENTERA_USERNAME")
-	    if *username == "" {
-		if (!prompted) {
-                  fmt.Printf("\nPlease enter you credentials.\n")
+		*username = os.Getenv("ACENTERA_USERNAME")
+		if *username == "" {
+			if !prompted {
+				fmt.Printf("\nPlease enter you credentials.\n")
+			}
+			prompted = true
+			promptUntilNonEmpty("\nUsername: ", username)
+			Set("user.username", *username)
 		}
-		prompted = true
-		promptUntilNonEmpty("\nUsername: ", username)
-		Set("user.username", *username)
-            }
 	}
+
+	if oldUsername != *username {
+		ResetUserSettings()
+	}
+
 	if *pass == "" {
-	  *pass = os.Getenv("ACENTERA_PASSWORD")
-	  if *pass == "" {
-		if (!prompted) {
-		  fmt.Printf("\nPlease enter you credentials.\n")
+		*pass = os.Getenv("ACENTERA_PASSWORD")
+		if *pass == "" {
+			if !prompted {
+				fmt.Printf("\nPlease enter you credentials.\n")
+			}
+			prompted = true
+			promptUntilNonEmptySecure("Password: ", pass)
+			enc := encrypt([]byte(*pass), global.ENC_PWD)
+			Set("_enc", string(enc))
 		}
-		prompted = true
-		promptUntilNonEmptySecure("Password: ", pass)
-		enc := encrypt([]byte(*pass), global.ENC_PWD)
-		Set("_enc", string(enc))
-	  }
-        }
-	if (prompted) {
+	}
+	if prompted {
 		Set("_token", string(""))
 	}
 	return prompted

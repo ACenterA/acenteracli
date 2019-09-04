@@ -17,7 +17,7 @@ type ById struct {
 }
 
 func (r *ById) Resolve(snap tstore.RDFGraph) ([]*Resource, error) {
-	resolver := &ByProperty{Key: properties.ID, Value: r.Id}
+	resolver := &ByProperty{Key: properties.Id, Value: r.Id}
 	return resolver.Resolve(snap)
 }
 

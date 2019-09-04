@@ -54,7 +54,7 @@ func InitResource(kind, id string) *Resource {
 	return &Resource{
 		id:         id,
 		kind:       kind,
-		properties: map[string]interface{}{properties.ID: id},
+		properties: map[string]interface{}{properties.Id: id},
 		meta:       make(map[string]interface{}),
 		relations:  make(map[string][]*Resource),
 	}
@@ -117,6 +117,13 @@ func (res *Resource) Type() string {
 
 func (res *Resource) Id() string {
 	return res.id
+}
+
+func (res *Resource) Name() string {
+	if v, ok := res.properties["Name"]; ok {
+		return v.(string)
+	}
+	return ""
 }
 
 func (res *Resource) Properties() map[string]interface{} {

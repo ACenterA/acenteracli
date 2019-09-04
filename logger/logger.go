@@ -43,6 +43,7 @@ type Logger struct {
 }
 
 var (
+	successPrefix      = color.GreenString("[success]   ")
 	infoPrefix         = color.GreenString("[info]   ")
 	errorPrefix        = color.RedString("[error]  ")
 	warningPrefix      = color.YellowString("[warning]")

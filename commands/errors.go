@@ -29,3 +29,12 @@ func exitOn(err error) {
 		os.Exit(1)
 	}
 }
+func exitWithError(err error, errorStr string) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, color.RedString("[error]  "), err)
+	}
+	if errorStr != "" {
+		fmt.Fprintln(os.Stderr, color.RedString("[error]  "), errorStr)
+	}
+	os.Exit(1)
+}

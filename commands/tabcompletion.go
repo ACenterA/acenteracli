@@ -7,7 +7,7 @@ import (
 	"unicode"
 
 	"github.com/chzyer/readline"
-	"github.com/wallix/awless/aws/services"
+	awsservices "github.com/wallix/awless/aws/services"
 	"github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/graph"
 	"github.com/wallix/awless/template"
@@ -92,7 +92,7 @@ func holeAutoCompletion(g cloud.GraphAPI, paramPaths []string) readline.AutoComp
 				switch prop := v.(type) {
 				case string, float64, int, bool:
 					possibleSuggests = append(possibleSuggests, fmt.Sprint(prop))
-					if validPropName == "ID" {
+					if validPropName == "id" || validPropName == "Id" || validPropName == "ID" || validPropName == "iD" {
 						possibleSuggests = appendWithNameAliases(possibleSuggests, r)
 					}
 				case []string:

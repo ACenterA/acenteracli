@@ -17,13 +17,9 @@ limitations under the License.
 package commands
 
 import (
-	// "fmt"
-
-	// "os"
-
 	"github.com/spf13/cobra"
 	"github.com/wallix/awless/config"
-	// "github.com/wallix/awless/logger"
+	"github.com/wallix/awless/logger"
 )
 
 func init() {
@@ -31,10 +27,10 @@ func init() {
 }
 
 var loginCmd = &cobra.Command{
-	Use:   "login",
-	Short: "Login to your account",
-
-        Run: func(cmd *cobra.Command, args []string) {
+	Use:              "login",
+	Short:            "Login to your account",
+	PersistentPreRun: applyHooks(initAwlessEnvHook, initLoggerHook, initCloudServicesHook, firstInstallDoneHook, initCliEnvHook),
+	Run: func(cmd *cobra.Command, args []string) {
 		login(cmd, args)
 		// Do not check for updates ... config.CheckForUpdate()
 		return
@@ -42,7 +38,13 @@ var loginCmd = &cobra.Command{
 }
 
 func login(*cobra.Command, []string) {
-        var username string
-        var pass string
-        config.AskUserPassword(&username,&pass)
+	var username string
+	var pass string
+	config.Set("_token", "")
+	config.AskUserPassword(&username, &pass)
+	if validateToken() {
+		logger.Infof("Successfully logged in.")
+	} else {
+		logger.Infof("Could not login to server. Please validate your username and password")
+	}
 }

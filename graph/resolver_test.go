@@ -33,7 +33,7 @@ func TestResolvers(t *testing.T) {
 
 		resources, err = g.ResolveResources(&graph.And{[]graph.Resolver{
 			&graph.ByType{Typ: "subnet"},
-			&graph.ByProperty{Key: "ID", Value: "inst_2"},
+			&graph.ByProperty{Key: "id", Value: "inst_2"},
 		},
 		})
 		if err != nil {
@@ -47,7 +47,7 @@ func TestResolvers(t *testing.T) {
 	t.Run("or", func(t *testing.T) {
 		resources, err := g.ResolveResources(&graph.Or{[]graph.Resolver{
 			&graph.ByProperty{Key: "Name", Value: "unexisting"},
-			&graph.ByProperty{Key: "ID", Value: "sub_1"},
+			&graph.ByProperty{Key: "id", Value: "sub_1"},
 			&graph.ByProperty{Key: "Name", Value: "unexisting"},
 		},
 		})
@@ -77,7 +77,7 @@ func TestResolvers(t *testing.T) {
 		}
 
 		resources, err = g.ResolveResources(&graph.ByTypeAndProperty{
-			Type: "subnet", Key: "ID", Value: "inst_2",
+			Type: "subnet", Key: "id", Value: "inst_2",
 		})
 		if err != nil {
 			t.Fatal(err)

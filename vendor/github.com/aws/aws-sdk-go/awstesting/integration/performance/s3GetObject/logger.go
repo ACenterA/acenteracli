@@ -22,7 +22,7 @@ func NewLogger(writer io.Writer) *Logger {
 	}
 
 	err := l.out.Write([]string{
-		"ID", "Attempt",
+		"id", "Attempt",
 		"Latency",
 		"DNSStart", "DNSDone", "DNSDur",
 		"ConnectStart", "ConnectDone", "ConnectDur",

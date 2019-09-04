@@ -24,7 +24,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/wallix/awless/aws/services"
+	awsservices "github.com/wallix/awless/aws/services"
 	"github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/config"
 	"github.com/wallix/awless/console"
@@ -32,18 +32,7 @@ import (
 	"github.com/wallix/awless/sync"
 )
 
-var (
-	// listingFormat              string
-	listingFiltersFlag         []string
-	listingTagFiltersFlag      []string
-	listingTagKeyFiltersFlag   []string
-	listingTagValueFiltersFlag []string
-	listingColumnsFlag         []string
-	listOnlyIDs                bool
-	noHeadersFlag              bool
-	sortBy                     []string
-	reverseFlag                bool
-)
+var ()
 
 func init() {
 	RootCmd.AddCommand(listCmd)
@@ -51,7 +40,7 @@ func init() {
 	cobra.EnableCommandSorting = false
 
 	/* ACENTERA
-	*/
+	 */
 	for _, srvName := range awsservices.ServiceNames {
 		listCmd.AddCommand(listAllResourceInServiceCmd(srvName))
 	}
@@ -73,7 +62,6 @@ func init() {
 	listCmd.PersistentFlags().StringSliceVar(&listingTagFiltersFlag, "tag", []string{}, "Filter EC2 resources given tags (case sensitive!). Ex: --tag Env=Production")
 	listCmd.PersistentFlags().StringSliceVar(&listingTagKeyFiltersFlag, "tag-key", []string{}, "Filter EC2 resources given a tag key only (case sensitive!). Ex: --tag-key Env")
 	listCmd.PersistentFlags().StringSliceVar(&listingTagValueFiltersFlag, "tag-value", []string{}, "Filter EC2 resources given a tag value only (case sensitive!). Ex: --tag-value Staging")
-	listCmd.PersistentFlags().StringSliceVar(&listingColumnsFlag, "columns", []string{}, "Select the properties to display in the columns. Ex: --columns id,name,cidr")
 	listCmd.PersistentFlags().BoolVar(&listOnlyIDs, "ids", false, "List only ids")
 	*/
 	listCmd.PersistentFlags().BoolVar(&noHeadersFlag, "no-headers", false, "Do not display headers")
