@@ -98,6 +98,7 @@ func (g *Graph) AddAppliesOnRelation(parent, child *Resource) error {
 
 func (g *Graph) GetResource(t string, id string) (*Resource, error) {
 	resource := InitResource(t, id)
+	// fmt.Println("GET RESOUTCE TEST")
 	snap := g.store.Snapshot()
 	if err := resource.unmarshalFullRdf(snap); err != nil {
 		return resource, err

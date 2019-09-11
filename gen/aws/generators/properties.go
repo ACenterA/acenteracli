@@ -40,6 +40,7 @@ func generateRDFProperties() {
 	writeTemplateToFile(templ, aws.PropertiesDefinitions, CLOUD_RDF_DIR, "gen_rdf.go")
 }
 
+//ACENTERA FIX RDF...
 const propertiesTempl = `/* Copyright 2017 WALLIX
 
 Licensed under the Apache License, Version 2.0 (the "License");

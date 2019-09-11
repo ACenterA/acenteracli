@@ -39,9 +39,28 @@ var configDefinitions = map[string]*Definition{
 	"user.username":       {help: "Current username", defaultValue: ""},
 	"user.project.name":   {help: "Current selected project name (only used for display)", defaultValue: ""},
 	"user.project.id":     {help: "Current selected project id   (used for queries)", defaultValue: ""},
-	"user.id":             {help: "Current userid", defaultValue: "", onUpdateFns: []onUpdateFunc{}},
-	"_enc":                {help: "", defaultValue: ""}, // Empty help prevnet to display it.
-	"_token":              {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+
+	"user.website.name": {help: "Current selected website name (only used for display)", defaultValue: ""},
+	"user.website.id":   {help: "Current selected website id   (used for queries)", defaultValue: ""},
+
+	"user.id": {help: "Current userid", defaultValue: "", onUpdateFns: []onUpdateFunc{}},
+	"_enc":    {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"_token":  {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+
+	"_github.user.password": {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"github.user.username":  {help: "Current Github Username", defaultValue: ""},
+	"github.url":            {help: "Enterprise Github URL", defaultValue: ""},
+
+	"_bitbucket.user.password":  {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"bitbucket.user.username":   {help: "Current Bitbucket Username", defaultValue: ""},
+	"bitbucket.user.team":       {help: "Current Bitbucket default team", defaultValue: ""},
+	"bitbucket.user.account_id": {help: "Current Bitbucket logged in account id", defaultValue: ""},
+	"bitbucket.url":             {help: "Current Bitbucket default team", defaultValue: ""},
+
+	"_gitlab.user.password": {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"gitlab.user.username":  {help: "Current Gitlab Username", defaultValue: ""},
+	"gitlab.url":            {help: "Gitlab self-hosted URL", defaultValue: ""},
+
 	/*
 		RegionConfigKey:             {help: "AWS region", parseParamFn: awsconfig.ParseRegion, stdinParamProviderFn: awsconfig.StdinRegionSelector, onUpdateFns: []onUpdateFunc{runSyncWithUpdatedRegion}},
 		ProfileConfigKey:            {help: "AWS profile", defaultValue: "default"},
@@ -116,6 +135,13 @@ func LoadConfig() error {
 	})
 
 	return err
+}
+
+func ResetGitCreds(provider string) {
+	Set(fmt.Sprintf("%v.user.account_id", provider), "")
+	Set(fmt.Sprintf("%v.user.username", provider), "")
+	Set(fmt.Sprintf("_%v.user.password", provider), "")
+	Set(fmt.Sprintf("_%v.token", provider), "")
 }
 
 func DisplayConfig() string {

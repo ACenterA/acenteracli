@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
 	"github.com/wallix/awless/global"
 )
 
@@ -17,8 +18,36 @@ func GetAWSRegion() string {
 	return ""
 }
 
+func GetGitUsername(prefix string) string {
+	if reg, ok := Config[fmt.Sprintf("%s.user.username", prefix)]; ok && reg != "" {
+		return fmt.Sprint(reg)
+	}
+	return ""
+}
+
+func GetGitPassword(prefix string) string {
+	if reg, ok := Config[fmt.Sprintf("_%s.user.password", prefix)]; ok && reg != "" {
+		return fmt.Sprint(reg)
+	}
+	return ""
+}
+
 func GetUsername() string {
 	if reg, ok := Config["user.username"]; ok && reg != "" {
+		return fmt.Sprint(reg)
+	}
+	return ""
+}
+
+func GetProjectId() string {
+	if reg, ok := Config["user.project.id"]; ok && reg != "" {
+		return fmt.Sprint(reg)
+	}
+	return ""
+}
+
+func GetWebsiteId() string {
+	if reg, ok := Config["user.website.id"]; ok && reg != "" {
 		return fmt.Sprint(reg)
 	}
 	return ""
@@ -47,7 +76,7 @@ func GetPassword() string {
 
 func GetPasswordPlainText() string {
 	enc := []byte(GetPassword())
-        pass := string(Decrypt(enc, global.ENC_PWD))
+	pass := string(Decrypt(enc, global.ENC_PWD))
 	return pass
 }
 

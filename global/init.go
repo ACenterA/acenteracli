@@ -16,9 +16,33 @@ limitations under the License.
 // DO NOT EDIT
 package global
 
+import (
+	"reflect"
+)
+
 func IfThenElse(condition bool, a string, b string) string {
 	if condition {
 		return a
 	}
 	return b
+}
+
+func PrintFields(b interface{}) []string {
+	val := reflect.ValueOf(b)
+	var res []string
+	for i := 0; i < val.Type().NumField(); i++ {
+		// res = append(res, strings.Title(val.Type().Field(i).Tag.Get("json")))
+		// res = append(res, val.Type().Field(i).Tag.Get("json"))
+		res = append(res, val.Type().Field(i).Name)
+	}
+	return res
+}
+
+func To_struct_ptr(obj interface{}) interface{} {
+	return reflect.ValueOf(obj).Interface()
+	/*
+		vp := reflect.New(reflect.TypeOf(obj))
+		vp.Elem().Set(reflect.ValueOf(obj))
+		return vp.Interface()
+	*/
 }

@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	errors "github.com/pkg/errors"
-	config "github.com/wallix/awless/config"
-	"gopkg.in/h2non/gentleman.v2/plugins/body"
+	logger "github.com/wallix/awless/logger"
 )
 
 /*	"bytes"
@@ -61,20 +60,20 @@ import (
 		}
 */
 
-type ProjectApi struct {
+type AccountApi struct {
 	Id   string `json:"projectId"`
 	Name string `json:"name"`
 }
 
-func (api *APIInternal) Projects() *ProjectApi {
-	return &ProjectApi{}
+func (api *APIInternal) Account() *AccountApi {
+	return &AccountApi{}
 }
 
 // POST TO sites/v1/databases/create using projectId as param
 
-func (api *ProjectApi) GetProjects() (map[string]ProjectApi, error) {
+func (api *AccountApi) GetAccount() (map[string]ProjectApi, error) {
 	var resp map[string]ProjectApi
-	itm, err := API().GetByKey("/customer/v1/websites/me", "projects")
+	itm, err := API().Get("/customer/v1/websites/me")
 	if err != nil {
 		return nil, err
 	}
@@ -88,37 +87,32 @@ func (api *ProjectApi) GetProjects() (map[string]ProjectApi, error) {
 	return resp, err
 }
 
-func (api *ProjectApi) ListDatabase(projectId string, name string, dbType string) (map[string]interface{}, error) {
-	// TODO ....
-	return nil, nil
-}
+func (api *AccountApi) Logout() error {
 
-func (api *ProjectApi) CreatDatabase(projectId string, name string, dbType string) (map[string]interface{}, error) {
-	// var resp map[string]ProjectApi
-
-	url := "/sites/v1/databases/create"
+	url := "customer/v1/websites/logout"
 	req := API().Path(url).Post()
 
 	// Method to be used
 	// req.Method("POST")
-
-	data := map[string]string{"projectId": config.GetProjectId(), "type": dbType, "name": name}
-	req.Use(body.JSON(data))
-
-	// Perform the request
 	res, err := req.Do()
 	if err != nil {
 		fmt.Printf("Request error: %s\n", err)
-		return nil, errors.Wrap(err, fmt.Sprintf("Request error: %s\n", err))
+		return errors.Wrap(err, fmt.Sprintf("Request error: %s\n", err))
 	}
 	if !res.Ok {
 		// fmt.Printf("Invalid server response: %d\n", res.StatusCode)
-		return nil, errors.New(fmt.Sprintf("Invalid server response: %d\n", res.StatusCode))
+		return errors.New(fmt.Sprintf("Invalid server response: %d\n", res.StatusCode))
 	}
 
-	fmt.Printf("Status: %d\n", res.StatusCode)
-	fmt.Printf("Body: %s", res.String())
-	return nil, nil
+	/*
+		fmt.Printf("Status: %d\n", res.StatusCode)
+		fmt.Printf("Body: %s", res.String())
+	*/
+	if !(res.StatusCode >= 200 && res.StatusCode <= 204) {
+		logger.Verbosef("Body: %s", res.String())
+		return errors.New(fmt.Sprintf("Invalid server response: %d\n", res.StatusCode))
+	}
+	return nil
 }
 
 /*

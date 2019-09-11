@@ -9,13 +9,16 @@ import (
 )
 
 func getPropertyValue(gph tstore.RDFGraph, propObj tstore.Object, prop string) (interface{}, error) {
-	rdfProp, err := rdf.Properties.Get(prop)
+	// ACENTERA RDF DEBUG fmt.Println("GET PROP TEST", prop)
+	RdfProp, err := rdf.Properties.Get(prop)
 	if err != nil {
+		// fmt.Println("EMPTY ?")
 		return "", err
 	}
 
-	definedBy := rdfProp.RdfsDefinedBy
-	dataType := rdfProp.RdfsDataType
+	definedBy := RdfProp.RdfsDefinedBy
+	dataType := RdfProp.RdfsDataType
+	// fmt.Println("NOT EMPTY ...")
 	switch {
 	case definedBy == rdf.RdfsLiteral, (definedBy == rdf.RdfsList) && (dataType == rdf.XsdString):
 		return tstore.ParseLiteral(propObj)

@@ -31,6 +31,8 @@ import (
 
 var (
 	defaultProjectsColumns = []string{"Id", "Name"}
+	dbType                 = "mysql"
+	dbName                 = ""
 )
 
 func init() {
@@ -45,8 +47,13 @@ func init() {
 
 	// Global parametes
 	projectCmd.PersistentFlags().StringSliceVar(&listingFiltersFlag, "filter", []string{}, "Filter resources given key/values fields (case insensitive). Ex: --filter name='Projct 1'")
+
+	createProjectDbServeCobraCmd.PersistentFlags().StringVar(&dbName, "name", "mysql", "Name for the Database resources Ex: --name='MySQL01'")
+	// createProjectDbServeCobraCmd.PersistentFlags().StringSliceVar(&dbType, "type", string, "Type of the Database resources Ex: --type='mysql'")
+
 	projectCmd.AddCommand(listProjectCobraCmd)
-	projectCmd.AddCommand(selectCobraCmd)
+	projectCmd.AddCommand(projectSelectCobraCmd)
+	projectCmd.AddCommand(createProjectDbServeCobraCmd)
 }
 
 var projectCmd = &cobra.Command{
@@ -57,7 +64,7 @@ var projectCmd = &cobra.Command{
 	PersistentPostRun: applyHooks(verifyNewVersionHook, onVersionUpgrade, networkMonitorHook),
 	Short:             "Project resources: sorting, filtering via tag/properties, output formatting, etc...",
 }
-var selectCobraCmd = &cobra.Command{
+var projectSelectCobraCmd = &cobra.Command{
 	Use:   "select",
 	Short: "Select an project",
 	Run:   projectSelectResource,
@@ -66,10 +73,22 @@ var selectCobraCmd = &cobra.Command{
 var listProjectCobraCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List projects",
-	Run:   projctListResource,
+	Run:   projectListResource,
 }
 
-func projctListResource(*cobra.Command, []string) {
+var createProjectDbServeCobraCmd = &cobra.Command{
+	Use:   "create-database-server",
+	Short: "Create a database server for the project",
+	Run:   projectCreateDatabase,
+}
+
+var listProjectDbServeCobraCmd = &cobra.Command{
+	Use:   "list-database-server",
+	Short: "List database servers for the project",
+	Run:   projectListDatabase,
+}
+
+func projectListResource(*cobra.Command, []string) {
 	projects, _ := cli.API().Projects().GetProjects()
 
 	columns := defaultProjectsColumns
@@ -175,4 +194,33 @@ func projectSelectResource(*cobra.Command, []string) {
 	} else {
 		exitWithError(nil, "Invalid command ...")
 	}
+}
+
+func projectCreateDatabase(*cobra.Command, []string) {
+	fmt.Println("CEATE DB HERE")
+	projects := cli.API().Projects()
+	fmt.Println("CEATE DB HERE 1")
+	a, ez := projects.CreatDatabase(config.GetProjectId(), dbName, dbType)
+	fmt.Println("CEATE DB HERE 2")
+	logger.Infof("Test crete projects", a, ez) // , r[0].Name())
+	fmt.Println("CEATE DB HERE 3")
+	/*} else {
+		exitWithError(nil, "Invalid command ...")
+	}*/
+}
+
+func projectListDatabase(*cobra.Command, []string) {
+	fmt.Println("LIST DB HERE")
+	/*
+		projects := cli.API().Projects()
+		fmt.Println("CEATE DB HERE 1")
+
+			a, ez := projects.ListDatabase(config.GetProjectId())
+			fmt.Println("CEATE DB HERE 2")
+			logger.Infof("Test crete projects", a, ez) // , r[0].Name())
+	*/
+	fmt.Println("CEATE DB HERE 3")
+	/*} else {
+		exitWithError(nil, "Invalid command ...")
+	}*/
 }

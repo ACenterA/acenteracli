@@ -60,10 +60,6 @@ func APIAnon() *APIInternal {
 	return v
 }
 
-func (api *APIInternal) Projects() *ProjectApi {
-	return &ProjectApi{}
-}
-
 func (api *APIInternal) Get(url string) (map[string]interface{}, error) {
 	req := API().Path(url).Get()
 	resp, err := req.Do()
@@ -83,10 +79,41 @@ func (api *APIInternal) Get(url string) (map[string]interface{}, error) {
 	}
 	if resp.StatusCode <= 208 && resp.StatusCode >= 200 {
 		logger.Verbosef("Got decoded of %s", decoded)
-		if _, ok := decoded["id"]; ok {
-			// fmt.Printf("Username: %s, Id: %s\n", decoded["contactEmail"], decoded["accountId"])
-			return decoded, nil
+		// if _, ok := decoded["id"]; ok {
+		// fmt.Printf("Username: %s, Id: %s\n", decoded["contactEmail"], decoded["accountId"])
+		return decoded, nil
+		// }
+		return decoded, errors.New("Could not decode response.")
+	} else {
+		//fmt.Println(resp.StatusCode)
+		logger.Error("Invalid access token.")
+	}
+	return nil, errors.New(fmt.Sprintf("Invalid response from server %d", resp.StatusCode))
+}
+
+func (api *APIInternal) GetArr(url string) ([]interface{}, error) {
+	req := API().Path(url).Get()
+	resp, err := req.Do()
+	if err != nil {
+		// fmt.Println(err)
+		fmt.Println(errors.Wrap(err, "Request failed"))
+	}
+	var decoded []interface{}
+	if resp.StatusCode < 400 {
+		//fmt.Println(err)
+		if err := UnmarshalResponse(resp, &decoded); err != nil {
+			fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
 		}
+	} else {
+		//fmt.Println(err)
+		fmt.Println(errors.Errorf("HTTP %d: %s", resp.StatusCode, resp.String()))
+	}
+	if resp.StatusCode <= 208 && resp.StatusCode >= 200 {
+		logger.Verbosef("Got decoded of %s", decoded)
+		// if _, ok := decoded["id"]; ok {
+		// fmt.Printf("Username: %s, Id: %s\n", decoded["contactEmail"], decoded["accountId"])
+		return decoded, nil
+		// }
 		return decoded, errors.New("Could not decode response.")
 	} else {
 		//fmt.Println(resp.StatusCode)
@@ -169,6 +196,7 @@ func UserAgentMiddleware(c *gentleman.Client) {
 	}
 	c.UseRequest(func(ctx *context.Context, h context.Handler) {
 		ctx.Request.Header.Set("User-Agent", fmt.Sprintf("%s-cli-%s", ua, config.Version))
+		ctx.Request.Header.Set("Content-Type", "application/json")
 		h.Next(ctx)
 	})
 }

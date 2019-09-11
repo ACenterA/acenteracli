@@ -66,7 +66,7 @@ func init() {
 	os.Setenv("__AWLESS_KEYS_DIR", KeysDir)
 }
 
-func InitAwlessEnv() error {
+func InitAwlessEnv(withUsernameAsk bool) error {
 	_, err := os.Stat(DBPath)
 
 	AwlessFirstInstall = os.IsNotExist(err)
@@ -112,19 +112,21 @@ func InitAwlessEnv() error {
 		return err
 	}
 
-	enc = []byte(GetPassword())
-	username = GetUsername()
-	pass = string(Decrypt(enc, global.ENC_PWD))
+	if withUsernameAsk {
+		enc = []byte(GetPassword())
+		username = GetUsername()
+		pass = string(Decrypt(enc, global.ENC_PWD))
 
-	if AskUserPassword(&username, &pass) {
-		// Ok got new user/pass?
-	}
-	if username == "" {
-		fmt.Printf("Error: Usernamei s no  valid email address or is empty\n")
-	}
-	if pass == "" {
-		// ?? No passwords? exit with errors?
-		fmt.Printf("Error: No password for user: [%s].\n", username)
+		if AskUserPassword(&username, &pass) {
+			// Ok got new user/pass?
+		}
+		if username == "" {
+			fmt.Printf("Error: Username is no  valid email address or is empty\n")
+		}
+		if pass == "" {
+			// ?? No passwords? exit with errors?
+			fmt.Printf("Error: No password for user: [%s].\n", username)
+		}
 	}
 	return nil
 }
@@ -143,7 +145,7 @@ func resolveRequiredConfigFromEnv() map[string]string {
 	return resolved
 }
 
-func promptUntilNonEmpty(question string, v *string) {
+func PromptUntilNonEmpty(question string, v *string) {
 	ask := func(v *string) bool {
 		fmt.Print(question)
 		_, err := fmt.Scanln(v)
@@ -165,7 +167,7 @@ func promptUntilNonEmpty(question string, v *string) {
 	}
 	return
 }
-func promptUntilNonEmptySecure(question string, v *string) {
+func PromptUntilNonEmptySecure(question string, v *string) {
 	ask := func(v *string) bool {
 		fmt.Print(question)
 		passwd, err := gopass.GetPasswd()
@@ -280,7 +282,9 @@ func AskUserPassword(username *string, pass *string) bool {
 				fmt.Printf("\nPlease enter you credentials.\n")
 			}
 			prompted = true
-			promptUntilNonEmpty("\nUsername: ", username)
+			PromptUntilNonEmpty("\nUsername: ", username)
+			Set("user.username", *username)
+		} else {
 			Set("user.username", *username)
 		}
 	}
@@ -296,7 +300,10 @@ func AskUserPassword(username *string, pass *string) bool {
 				fmt.Printf("\nPlease enter you credentials.\n")
 			}
 			prompted = true
-			promptUntilNonEmptySecure("Password: ", pass)
+			PromptUntilNonEmptySecure("Password: ", pass)
+			enc := encrypt([]byte(*pass), global.ENC_PWD)
+			Set("_enc", string(enc))
+		} else {
 			enc := encrypt([]byte(*pass), global.ENC_PWD)
 			Set("_enc", string(enc))
 		}
