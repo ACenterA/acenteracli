@@ -10,10 +10,6 @@ Initial setup for creation of projet, websites and databases
 - GIT Bucket creation and link with a Website
 - Website creation / listing
 
-### Bugfixes
-
-- N/A
-
 ## 0.0.2
 
 # Release date : [2019-09-01]
