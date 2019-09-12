@@ -48,10 +48,10 @@ func (a *OpenBuckets) Inspect(g cloud.GraphAPI) error {
 		if ok {
 			for _, g := range grants {
 				if strings.Contains(g.Grantee.GranteeID, "AllUsers") {
-					openToUsers[fmt.Sprint(buck.Properties()["ID"])] = true
+					openToUsers[fmt.Sprint(buck.Properties()["id"])] = true
 				}
 				if strings.Contains(g.Grantee.GranteeID, "AuthenticatedUsers") {
-					openToAuthUsers[fmt.Sprint(buck.Properties()["ID"])] = true
+					openToAuthUsers[fmt.Sprint(buck.Properties()["id"])] = true
 				}
 			}
 		}

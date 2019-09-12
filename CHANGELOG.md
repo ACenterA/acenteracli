@@ -1,3 +1,25 @@
+## 0.0.3
+
+# Release date : [2019-09-01]
+
+Initial setup for creation of projet, websites and databases
+
+### Features
+
+- Project listing
+- GIT Bucket creation and link with a Website
+- Website creation / listing
+
+### Bugfixes
+
+- N/A
+
+## 0.0.2
+
+# Release date : [2019-09-01]
+
+Test release proces
+
 ## 0.0.1
 
 # Release date : [2019-09-01]

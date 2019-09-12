@@ -38,7 +38,7 @@ func TestGetResource(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := map[string]interface{}{properties.ID: "inst_1", properties.Type: "t2.micro", properties.PublicIP: "1.2.3.4",
+	expected := map[string]interface{}{properties.Id: "inst_1", properties.Type: "t2.micro", properties.PublicIP: "1.2.3.4",
 		properties.State: "running",
 		properties.Name:  "redis",
 	}
@@ -84,7 +84,7 @@ func TestFindResources(t *testing.T) {
 	})
 	t.Run("FindResourcesByProperty", func(t *testing.T) {
 		t.Parallel()
-		res, err := g.FindResourcesByProperty("ID", "inst_1")
+		res, err := g.FindResourcesByProperty("id", "inst_1")
 		if err != nil {
 			t.Fatal(err)
 		}

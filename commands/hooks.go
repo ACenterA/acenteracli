@@ -20,18 +20,23 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+
 	// "strings"
 
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/ktrysmt/go-bitbucket"
 	"github.com/spf13/cobra"
-	"github.com/wallix/awless/aws/services"
+	awsservices "github.com/wallix/awless/aws/services"
+	"github.com/wallix/awless/cli"
+
 	// "github.com/wallix/awless/cloud"
 	"github.com/wallix/awless/config"
 	"github.com/wallix/awless/database"
+	"github.com/wallix/awless/global"
 	"github.com/wallix/awless/logger"
 	"github.com/wallix/awless/sync"
-	"github.com/wallix/awless/global"
 )
 
 func applyHooks(funcs ...func(*cobra.Command, []string) error) func(*cobra.Command, []string) {
@@ -44,12 +49,83 @@ func applyHooks(funcs ...func(*cobra.Command, []string) error) func(*cobra.Comma
 	}
 }
 
-func initAwlessEnvHook(cmd *cobra.Command, args []string) error {
-	if err := config.InitAwlessEnv(); err != nil {
+func initAwlessEnvHookLogout(cmd *cobra.Command, args []string) error {
+	if err := config.InitAwlessEnv(false); err != nil {
 		return fmt.Errorf("cannot init awless environment: %s", err)
 	}
 
 	return applyRegionAndProfilePrecedence()
+}
+func initAwlessEnvHook(cmd *cobra.Command, args []string) error {
+	if err := config.InitAwlessEnv(true); err != nil {
+		return fmt.Errorf("cannot init awless environment: %s", err)
+	}
+
+	return applyRegionAndProfilePrecedence()
+}
+
+func toUpper(item string) string {
+	return strings.ToUpper(item)
+}
+func toLower(item string) string {
+	return strings.ToLower(item)
+}
+
+func Normalize(item string) string {
+	return strings.Title(strings.ToLower(item))
+}
+
+func Map(vs []string, f func(string) string) []string {
+	vsm := make([]string, len(vs))
+	for i, v := range vs {
+		vsm[i] = f(v)
+	}
+	return vsm
+}
+
+func normalizeColumns(cmd *cobra.Command, args []string) error {
+	listingColumnsFlag = Map(listingColumnsFlag, Normalize)
+	return nil
+}
+
+func initGitHook(cmd *cobra.Command, args []string) error {
+	fmt.Println("Provider is set to :" + GitProvider)
+
+	tokenKey := fmt.Sprintf("_%s.token", strings.Trim(strings.ToLower(GitProvider), ""))
+	// usernameKey := fmt.Sprintf("%s.user.username", strings.Trim(strings.ToLower(GitProvider), ""))
+	// passKey := fmt.Sprintf("_%s.user.password", strings.Trim(strings.ToLower(GitProvider), ""))
+
+	t, _ := config.Get(tokenKey)
+	if t != nil && t != "" {
+		logger.Verbosef("[%s] using token", GitProvider)
+		//Ok no token
+		return nil
+	}
+	// fmt.Println("No Token")
+	var username string
+	var pass string
+	// resp := false
+	fmt.Println("LOWER TEST?")
+
+	if strings.ToLower(GitProvider) == "bitbucket" {
+		fmt.Println("LOWER TEST? - 1")
+		AskBitBucketUserPassword(&username, &pass)
+	} else if strings.ToLower(GitProvider) == "github" {
+		// AskGithubUserPassword(&username, &pass)
+	}
+
+	/*
+		if res {
+			// fmt.Println("Keys are:", tokenKey, usernameKey, passKey)
+		}
+	*/
+
+	return nil
+}
+
+func initCliEnvHook(cmd *cobra.Command, args []string) error {
+	cli.InitCliEnv()
+	return nil
 }
 
 var profileOverridenThrough, regionOverridenThrough string
@@ -129,16 +205,16 @@ func initCloudServicesHook(cmd *cobra.Command, args []string) error {
 	}
 
 	/*
-	if config.TriggerSyncOnConfigUpdate && !strings.HasPrefix(cmd.Name(), "sync") {
-		var services []cloud.Service
-		for _, s := range cloud.ServiceRegistry {
-			services = append(services, s)
+		if config.TriggerSyncOnConfigUpdate && !strings.HasPrefix(cmd.Name(), "sync") {
+			var services []cloud.Service
+			for _, s := range cloud.ServiceRegistry {
+				services = append(services, s)
+			}
+			if !noSyncGlobalFlag {
+				logger.Infof("Syncing new region '%s'... (disable with --no-sync global flag)", region)
+				sync.NewSyncer(logger.DefaultLogger).Sync(services...)
+			}
 		}
-		if !noSyncGlobalFlag {
-			logger.Infof("Syncing new region '%s'... (disable with --no-sync global flag)", region)
-			sync.NewSyncer(logger.DefaultLogger).Sync(services...)
-		}
-	}
 	*/
 
 	return nil
@@ -209,9 +285,9 @@ func verifyNewVersionHook(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 	cliBranch := os.Getenv("ACENTERA_CLI_BRANCH")
-	if (cliBranch == "") {
-	   cliBranch = "master"
-        }
+	if cliBranch == "" {
+		cliBranch = "master"
+	}
 	config.VerifyNewVersionAvailable(fmt.Sprintf("https://raw.githubusercontent.com/ACenterA/acenteracli/%v/VERSION", cliBranch), os.Stderr)
 	return nil
 }
@@ -276,4 +352,146 @@ func isNotAwlessFormerDefaultAMI(s string) bool {
 		}
 	}
 	return true
+}
+
+func AskBitBucketUserPassword(username *string, pass *string) bool {
+
+	prompted := false
+
+	token := os.Getenv("ACENTERA_BITBUCKET_TOKEN")
+	c := bitbucket.NewOAuthbearerToken(token)
+	r, er := c.User.Profile()
+	if er == nil {
+		BitBucket = c
+		fmt.Println("Successfully loggedin using Bitbucket Token")
+		config.Set("bitbucket.user.account_id", r.(map[string]interface{})["account_id"].(string))
+		ac, _ := config.Get("bitbucket.user.account_id")
+		config.Set("_bitbucket.token", token)
+		GitOwner = ac.(string)
+		return prompted
+	}
+
+	if *username == "" {
+		*username = config.GetGitUsername("bitbucket")
+	}
+	if *username == "" {
+		*username = os.Getenv("ACENTERA_BITBUCKET_USERNAME")
+		if *username == "" {
+			if !prompted {
+				fmt.Printf("\nPlease enter your bitbucket credentials.\n")
+			}
+			prompted = true
+			config.PromptUntilNonEmpty("\nUsername: ", username)
+			config.Set("bitbucket.user.username", *username)
+			ac, _ := config.Get("bitbucket.user.account_id")
+			GitOwner = ac.(string)
+		} else {
+			config.Set("bitbucket.user.username", *username)
+		}
+	}
+
+	/*if oldUsername != *username {
+		ResetUserSettings()
+	}
+	*/
+
+	*pass = config.GetGitPassword("bitbucket")
+	if *pass != "" {
+		c := bitbucket.NewBasicAuth(*username, *pass)
+		r, er := c.User.Profile()
+		if er == nil {
+			config.Set("_bitbucket.token", string(""))
+			config.Set("bitbucket.user.username", *username)
+			config.Set("_bitbucket.user.password", *pass)
+			config.Set("bitbucket.user.account_id", r.(map[string]interface{})["account_id"].(string))
+			BitBucket = c
+
+			ac, _ := config.Get("bitbucket.user.account_id")
+			GitOwner = ac.(string)
+			return prompted
+		}
+		*pass = ""
+	}
+	if *pass == "" {
+		*pass = os.Getenv("ACENTERA_BITBUCKET_PASSWORD")
+		if *pass != "" {
+			c := bitbucket.NewBasicAuth(*username, *pass)
+			r, e := c.User.Profile()
+			if e == nil {
+				config.Set("_bitbucket.token", string(""))
+				config.Set("bitbucket.user.username", *username)
+				config.Set("_bitbucket.user.password", *pass)
+				config.Set("bitbucket.user.account_id", r.(map[string]interface{})["account_id"].(string))
+				BitBucket = c
+				ac, _ := config.Get("bitbucket.user.account_id")
+				GitOwner = ac.(string)
+				return prompted
+			}
+		}
+		*pass = ""
+
+		if *pass == "" {
+			if !prompted {
+				fmt.Printf("\nPlease enter your bitbucket credentials.\n")
+			}
+			prompted = true
+			config.PromptUntilNonEmptySecure("Password: ", pass)
+		}
+	}
+	if prompted {
+		config.Set("_bitbucket.token", string(""))
+		c := bitbucket.NewBasicAuth(*username, *pass)
+		r, ez := c.User.Profile()
+		if ez == nil {
+			config.Set("_bitbucket.user.password", *pass)
+			config.Set("bitbucket.user.account_id", r.(map[string]interface{})["account_id"].(string))
+
+			ac, _ := config.Get("bitbucket.user.account_id")
+			GitOwner = ac.(string)
+
+			BitBucket = c
+			return prompted
+		} else {
+			logger.Error("Could not login to bitbucket. Please try again.")
+		}
+	}
+	return prompted
+}
+
+func AskGithubUserPassword(username *string, pass *string) bool {
+
+	prompted := false
+	oldUsername := config.GetUsername()
+	if *username == "" {
+		*username = os.Getenv("ACENTERA_GITHUB_USERNAME")
+		if *username == "" {
+			if !prompted {
+				fmt.Printf("\nPlease enter your Github credentials.\n")
+			}
+			prompted = true
+			config.PromptUntilNonEmpty("\nUsername: ", username)
+			config.Set("github.user.username", *username)
+		}
+	}
+
+	if oldUsername != *username {
+		config.ResetUserSettings()
+	}
+
+	if *pass == "" {
+		*pass = os.Getenv("ACENTERA_GITHUB_PASSWORD")
+		if *pass == "" {
+			if !prompted {
+				fmt.Printf("\nPlease enter your github credentials.\n")
+			}
+			prompted = true
+			config.PromptUntilNonEmptySecure("Password: ", pass)
+			// enc := encrypt([]byte(*pass), global.ENC_PWD)
+			// config.Set("_github.user.password", string(enc))
+		}
+	}
+	if prompted {
+		config.Set("_github.user.password", string(""))
+	}
+	return prompted
 }

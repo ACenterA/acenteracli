@@ -23,27 +23,27 @@ import (
 )
 
 var ColumnsInListing = map[string][]string{
-	cloud.Instance:            {properties.ID, properties.AvailabilityZone, properties.Name, properties.State, properties.Type, properties.PublicIP, properties.PrivateIP, properties.Launched, properties.KeyPair},
-	cloud.Vpc:                 {properties.ID, properties.Name, properties.Default, properties.State, properties.CIDR},
-	cloud.Subnet:              {properties.ID, properties.Name, properties.CIDR, properties.AvailabilityZone, properties.Default, properties.Vpc, properties.Public, properties.State},
-	cloud.SecurityGroup:       {properties.ID, properties.Vpc, properties.InboundRules, properties.OutboundRules, properties.Name, properties.Description},
-	cloud.InternetGateway:     {properties.ID, properties.Name, properties.Vpcs},
-	cloud.NatGateway:          {properties.ID, properties.State, properties.Vpc, properties.Subnet, properties.Created},
-	cloud.RouteTable:          {properties.ID, properties.Name, properties.Vpc, properties.Default, properties.Routes, properties.Associations},
-	cloud.Keypair:             {properties.ID, properties.Fingerprint},
-	cloud.Image:               {properties.ID, properties.Name, properties.State, properties.Location, properties.Public, properties.Type, properties.Created, properties.Architecture, properties.Hypervisor, properties.Virtualization},
-	cloud.ImportImageTask:     {properties.ID, properties.Description, properties.Image, properties.Progress, properties.State, properties.StateMessage},
-	cloud.Volume:              {properties.ID, properties.Name, properties.Type, properties.State, properties.Size, properties.Encrypted, properties.Created, properties.AvailabilityZone, properties.Instances},
+	cloud.Instance:            {properties.Id, properties.AvailabilityZone, properties.Name, properties.State, properties.Type, properties.PublicIP, properties.PrivateIP, properties.Launched, properties.KeyPair},
+	cloud.Vpc:                 {properties.Id, properties.Name, properties.Default, properties.State, properties.CIDR},
+	cloud.Subnet:              {properties.Id, properties.Name, properties.CIDR, properties.AvailabilityZone, properties.Default, properties.Vpc, properties.Public, properties.State},
+	cloud.SecurityGroup:       {properties.Id, properties.Vpc, properties.InboundRules, properties.OutboundRules, properties.Name, properties.Description},
+	cloud.InternetGateway:     {properties.Id, properties.Name, properties.Vpcs},
+	cloud.NatGateway:          {properties.Id, properties.State, properties.Vpc, properties.Subnet, properties.Created},
+	cloud.RouteTable:          {properties.Id, properties.Name, properties.Vpc, properties.Default, properties.Routes, properties.Associations},
+	cloud.Keypair:             {properties.Id, properties.Fingerprint},
+	cloud.Image:               {properties.Id, properties.Name, properties.State, properties.Location, properties.Public, properties.Type, properties.Created, properties.Architecture, properties.Hypervisor, properties.Virtualization},
+	cloud.ImportImageTask:     {properties.Id, properties.Description, properties.Image, properties.Progress, properties.State, properties.StateMessage},
+	cloud.Volume:              {properties.Id, properties.Name, properties.Type, properties.State, properties.Size, properties.Encrypted, properties.Created, properties.AvailabilityZone, properties.Instances},
 	cloud.AvailabilityZone:    {properties.Name, properties.State, properties.Region, properties.Messages},
-	cloud.ElasticIP:           {properties.ID, properties.PublicIP, properties.PrivateIP, properties.Association},
-	cloud.Snapshot:            {properties.ID, properties.Volume, properties.Encrypted, properties.Owner, properties.State, properties.Progress, properties.Created, properties.Size},
-	cloud.NetworkInterface:    {properties.ID, properties.Vpc, properties.Subnet, properties.State, properties.Instance, properties.PrivateIP, properties.PublicIP, properties.Description},
+	cloud.ElasticIP:           {properties.Id, properties.PublicIP, properties.PrivateIP, properties.Association},
+	cloud.Snapshot:            {properties.Id, properties.Volume, properties.Encrypted, properties.Owner, properties.State, properties.Progress, properties.Created, properties.Size},
+	cloud.NetworkInterface:    {properties.Id, properties.Vpc, properties.Subnet, properties.State, properties.Instance, properties.PrivateIP, properties.PublicIP, properties.Description},
 	cloud.LoadBalancer:        {properties.Name, properties.Vpc, properties.State, properties.PublicDNS, properties.Created, properties.Scheme},
 	cloud.ClassicLoadBalancer: {properties.Name, properties.Vpc, properties.PublicDNS, properties.Instances, properties.Ports, properties.Created, properties.Scheme},
 	cloud.TargetGroup:         {properties.Name, properties.Vpc, properties.CheckHTTPCode, properties.Port, properties.Protocol, properties.CheckInterval, properties.CheckPath, properties.CheckPort, properties.CheckProtocol},
-	cloud.Listener:            {properties.ID, properties.Protocol, properties.Port, properties.LoadBalancer, properties.TargetGroups, properties.AlarmActions},
-	cloud.Database:            {properties.ID, properties.Name, properties.AvailabilityZone, properties.Class, properties.State, properties.Storage, properties.Port, properties.Username, properties.Public, properties.ReplicaOf, properties.Engine, properties.EngineVersion, properties.Created},
-	cloud.DbSubnetGroup:       {properties.ID, properties.State, properties.Vpc, properties.Subnets, properties.Description},
+	cloud.Listener:            {properties.Id, properties.Protocol, properties.Port, properties.LoadBalancer, properties.TargetGroups, properties.AlarmActions},
+	cloud.Database:            {properties.Id, properties.Name, properties.AvailabilityZone, properties.Class, properties.State, properties.Storage, properties.Port, properties.Username, properties.Public, properties.ReplicaOf, properties.Engine, properties.EngineVersion, properties.Created},
+	cloud.DbSubnetGroup:       {properties.Id, properties.State, properties.Vpc, properties.Subnets, properties.Description},
 	cloud.LaunchConfiguration: {properties.Name, properties.Type, properties.Created, properties.KeyPair},
 	cloud.ScalingGroup:        {properties.Name, properties.LaunchConfigurationName, properties.DesiredCapacity, properties.State, properties.Created, properties.NewInstancesProtected},
 	cloud.ScalingPolicy:       {properties.Name, properties.Type, properties.ScalingGroupName, properties.AlarmNames, properties.AdjustmentType, properties.ScalingAdjustment},
@@ -51,33 +51,33 @@ var ColumnsInListing = map[string][]string{
 	cloud.ContainerCluster:    {properties.Name, properties.State, properties.ActiveServicesCount, properties.PendingTasksCount, properties.RegisteredContainerInstancesCount, properties.RunningTasksCount},
 	cloud.ContainerTask:       {properties.Name, properties.Version, properties.State, properties.ContainersImages, properties.Deployments},
 	cloud.Container:           {properties.Name, properties.DeploymentName, properties.State, properties.Created, properties.Launched, properties.Stopped, properties.Cluster, properties.ContainerTask},
-	cloud.ContainerInstance:   {properties.ID, properties.Instance, properties.Cluster, properties.State, properties.RunningTasksCount, properties.PendingTasksCount, properties.Created, properties.AgentConnected},
+	cloud.ContainerInstance:   {properties.Id, properties.Instance, properties.Cluster, properties.State, properties.RunningTasksCount, properties.PendingTasksCount, properties.Created, properties.AgentConnected},
 	cloud.Certificate:         {properties.Arn, properties.Name},
-	cloud.User:                {properties.ID, properties.Name, properties.PasswordLastUsed, properties.Created},
-	cloud.Role:                {properties.ID, properties.Name, properties.Created},
-	cloud.InstanceProfile:     {properties.ID, properties.Name, properties.Path, properties.Created},
-	cloud.Policy:              {properties.ID, properties.Name, properties.Type, properties.Created, properties.Updated, properties.Attached},
-	cloud.Group:               {properties.ID, properties.Name, properties.Created},
-	cloud.AccessKey:           {properties.ID, properties.State, properties.Username, properties.Created},
-	cloud.MFADevice:           {properties.ID, properties.AttachedAt},
-	cloud.Bucket:              {properties.ID, properties.Grants, properties.Created},
-	cloud.S3Object:            {properties.ID, properties.Bucket, properties.Modified, properties.Owner, properties.Size, properties.Class},
+	cloud.User:                {properties.Id, properties.Name, properties.PasswordLastUsed, properties.Created},
+	cloud.Role:                {properties.Id, properties.Name, properties.Created},
+	cloud.InstanceProfile:     {properties.Id, properties.Name, properties.Path, properties.Created},
+	cloud.Policy:              {properties.Id, properties.Name, properties.Type, properties.Created, properties.Updated, properties.Attached},
+	cloud.Group:               {properties.Id, properties.Name, properties.Created},
+	cloud.AccessKey:           {properties.Id, properties.State, properties.Username, properties.Created},
+	cloud.MFADevice:           {properties.Id, properties.AttachedAt},
+	cloud.Bucket:              {properties.Id, properties.Grants, properties.Created},
+	cloud.S3Object:            {properties.Id, properties.Bucket, properties.Modified, properties.Owner, properties.Size, properties.Class},
 	cloud.Subscription:        {properties.Arn, properties.Topic, properties.Endpoint, properties.Protocol, properties.Owner},
-	cloud.Topic:               {properties.ID},
-	cloud.Queue:               {properties.ID, properties.ApproximateMessageCount, properties.Created, properties.Modified, properties.Delay},
-	cloud.Zone:                {properties.ID, properties.Name, properties.Comment, properties.Private, properties.RecordCount, properties.CallerReference},
-	cloud.Record:              {properties.ID, properties.Type, properties.Name, properties.Records, properties.Zone, properties.Alias, properties.TTL},
+	cloud.Topic:               {properties.Id},
+	cloud.Queue:               {properties.Id, properties.ApproximateMessageCount, properties.Created, properties.Modified, properties.Delay},
+	cloud.Zone:                {properties.Id, properties.Name, properties.Comment, properties.Private, properties.RecordCount, properties.CallerReference},
+	cloud.Record:              {properties.Id, properties.Type, properties.Name, properties.Records, properties.Zone, properties.Alias, properties.TTL},
 	cloud.Function:            {properties.Name, properties.Size, properties.Memory, properties.Runtime, properties.Version, properties.Modified, properties.Description},
-	cloud.Metric:              {properties.ID, properties.Name, properties.Namespace, properties.Dimensions},
+	cloud.Metric:              {properties.Id, properties.Name, properties.Namespace, properties.Dimensions},
 	cloud.Alarm:               {properties.Name, properties.Namespace, properties.MetricName, properties.Description, properties.State, properties.Updated, properties.Dimensions},
-	cloud.Distribution:        {properties.ID, properties.PublicDNS, properties.Enabled, properties.State, properties.Modified, properties.Aliases, properties.SSLSupportMethod, properties.Origins},
-	cloud.Stack:               {properties.ID, properties.Name, properties.State, properties.Created, properties.Modified},
+	cloud.Distribution:        {properties.Id, properties.PublicDNS, properties.Enabled, properties.State, properties.Modified, properties.Aliases, properties.SSLSupportMethod, properties.Origins},
+	cloud.Stack:               {properties.Id, properties.Name, properties.State, properties.Created, properties.Modified},
 }
 
 var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 	//EC2
 	cloud.Instance: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.AvailabilityZone, Friendly: "Zone"},
 		StringColumnDefinition{Prop: properties.Name},
 		ColoredValueColumnDefinition{
@@ -91,7 +91,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.KeyPair},
 	},
 	cloud.Vpc: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		ColoredValueColumnDefinition{
 			StringColumnDefinition: StringColumnDefinition{Prop: properties.Default, Friendly: "Default"},
@@ -101,7 +101,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.CIDR},
 	},
 	cloud.Subnet: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.CIDR},
 		StringColumnDefinition{Prop: properties.AvailabilityZone, Friendly: "Zone"},
@@ -118,7 +118,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 			ColoredValues:          map[string]color.Attribute{"available": color.FgGreen}},
 	},
 	cloud.SecurityGroup: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Vpc},
 		FirewallRulesColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.InboundRules, Friendly: "Inbound"}},
 		FirewallRulesColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.OutboundRules, Friendly: "Outbound"}},
@@ -126,19 +126,19 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.Description},
 	},
 	cloud.InternetGateway: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.Vpcs},
 	},
 	cloud.NatGateway: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.State},
 		StringColumnDefinition{Prop: properties.Vpc},
 		StringColumnDefinition{Prop: properties.Subnet},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created, Friendly: "Created"}},
 	},
 	cloud.RouteTable: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.Vpc},
 		ColoredValueColumnDefinition{
@@ -149,11 +149,11 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		KeyValuesColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Associations}},
 	},
 	cloud.Keypair: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Fingerprint},
 	},
 	cloud.Image: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.State},
 		StringColumnDefinition{Prop: properties.Location},
@@ -165,7 +165,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.Virtualization, Friendly: "Virt"},
 	},
 	cloud.ImportImageTask: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Description},
 		StringColumnDefinition{Prop: properties.Image},
 		StringColumnDefinition{Prop: properties.Progress},
@@ -173,7 +173,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.StateMessage},
 	},
 	cloud.Volume: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.Type},
 		StringColumnDefinition{Prop: properties.State},
@@ -190,13 +190,13 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.Messages},
 	},
 	cloud.ElasticIP: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.PublicIP},
 		StringColumnDefinition{Prop: properties.PrivateIP},
 		StringColumnDefinition{Prop: properties.Association},
 	},
 	cloud.Snapshot: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Volume},
 		StringColumnDefinition{Prop: properties.Encrypted},
 		StringColumnDefinition{Prop: properties.Owner},
@@ -206,7 +206,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StorageColumnDefinition{Unit: gb, StringColumnDefinition: StringColumnDefinition{Prop: properties.Size}},
 	},
 	cloud.NetworkInterface: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Vpc},
 		StringColumnDefinition{Prop: properties.Subnet},
 		StringColumnDefinition{Prop: properties.State},
@@ -245,7 +245,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.CheckProtocol, Friendly: "HCProtocol"},
 	},
 	cloud.Listener: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Port},
 		StringColumnDefinition{Prop: properties.Protocol},
 		StringColumnDefinition{Prop: properties.LoadBalancer},
@@ -254,7 +254,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 	},
 	// Database
 	cloud.Database: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.AvailabilityZone, Friendly: "Zone"},
 		StringColumnDefinition{Prop: properties.Zone, Friendly: "HostedZone"},
@@ -274,7 +274,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created, Friendly: "Created"}},
 	},
 	cloud.DbSubnetGroup: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.State, Friendly: "Status"},
 		StringColumnDefinition{Prop: properties.Vpc},
 		StringColumnDefinition{Prop: properties.Subnets},
@@ -337,7 +337,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		ARNLastValueColumnDefinition{Separator: "/", StringColumnDefinition: StringColumnDefinition{Prop: properties.ContainerTask}},
 	},
 	cloud.ContainerInstance: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Instance},
 		ARNLastValueColumnDefinition{Separator: "/", StringColumnDefinition: StringColumnDefinition{Prop: properties.Cluster}},
 		StringColumnDefinition{Prop: properties.State},
@@ -353,24 +353,24 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 	},
 	//IAM
 	cloud.User: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.PasswordLastUsed, Friendly: "PasswordLastUsed"}},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},
 	},
 	cloud.Role: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},
 	},
 	cloud.InstanceProfile: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.Path},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},
 	},
 	cloud.Policy: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.Type},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},
@@ -381,28 +381,28 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		},
 	},
 	cloud.Group: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},
 	},
 	cloud.AccessKey: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.State},
 		StringColumnDefinition{Prop: properties.Username},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},
 	},
 	cloud.MFADevice: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.AttachedAt}},
 	},
 	// S3
 	cloud.Bucket: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		GrantsColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Grants}},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},
 	},
 	cloud.S3Object: {
-		StringColumnDefinition{Prop: properties.ID, Friendly: "Name"},
+		StringColumnDefinition{Prop: properties.Id, Friendly: "Name"},
 		StringColumnDefinition{Prop: properties.Bucket, Friendly: "Bucket"},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Modified, Friendly: "Modified"}},
 		StringColumnDefinition{Prop: properties.Owner},
@@ -418,11 +418,11 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.Owner},
 	},
 	cloud.Topic: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 	},
 	//Queue
 	cloud.Queue: {
-		StringColumnDefinition{Prop: properties.ID, Friendly: "URL"},
+		StringColumnDefinition{Prop: properties.Id, Friendly: "URL"},
 		StringColumnDefinition{Prop: properties.ApproximateMessageCount, Friendly: "~NbMsg"},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Modified, Friendly: "LastModif"}},
@@ -430,7 +430,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 	},
 	// DNS
 	cloud.Zone: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.Comment},
 		StringColumnDefinition{Prop: properties.Private, Friendly: "Private"},
@@ -438,7 +438,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 		StringColumnDefinition{Prop: properties.CallerReference},
 	},
 	cloud.Record: {
-		StringColumnDefinition{Prop: properties.ID, Friendly: "AwlessId"},
+		StringColumnDefinition{Prop: properties.Id, Friendly: "AwlessId"},
 		StringColumnDefinition{Prop: properties.Type},
 		StringColumnDefinition{Prop: properties.Name},
 		SliceColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Records}},
@@ -458,7 +458,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 	},
 	//Monitoring
 	cloud.Metric: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.Namespace},
 		KeyValuesColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Dimensions}},
@@ -474,7 +474,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 	},
 	//CDN
 	cloud.Distribution: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.PublicDNS},
 		StringColumnDefinition{Prop: properties.Enabled},
 		StringColumnDefinition{Prop: properties.State},
@@ -485,7 +485,7 @@ var DefaultsColumnDefinitions = map[string][]ColumnDefinition{
 	},
 	//Cloudformation
 	cloud.Stack: {
-		StringColumnDefinition{Prop: properties.ID},
+		StringColumnDefinition{Prop: properties.Id},
 		StringColumnDefinition{Prop: properties.Name},
 		StringColumnDefinition{Prop: properties.State},
 		TimeColumnDefinition{StringColumnDefinition: StringColumnDefinition{Prop: properties.Created}},

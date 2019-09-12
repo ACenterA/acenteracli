@@ -37,9 +37,30 @@ var configDefinitions = map[string]*Definition{
 	// autosyncConfigKey:              {help: "Automatically synchronize your cloud locally", defaultValue: "true", parseParamFn: parseBool},
 	"user.store.password": {help: "Enable/disable password of encrypted password (when empty: true)", defaultValue: "true", parseParamFn: parseBool},
 	"user.username":       {help: "Current username", defaultValue: ""},
-	"user.id":             {help: "Current userid", defaultValue: "", onUpdateFns: []onUpdateFunc{}},
-	"_enc":                {help: "", defaultValue: ""}, // Empty help prevnet to display it.
-	"_token":              {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"user.project.name":   {help: "Current selected project name (only used for display)", defaultValue: ""},
+	"user.project.id":     {help: "Current selected project id   (used for queries)", defaultValue: ""},
+
+	"user.website.name": {help: "Current selected website name (only used for display)", defaultValue: ""},
+	"user.website.id":   {help: "Current selected website id   (used for queries)", defaultValue: ""},
+
+	"user.id": {help: "Current userid", defaultValue: "", onUpdateFns: []onUpdateFunc{}},
+	"_enc":    {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"_token":  {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+
+	"_github.user.password": {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"github.user.username":  {help: "Current Github Username", defaultValue: ""},
+	"github.url":            {help: "Enterprise Github URL", defaultValue: ""},
+
+	"_bitbucket.user.password":  {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"bitbucket.user.username":   {help: "Current Bitbucket Username", defaultValue: ""},
+	"bitbucket.user.team":       {help: "Current Bitbucket default team", defaultValue: ""},
+	"bitbucket.user.account_id": {help: "Current Bitbucket logged in account id", defaultValue: ""},
+	"bitbucket.url":             {help: "Current Bitbucket default team", defaultValue: ""},
+
+	"_gitlab.user.password": {help: "", defaultValue: ""}, // Empty help prevnet to display it.
+	"gitlab.user.username":  {help: "Current Gitlab Username", defaultValue: ""},
+	"gitlab.url":            {help: "Gitlab self-hosted URL", defaultValue: ""},
+
 	/*
 		RegionConfigKey:             {help: "AWS region", parseParamFn: awsconfig.ParseRegion, stdinParamProviderFn: awsconfig.StdinRegionSelector, onUpdateFns: []onUpdateFunc{runSyncWithUpdatedRegion}},
 		ProfileConfigKey:            {help: "AWS profile", defaultValue: "default"},
@@ -79,6 +100,14 @@ var deprecated = map[string]string{
 	"region": RegionConfigKey,
 }
 
+func ResetUserSettings() {
+	Set("user.project.id", "")
+	Set("user.project.name", "")
+	Set("user.id", "")
+	Set("_enc", "")
+	Set("_token", "")
+}
+
 var TriggerSyncOnConfigUpdate bool
 
 type onUpdateFunc func(interface{})
@@ -106,6 +135,13 @@ func LoadConfig() error {
 	})
 
 	return err
+}
+
+func ResetGitCreds(provider string) {
+	Set(fmt.Sprintf("%v.user.account_id", provider), "")
+	Set(fmt.Sprintf("%v.user.username", provider), "")
+	Set(fmt.Sprintf("_%v.user.password", provider), "")
+	Set(fmt.Sprintf("_%v.token", provider), "")
 }
 
 func DisplayConfig() string {
@@ -357,22 +393,22 @@ func displayDefaults() string {
 	}
 	t.Flush()
 	/*
-	count := 0
-	t = tabwriter.NewWriter(&b, 0, 0, 3, ' ', 0)
-	for _, k := range keys {
-		if _, ok := defaultsDefinitions[k]; !ok {
-			count++
-			fmt.Fprintf(t, "\t%s:\t%v\t(%[2]T)", k, Defaults[k])
-			if newKey, ok := deprecated[k]; ok {
-				fmt.Fprintf(t, "\t# DEPRECATED, update with `awless config set %s` `awless config unset %s`", newKey, k)
+		count := 0
+		t = tabwriter.NewWriter(&b, 0, 0, 3, ' ', 0)
+		for _, k := range keys {
+			if _, ok := defaultsDefinitions[k]; !ok {
+				count++
+				fmt.Fprintf(t, "\t%s:\t%v\t(%[2]T)", k, Defaults[k])
+				if newKey, ok := deprecated[k]; ok {
+					fmt.Fprintf(t, "\t# DEPRECATED, update with `awless config set %s` `awless config unset %s`", newKey, k)
+				}
+				fmt.Fprintln(t)
 			}
-			fmt.Fprintln(t)
 		}
-	}
-	if count > 0 {
-		b.WriteString("\n   ## User defined\n")
-		t.Flush()
-	}
+		if count > 0 {
+			b.WriteString("\n   ## User defined\n")
+			t.Flush()
+		}
 	*/
 	return b.String()
 }

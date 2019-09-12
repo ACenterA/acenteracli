@@ -325,7 +325,7 @@ func (g *Grant) unmarshalFromTriples(gph tstore.RDFGraph, id string) error {
 	if !ok {
 		return fmt.Errorf("unmarshal grant: grantee does not contain a resource identifier")
 	}
-	granteeIdTs := gph.WithSubjPred(granteeNode, rdf.ID)
+	granteeIdTs := gph.WithSubjPred(granteeNode, rdf.Id)
 	if len(granteeIdTs) > 0 {
 		g.Grantee.GranteeID, err = extractUniqueLiteralTextFromTriples(granteeIdTs)
 		if err != nil {
@@ -357,6 +357,7 @@ type KeyValue struct {
 }
 
 func (kv *KeyValue) String() string {
+	// fmt.Println("KEY NAME IS :", kv.KeyName)
 	return fmt.Sprintf("[Key:%s,Value:%s]", kv.KeyName, kv.Value)
 }
 
@@ -419,7 +420,7 @@ func (o *DistributionOrigin) marshalToTriples(id string) []tstore.Triple {
 
 func (o *DistributionOrigin) unmarshalFromTriples(gph tstore.RDFGraph, id string) error {
 	var err error
-	o.ID, err = extractUniqueLiteralTextFromGraph(gph, id, rdf.ID)
+	o.ID, err = extractUniqueLiteralTextFromGraph(gph, id, rdf.Id)
 	if err != nil {
 		return fmt.Errorf("unmarshal DistributionOrigin: extract id: %s", err)
 	}

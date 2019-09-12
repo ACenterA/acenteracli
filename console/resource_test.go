@@ -27,8 +27,8 @@ import (
 func TestResourceDisplay(t *testing.T) {
 	g := graph.NewGraph()
 
-	res1 := resourcetest.Instance("inst_1").Prop("ID", "inst_1").Prop("Name", "instance 1").Build()
-	res2 := resourcetest.Instance("inst_2").Prop("ID", "inst_2").Build()
+	res1 := resourcetest.Instance("inst_1").Prop("id", "inst_1").Prop("Name", "instance 1").Build()
+	res2 := resourcetest.Instance("inst_2").Prop("id", "inst_2").Build()
 
 	if err := g.AddResource(res1, res2); err != nil {
 		t.Fatal(err)
@@ -39,7 +39,7 @@ func TestResourceDisplay(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	columns := []string{"ID", "Name"}
+	columns := []string{"id", "Name"}
 
 	displayer, _ := BuildOptions(
 		WithColumns(columns),

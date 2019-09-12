@@ -62,16 +62,17 @@ var (
 
 var Labels = make(map[string]string)
 
-type rdfProp struct {
+type RdfProp struct {
 	ID, RdfType, RdfsLabel, RdfsDefinedBy, RdfsDataType string
 }
 
-type RDFProperties map[string]rdfProp
+type RDFProperties map[string]RdfProp
 
-func (r RDFProperties) Get(prop string) (rdfProp, error) {
+func (r RDFProperties) Get(prop string) (RdfProp, error) {
 	p, ok := r[prop]
 	if !ok {
-		return rdfProp{}, fmt.Errorf("property '%s' not found", p)
+		// ACENTERA RDF DEBUG fmt.Println(fmt.Sprintf("ID %s is not found prop", prop))
+		return RdfProp{}, fmt.Errorf("property '%s' not found", p)
 	}
 	return p, nil
 }
@@ -79,6 +80,7 @@ func (r RDFProperties) Get(prop string) (rdfProp, error) {
 func (r RDFProperties) IsRDFProperty(id string) bool {
 	prop, ok := r[id]
 	if !ok {
+		// ACENTERA RDF DEBUG fmt.Println(fmt.Sprintf("ID %s is not rdf prop", id))
 		return false
 	}
 	return prop.RdfType == RdfProperty
@@ -87,6 +89,7 @@ func (r RDFProperties) IsRDFProperty(id string) bool {
 func (r RDFProperties) IsRDFSubProperty(id string) bool {
 	prop, ok := r[id]
 	if !ok {
+		// ACENTERA RDF DEBUG fmt.Println(fmt.Sprintf("ID %s return false...", id))
 		return false
 	}
 	return prop.RdfType == RdfsSubProperty
@@ -95,6 +98,7 @@ func (r RDFProperties) IsRDFSubProperty(id string) bool {
 func (r RDFProperties) IsRDFList(prop string) bool {
 	p, ok := r[prop]
 	if !ok {
+		// ACENTERA RDF DEBUG fmt.Println(fmt.Sprintf("ID %s return false... list 1", prop))
 		return false
 	}
 	return p.RdfsDefinedBy == RdfsList
@@ -102,7 +106,10 @@ func (r RDFProperties) IsRDFList(prop string) bool {
 
 func (r RDFProperties) GetRDFId(label string) (string, error) {
 	propId, ok := Labels[label]
+	// ACENTERA RDF DEBUG   fmt.Println(propId)
 	if !ok {
+		// ACENTERA RDF DEBUG  fmt.Println(fmt.Sprintf("ID %s label not found false... list 1", label))
+		// ACENTERA RDF DEBUG panic(ok)
 		return "", fmt.Errorf("get property id: label '%s' not found", label)
 	}
 	return propId, nil
@@ -111,6 +118,7 @@ func (r RDFProperties) GetRDFId(label string) (string, error) {
 func (r RDFProperties) GetDataType(prop string) (string, error) {
 	p, ok := r[prop]
 	if !ok {
+		// ACENTERA RDF DEBUG fmt.Println(fmt.Sprintf("ID %s label g", prop))
 		return "", fmt.Errorf("property '%s' not found", p)
 	}
 	return p.RdfsDataType, nil
@@ -119,6 +127,7 @@ func (r RDFProperties) GetDataType(prop string) (string, error) {
 func (r RDFProperties) GetLabel(prop string) (string, error) {
 	p, ok := r[prop]
 	if !ok {
+		// ACENTERA RDF DEBUG fmt.Println(fmt.Sprintf("ID %s GetLabel g", prop))
 		return "", fmt.Errorf("property '%s' not found", p)
 	}
 	return p.RdfsLabel, nil
@@ -127,6 +136,7 @@ func (r RDFProperties) GetLabel(prop string) (string, error) {
 func (r RDFProperties) GetDefinedBy(prop string) (string, error) {
 	p, ok := r[prop]
 	if !ok {
+		// ACENTERA RDF DEBUG fmt.Println(fmt.Sprintf("ID %s getProp not found g", p))
 		return "", fmt.Errorf("property '%s' not found", p)
 	}
 	return p.RdfsDefinedBy, nil

@@ -741,7 +741,7 @@ func addManualMessagingFetchFuncs(conf *Config, funcs map[string]fetch.Func) {
 				defer wg.Done()
 				objectsC <- url
 				res := graph.InitResource(cloud.Queue, awssdk.StringValue(url))
-				res.Properties()[properties.ID] = awssdk.StringValue(url)
+				res.Properties()[properties.Id] = awssdk.StringValue(url)
 				attrs, err := conf.APIs.Sqs.GetQueueAttributes(&sqs.GetQueueAttributesInput{AttributeNames: []*string{awssdk.String("All")}, QueueUrl: url})
 				if e, ok := err.(awserr.RequestFailure); ok && (e.Code() == sqs.ErrCodeQueueDoesNotExist || e.Code() == sqs.ErrCodeQueueDeletedRecently) {
 					return

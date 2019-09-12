@@ -33,7 +33,7 @@ func init() {
 
 func TestSorting(t *testing.T) {
 	g := createInfraGraph()
-	columns := []string{"ID", "Name", "State", "Type", "PublicIP"}
+	columns := []string{"id", "Name", "State", "Type", "PublicIP"}
 	var w bytes.Buffer
 
 	t.Run("ascending", func(t *testing.T) {
@@ -92,9 +92,9 @@ func TestJSONDisplays(t *testing.T) {
 			WithFormat("json"),
 		).SetSource(g).Build()
 
-		expected := `[{"ID": "inst_1", "Name": "redis", "PublicIP": "1.2.3.4", "State": "running", "Type": "t2.micro"},
-		{"ID": "inst_2", "Name": "django", "State": "stopped", "Type": "t2.medium" },
-		{"ID": "inst_3", "Name": "apache", "State": "running", "Type": "t2.xlarge"}]`
+		expected := `[{"id": "inst_1", "Name": "redis", "PublicIP": "1.2.3.4", "State": "running", "Type": "t2.micro"},
+		{"id": "inst_2", "Name": "django", "State": "stopped", "Type": "t2.medium" },
+		{"id": "inst_3", "Name": "apache", "State": "running", "Type": "t2.xlarge"}]`
 
 		if err := displayer.Print(&w); err != nil {
 			t.Fatal(err)
@@ -111,13 +111,13 @@ func TestJSONDisplays(t *testing.T) {
 		).SetSource(g).Build()
 
 		expected := `{"instances": [
-			{ "ID": "inst_1", "Name": "redis", "PublicIP": "1.2.3.4", "State": "running", "Type": "t2.micro"},
-		  { "ID": "inst_2", "Name": "django", "State": "stopped", "Type": "t2.medium" },
-		  { "ID": "inst_3", "Name": "apache", "State": "running", "Type": "t2.xlarge" }
+			{ "id": "inst_1", "Name": "redis", "PublicIP": "1.2.3.4", "State": "running", "Type": "t2.micro"},
+		  { "id": "inst_2", "Name": "django", "State": "stopped", "Type": "t2.medium" },
+		  { "id": "inst_3", "Name": "apache", "State": "running", "Type": "t2.xlarge" }
 		 ], "subnets": [
-		  { "ID": "sub_1", "Name": "my_subnet", "Vpc": "vpc_1" }, {"ID": "sub_2", "Vpc": "vpc_2" }
+		  { "id": "sub_1", "Name": "my_subnet", "Vpc": "vpc_1" }, {"id": "sub_2", "Vpc": "vpc_2" }
 		 ], "vpcs": [
-		  { "ID": "vpc_1", "NewProp": "my_value" }, { "ID": "vpc_2", "Name": "my_vpc_2" }
+		  { "id": "vpc_1", "NewProp": "my_value" }, { "id": "vpc_2", "Name": "my_vpc_2" }
 		 ]}`
 
 		w.Reset()
@@ -131,7 +131,7 @@ func TestJSONDisplays(t *testing.T) {
 
 func TestTabularDisplays(t *testing.T) {
 	g := createInfraGraph()
-	columns := []string{"ID", "Name", "State", "Type", "PublicIP"}
+	columns := []string{"id", "Name", "State", "Type", "PublicIP"}
 
 	displayer, _ := BuildOptions(
 		WithRdfType("instance"),
@@ -171,7 +171,7 @@ func TestTabularDisplays(t *testing.T) {
 		t.Fatalf("got \n%q\n\nwant\n\n%q\n", got, want)
 	}
 
-	columns = []string{"ID", "Name", "State", "Type", "PublicIP"}
+	columns = []string{"id", "Name", "State", "Type", "PublicIP"}
 
 	displayer, _ = BuildOptions(
 		WithRdfType("instance"),
@@ -232,7 +232,7 @@ func TestTabularDisplays(t *testing.T) {
 		t.Fatalf("got \n%s\n\nwant\n\n%s\n", got, want)
 	}
 
-	columns = []string{"ID", "Name"}
+	columns = []string{"id", "Name"}
 
 	displayer, _ = BuildOptions(
 		WithRdfType("instance"),
@@ -295,7 +295,7 @@ func TestMultiResourcesDisplays(t *testing.T) {
 		t.Fatalf("got \n%s\n\nwant\n\n%s\n", got, want)
 	}
 
-	displayer, _ = BuildOptions(WithColumns([]string{"ID"}), WithFormat("porcelain")).SetSource(g).Build()
+	displayer, _ = BuildOptions(WithColumns([]string{"id"}), WithFormat("porcelain")).SetSource(g).Build()
 
 	expected = `inst_1
 inst_2
@@ -406,7 +406,7 @@ func TestDateLists(t *testing.T) {
 		globalNow = time.Now().UTC()
 	}()
 
-	columns := []string{"ID", "Name", "PasswordLastUsed"}
+	columns := []string{"id", "Name", "PasswordLastUsed"}
 
 	displayer, _ := BuildOptions(
 		WithRdfType("user"),
@@ -450,7 +450,7 @@ func TestDateLists(t *testing.T) {
 
 func TestMaxWidth(t *testing.T) {
 	g := createInfraGraph()
-	columns := []string{"ID", "Name", "State", "Type", "PublicIP"}
+	columns := []string{"id", "Name", "State", "Type", "PublicIP"}
 
 	displayer, _ := BuildOptions(
 		WithRdfType("instance"),
@@ -473,7 +473,7 @@ func TestMaxWidth(t *testing.T) {
 		t.Fatalf("got \n%s\n\nwant\n\n%s\n", got, want)
 	}
 
-	columns = []string{"ID", "Name", "State", "Type", "PublicIP"}
+	columns = []string{"id", "Name", "State", "Type", "PublicIP"}
 
 	autowrapMaxSize = 4
 	tableColWidth = 4
@@ -526,7 +526,7 @@ func TestMaxWidth(t *testing.T) {
 	}
 
 	columnDefs := []ColumnDefinition{
-		StringColumnDefinition{Prop: "ID", Friendly: "I"},
+		StringColumnDefinition{Prop: "id", Friendly: "I"},
 		StringColumnDefinition{Prop: "Name", Friendly: "N"},
 		StringColumnDefinition{Prop: "State", Friendly: "S"},
 		StringColumnDefinition{Prop: "Type", Friendly: "T"},
@@ -619,9 +619,9 @@ func TestFilter(t *testing.T) {
 			WithRdfType("subnet"),
 			WithFormat("json"),
 		).SetSource(g).Build()
-		expected := `[{"ID":"sub_1","Public":true,"Name":"my_subnet","Vpc":"vpc_1"},
-		{"ID":"sub_2","Public":false,"Vpc":"vpc_2"},
-		{"ID":"sub_3","Public":false,"Name":"my_subnet","Vpc":"vpc_1"}]`
+		expected := `[{"id":"sub_1","Public":true,"Name":"my_subnet","Vpc":"vpc_1"},
+		{"id":"sub_2","Public":false,"Vpc":"vpc_2"},
+		{"id":"sub_3","Public":false,"Name":"my_subnet","Vpc":"vpc_1"}]`
 		if err := displayer.Print(&w); err != nil {
 			t.Fatal(err)
 		}
@@ -634,8 +634,8 @@ func TestFilter(t *testing.T) {
 			WithFormat("json"),
 			WithFilters([]string{"Vpc=vpc_1"}),
 		).SetSource(g).Build()
-		expected := `[{"ID":"sub_1","Public":true,"Name":"my_subnet","Vpc":"vpc_1"},
-		{"ID":"sub_3","Public":false,"Name":"my_subnet","Vpc":"vpc_1"}]`
+		expected := `[{"id":"sub_1","Public":true,"Name":"my_subnet","Vpc":"vpc_1"},
+		{"id":"sub_3","Public":false,"Name":"my_subnet","Vpc":"vpc_1"}]`
 		if err := displayer.Print(&w); err != nil {
 			t.Fatal(err)
 		}
@@ -648,8 +648,8 @@ func TestFilter(t *testing.T) {
 			WithFormat("json"),
 			WithFilters([]string{"public=false"}),
 		).SetSource(g).Build()
-		expected := `[{"ID":"sub_2","Public":false,"Vpc":"vpc_2"},
-		{"ID":"sub_3","Public":false,"Name":"my_subnet","Vpc":"vpc_1"}]`
+		expected := `[{"id":"sub_2","Public":false,"Vpc":"vpc_2"},
+		{"id":"sub_3","Public":false,"Name":"my_subnet","Vpc":"vpc_1"}]`
 		if err := displayer.Print(&w); err != nil {
 			t.Fatal(err)
 		}
@@ -691,7 +691,7 @@ func TestCSVDisplayWithCommaAndQuotes(t *testing.T) {
 
 	displayer, _ := BuildOptions(
 		WithRdfType("instance"),
-		WithColumns([]string{"ID", "Name"}),
+		WithColumns([]string{"id", "Name"}),
 		WithFormat("csv"),
 	).SetSource(g).Build()
 
@@ -772,7 +772,7 @@ func createDiff(root *graph.Resource) (*graph.Diff, error) {
 
 func TestEmotyDisplays(t *testing.T) {
 	g := graph.NewGraph()
-	columns := []string{"ID", "Name", "PublicIP"}
+	columns := []string{"id", "Name", "PublicIP"}
 
 	displayer, _ := BuildOptions(
 		WithRdfType("instance"),
@@ -842,7 +842,7 @@ func TestEmotyDisplays(t *testing.T) {
 func TestNoHeadersDisplay(t *testing.T) {
 	g := createInfraGraph()
 	columnDefs := []ColumnDefinition{
-		StringColumnDefinition{Prop: "ID"},
+		StringColumnDefinition{Prop: "id"},
 		StringColumnDefinition{Prop: "Name"},
 		StringColumnDefinition{Prop: "State"},
 		StringColumnDefinition{Prop: "Type"},

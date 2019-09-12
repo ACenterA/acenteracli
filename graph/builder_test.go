@@ -6,7 +6,7 @@ type rBuilder struct {
 }
 
 func testResource(id, typ string) *rBuilder {
-	return &rBuilder{id: id, typ: typ, props: map[string]interface{}{"ID": id}}
+	return &rBuilder{id: id, typ: typ, props: map[string]interface{}{"id": id}}
 }
 
 func instResource(id string) *rBuilder {

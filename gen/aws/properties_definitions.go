@@ -105,7 +105,7 @@ var PropertiesDefinitions = []property{
 	{AwlessLabel: "Host", RDFLabel: fmt.Sprintf("%s:host", rdf.CloudNS), RDFType: rdf.RdfProperty, RdfsDefinedBy: rdf.RdfsLiteral, RdfsDataType: rdf.XsdString},
 	{AwlessLabel: "HTTPVersion", RDFLabel: fmt.Sprintf("%s:httpVersion", rdf.CloudNS), RDFType: rdf.RdfProperty, RdfsDefinedBy: rdf.RdfsLiteral, RdfsDataType: rdf.XsdString},
 	{AwlessLabel: "Hypervisor", RDFLabel: fmt.Sprintf("%s:hypervisor", rdf.CloudNS), RDFType: rdf.RdfProperty, RdfsDefinedBy: rdf.RdfsLiteral, RdfsDataType: rdf.XsdString},
-	{AwlessLabel: "ID", RDFLabel: fmt.Sprintf("%s:id", rdf.CloudNS), RDFType: rdf.RdfProperty, RdfsDefinedBy: rdf.RdfsLiteral, RdfsDataType: rdf.XsdString},
+	{AwlessLabel: "Id", RDFLabel: fmt.Sprintf("%s:id", rdf.CloudNS), RDFType: rdf.RdfProperty, RdfsDefinedBy: rdf.RdfsLiteral, RdfsDataType: rdf.XsdString},
 	{AwlessLabel: "Image", RDFLabel: fmt.Sprintf("%s:image", rdf.CloudNS), RDFType: rdf.RdfProperty, RdfsDefinedBy: rdf.RdfsLiteral, RdfsDataType: rdf.XsdString},
 	{AwlessLabel: "InboundRules", RDFLabel: fmt.Sprintf("%s:inboundRules", rdf.NetNS), RDFType: rdf.RdfProperty, RdfsDefinedBy: rdf.RdfsList, RdfsDataType: rdf.NetFirewallRule},
 	{AwlessLabel: "InlinePolicies", RDFLabel: fmt.Sprintf("%s:inlinePolicies", rdf.CloudNS), RDFType: rdf.RdfProperty, RdfsDefinedBy: rdf.RdfsList, RdfsDataType: rdf.RdfsClass},

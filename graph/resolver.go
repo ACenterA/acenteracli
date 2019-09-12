@@ -17,7 +17,7 @@ type ById struct {
 }
 
 func (r *ById) Resolve(snap tstore.RDFGraph) ([]*Resource, error) {
-	resolver := &ByProperty{Key: properties.ID, Value: r.Id}
+	resolver := &ByProperty{Key: properties.Id, Value: r.Id}
 	return resolver.Resolve(snap)
 }
 
@@ -33,15 +33,18 @@ func (r *ByTypeAndProperty) Resolve(snap tstore.RDFGraph) ([]*Resource, error) {
 	if r.Value == nil {
 		return resources, nil
 	}
+	// fmt.Println("ESOLVING O LABEL ...", rdf.Labels)
+	// fmt.Println("ESOLVING O LABEL KEY...", r.Key)
+
 	rdfpropLabel, ok := rdf.Labels[r.Key]
 	if !ok {
 		return resources, fmt.Errorf("resolve by property: undefined property label '%s'", r.Key)
 	}
-	rdfProp, err := rdf.Properties.Get(rdfpropLabel)
+	RdfProp, err := rdf.Properties.Get(rdfpropLabel)
 	if err != nil {
 		return resources, fmt.Errorf("resolve by property: %s", err)
 	}
-	obj, err := marshalToRdfObject(r.Value, rdfProp.RdfsDefinedBy, rdfProp.RdfsDataType)
+	obj, err := marshalToRdfObject(r.Value, RdfProp.RdfsDefinedBy, RdfProp.RdfsDataType)
 	if err != nil {
 		return resources, fmt.Errorf("resolve by property: unmarshaling property '%s': %s", r.Key, err)
 	}
@@ -76,11 +79,11 @@ func (r *ByProperty) Resolve(snap tstore.RDFGraph) ([]*Resource, error) {
 	if !ok {
 		return resources, fmt.Errorf("resolve by property: undefined property label '%s'", r.Key)
 	}
-	rdfProp, err := rdf.Properties.Get(rdfpropLabel)
+	RdfProp, err := rdf.Properties.Get(rdfpropLabel)
 	if err != nil {
 		return resources, fmt.Errorf("resolve by property: %s", err)
 	}
-	obj, err := marshalToRdfObject(r.Value, rdfProp.RdfsDefinedBy, rdfProp.RdfsDataType)
+	obj, err := marshalToRdfObject(r.Value, RdfProp.RdfsDefinedBy, RdfProp.RdfsDataType)
 	if err != nil {
 		return resources, fmt.Errorf("resolve by property: unmarshaling property '%s': %s", r.Key, err)
 	}
@@ -152,10 +155,13 @@ type ByType struct {
 func (r *ByType) Resolve(snap tstore.RDFGraph) ([]*Resource, error) {
 	var resources []*Resource
 	typ := namespacedResourceType(r.Typ)
+	// fmt.Println("RESOLVE O TYPE ", r.Typ, "vs", typ)
 	for _, t := range snap.WithPredObj(rdf.RdfType, tstore.Resource(typ)) {
 		r := InitResource(r.Typ, t.Subject())
+		// fmt.Println("Get rTyp and subjet?", t.Subject())
 		err := r.unmarshalFullRdf(snap)
 		if err != nil {
+			// fmt.Println(err)
 			return resources, err
 		}
 		resources = append(resources, r)

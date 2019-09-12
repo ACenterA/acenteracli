@@ -54,7 +54,7 @@ func InitResource(kind, id string) *Resource {
 	return &Resource{
 		id:         id,
 		kind:       kind,
-		properties: map[string]interface{}{properties.ID: id},
+		properties: map[string]interface{}{properties.Id: id},
 		meta:       make(map[string]interface{}),
 		relations:  make(map[string][]*Resource),
 	}
@@ -119,7 +119,15 @@ func (res *Resource) Id() string {
 	return res.id
 }
 
+func (res *Resource) Name() string {
+	if v, ok := res.properties["Name"]; ok {
+		return v.(string)
+	}
+	return ""
+}
+
 func (res *Resource) Properties() map[string]interface{} {
+	// fmt.Println("PROP TEST :", res.properties)
 	return res.properties
 }
 
@@ -166,16 +174,20 @@ func (res *Resource) marshalFullRDF() ([]tstore.Triple, error) {
 
 	for key, value := range res.properties {
 		if value == nil {
+			// fmt.Println("VALUE IS NIL FOR KEY", key)
 			continue
 		}
 
+		// ACenterA getRDFId fixing ...
 		propId, err := rdf.Properties.GetRDFId(key)
 		if err != nil {
+			// fmt.Println("errror get id?", err)
 			return triples, fmt.Errorf("resource %s: marshalling property: %s", res, err)
 		}
 
 		propType, err := rdf.Properties.GetDefinedBy(propId)
 		if err != nil {
+			// fmt.Println("errror get propi", err)
 			return triples, fmt.Errorf("resource %s: marshalling property: %s", res, err)
 		}
 		dataType, err := rdf.Properties.GetDataType(propId)
@@ -283,12 +295,16 @@ func marshalToRdfObject(i interface{}, definedBy, dataType string) (tstore.Objec
 
 func (res *Resource) unmarshalFullRdf(gph tstore.RDFGraph) error {
 	cloudType := namespacedResourceType(res.Type())
+	// ACENTERA RDF DEBUG fmt.Println("RES ID TEST 1CLOUDTYPE")
 	if !gph.Contains(tstore.SubjPred(res.Id(), rdf.RdfType).Resource(cloudType)) {
 		return fmt.Errorf("triple <%s><%s><%s> not found in graph", res.Id(), rdf.RdfType, cloudType)
 	}
 	for _, t := range gph.WithSubject(res.Id()) {
+		// fmt.Println("RES ID TEST")
 		pred := t.Predicate()
+		// fmt.Println("RES ID TEST 1")
 		if !rdf.Properties.IsRDFProperty(pred) || rdf.Properties.IsRDFSubProperty(pred) {
+			// fmt.Println("RES ID TEST 222")
 			continue
 		}
 
@@ -370,6 +386,7 @@ func (r *Resource) unmarshalMeta(gph tstore.RDFGraph) error {
 }
 
 func namespacedResourceType(typ string) string {
+	// ACENTERA RDF DEBUG fmt.Println("named esourc type ... 1 ", rdf.CloudOwlNS, strings.Title(typ))
 	return fmt.Sprintf("%s:%s", rdf.CloudOwlNS, strings.Title(typ))
 }
 

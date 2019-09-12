@@ -52,7 +52,7 @@ package global
 
 var (
   {{- range $, $prop := . }}
-  {{ $prop.AwlessLabel }} = "{{ $prop.Value }}"
+  {{ $prop.AwlessLabel }} = IfThenElse(os.Getenv("ACENTERA_{{ $prop.AwlessLabel }}") != "", os.Getenv("ACENTERA_{{ $prop.AwlessLabel }}"), "{{ $prop.Value }}")
   {{- end }}
 )
 

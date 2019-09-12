@@ -33,7 +33,7 @@ func TestGetColumnsDefinitions(t *testing.T) {
 		{
 			chosenProperties: []string{"id", "name"},
 			resourceType:     cloud.Instance,
-			expectedHeaders:  []ColumnDefinition{StringColumnDefinition{Prop: properties.ID}, StringColumnDefinition{Prop: properties.Name}},
+			expectedHeaders:  []ColumnDefinition{StringColumnDefinition{Prop: properties.Id}, StringColumnDefinition{Prop: properties.Name}},
 		},
 		{
 			chosenProperties: []string{},
@@ -46,14 +46,14 @@ func TestGetColumnsDefinitions(t *testing.T) {
 			expectedHeaders: []ColumnDefinition{
 				StringColumnDefinition{Prop: properties.CIDR},
 				StringColumnDefinition{Prop: properties.AvailabilityZone, Friendly: "Zone"},
-				StringColumnDefinition{Prop: properties.ID},
+				StringColumnDefinition{Prop: properties.Id},
 				StringColumnDefinition{Prop: properties.CIDR},
 			},
 		},
 		{
 			chosenProperties: []string{"id", "vpc"},
 			resourceType:     cloud.Instance,
-			expectedHeaders:  []ColumnDefinition{StringColumnDefinition{Prop: properties.ID}, StringColumnDefinition{Prop: properties.Vpc}},
+			expectedHeaders:  []ColumnDefinition{StringColumnDefinition{Prop: properties.Id}, StringColumnDefinition{Prop: properties.Vpc}},
 		},
 	}
 	for i, tcase := range tcases {

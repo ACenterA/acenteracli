@@ -129,7 +129,7 @@ func (cmd *DeleteAccesskey) ParamsSpec() params.Spec {
 			user, hasUser := values["user"].(string)
 			id, hasId := values["id"].(string)
 			if !hasUser && hasId {
-				r, err := cmd.graph.FindOne(cloud.NewQuery(cloud.AccessKey).Match(match.Property(properties.ID, id)))
+				r, err := cmd.graph.FindOne(cloud.NewQuery(cloud.AccessKey).Match(match.Property(properties.Id, id)))
 				if err != nil || r == nil {
 					return values, nil
 				}
@@ -185,8 +185,8 @@ func (c *credentialsPrompter) Prompt() error {
 	}
 	fmt.Printf("\nPlease enter access keys %s (stored at %s):\n", token, AWSCredFilepath)
 
-	promptUntilNonEmpty("AWS Access Key ID? ", &c.Val.AccessKeyID)
-	promptUntilNonEmpty("AWS Secret Access Key? ", &c.Val.SecretAccessKey)
+	PromptUntilNonEmpty("AWS Access Key ID? ", &c.Val.AccessKeyID)
+	PromptUntilNonEmpty("AWS Secret Access Key? ", &c.Val.SecretAccessKey)
 	if c.HasProfile() {
 		promptToOverride(fmt.Sprintf("Change your profile name (or just press Enter to keep '%s')? ", c.Profile), &c.Profile)
 	} else {
@@ -269,7 +269,7 @@ func promptToOverride(question string, v *string) {
 	}
 }
 
-func promptUntilNonEmpty(question string, v *string) {
+func PromptUntilNonEmpty(question string, v *string) {
 	ask := func(v *string) bool {
 		fmt.Print(question)
 		_, err := fmt.Scanln(v)

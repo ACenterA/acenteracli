@@ -117,7 +117,7 @@ func (cmd *DeleteRecord) ParamsSpec() params.Spec {
 			id, hasId := values["id"].(string)
 			if hasId {
 				delete(values, "id")
-				r, err := cmd.graph.FindOne(cloud.NewQuery(cloud.Record).Match(match.Property(properties.ID, id)))
+				r, err := cmd.graph.FindOne(cloud.NewQuery(cloud.Record).Match(match.Property(properties.Id, id)))
 				if err != nil {
 					return values, fmt.Errorf("can not find record for %s: %s", id, err)
 				}
