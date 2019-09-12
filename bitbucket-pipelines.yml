@@ -29,3 +29,4 @@ pipelines:
           - git push -u github-origin master
           - apt-get update && apt-get -y install zip
           - sh release.sh
+
