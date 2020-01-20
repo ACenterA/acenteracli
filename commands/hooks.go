@@ -109,7 +109,8 @@ func initGitHook(cmd *cobra.Command, args []string) error {
 
 	if strings.ToLower(GitProvider) == "bitbucket" {
 		fmt.Println("LOWER TEST? - 1")
-		AskBitBucketUserPassword(&username, &pass)
+		_, err := AskBitBucketUserPassword(&username, &pass)
+		return err
 	} else if strings.ToLower(GitProvider) == "github" {
 		// AskGithubUserPassword(&username, &pass)
 	}
@@ -354,7 +355,7 @@ func isNotAwlessFormerDefaultAMI(s string) bool {
 	return true
 }
 
-func AskBitBucketUserPassword(username *string, pass *string) bool {
+func AskBitBucketUserPassword(username *string, pass *string) (bool, error) {
 
 	prompted := false
 
@@ -368,7 +369,7 @@ func AskBitBucketUserPassword(username *string, pass *string) bool {
 		ac, _ := config.Get("bitbucket.user.account_id")
 		config.Set("_bitbucket.token", token)
 		GitOwner = ac.(string)
-		return prompted
+		return prompted, er
 	}
 
 	if *username == "" {
@@ -408,7 +409,7 @@ func AskBitBucketUserPassword(username *string, pass *string) bool {
 
 			ac, _ := config.Get("bitbucket.user.account_id")
 			GitOwner = ac.(string)
-			return prompted
+			return prompted, er
 		}
 		*pass = ""
 	}
@@ -425,7 +426,7 @@ func AskBitBucketUserPassword(username *string, pass *string) bool {
 				BitBucket = c
 				ac, _ := config.Get("bitbucket.user.account_id")
 				GitOwner = ac.(string)
-				return prompted
+				return prompted, e
 			}
 		}
 		*pass = ""
@@ -450,12 +451,14 @@ func AskBitBucketUserPassword(username *string, pass *string) bool {
 			GitOwner = ac.(string)
 
 			BitBucket = c
-			return prompted
+			return prompted, ez
 		} else {
 			logger.Error("Could not login to bitbucket. Please try again.")
+			fmt.Println(ez)
+			return prompted, ez
 		}
 	}
-	return prompted
+	return prompted, nil
 }
 
 func AskGithubUserPassword(username *string, pass *string) bool {

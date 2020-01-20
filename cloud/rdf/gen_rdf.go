@@ -199,9 +199,7 @@ const (
 	SpotInstanceRequestId             = "cloud:spotInstanceRequestId"
 	SpotPrice                         = "cloud:spotPrice"
 	SSLSupportMethod                  = "cloud:sslSupportMethod"
-	FState                            = "cloud:fstate"
 	State                             = "cloud:state"
-	Status                            = "cloud:status"
 	StateMessage                      = "cloud:stateMessage"
 	Stopped                           = "cloud:stopped"
 	Storage                           = "cloud:storage"
@@ -415,9 +413,7 @@ func init() {
 		properties.SpotInstanceRequestId:             SpotInstanceRequestId,
 		properties.SpotPrice:                         SpotPrice,
 		properties.SSLSupportMethod:                  SSLSupportMethod,
-		properties.FState:                            FState,
 		properties.State:                             State,
-		properties.Status:                            Status,
 		properties.StateMessage:                      StateMessage,
 		properties.Stopped:                           Stopped,
 		properties.Storage:                           Storage,
@@ -631,7 +627,6 @@ var Properties = RDFProperties{
 	SpotInstanceRequestId:             {ID: SpotInstanceRequestId, RdfType: "rdf:Property", RdfsLabel: "SpotInstanceRequestId", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	SpotPrice:                         {ID: SpotPrice, RdfType: "rdf:Property", RdfsLabel: "SpotPrice", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	SSLSupportMethod:                  {ID: SSLSupportMethod, RdfType: "rdf:Property", RdfsLabel: "SSLSupportMethod", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
-	FState:                            {ID: FState, RdfType: "rdf:Property", RdfsLabel: "FState", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	State:                             {ID: State, RdfType: "rdf:Property", RdfsLabel: "State", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	StateMessage:                      {ID: StateMessage, RdfType: "rdf:Property", RdfsLabel: "StateMessage", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:string"},
 	Stopped:                           {ID: Stopped, RdfType: "rdf:Property", RdfsLabel: "Stopped", RdfsDefinedBy: "rdfs:Literal", RdfsDataType: "xsd:dateTime"},
