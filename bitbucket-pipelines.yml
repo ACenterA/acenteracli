@@ -6,8 +6,9 @@
 image: golang:1.12
 
 pipelines:
-  master:
-    - step:
+  branches:
+    master:
+      - step:
         name: Build and release
         script: # Modify the commands below to build your repository.
           - export CURRFOLDER=$(pwd)
