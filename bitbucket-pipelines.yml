@@ -9,8 +9,8 @@ pipelines:
   branches:
     master:
       - step:
-        name: Build and release
-        script: # Modify the commands below to build your repository.
+          name: Build and release
+          script: # Modify the commands below to build your repository.
           - export CURRFOLDER=$(pwd)
           - BITBUCKET_REPO_FULL_NAME="wallix/awless"
           - PACKAGE_PATH="${GOPATH}/src/github.com/${BITBUCKET_REPO_FULL_NAME}"
