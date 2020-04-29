@@ -3,7 +3,7 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: golang:1.12
+image: golang:1.13
 
 pipelines:
   branches:
@@ -17,7 +17,7 @@ pipelines:
           - mkdir -pv "${PACKAGE_PATH}"
           - tar -cO --exclude=bitbucket-pipelines.yml . | tar -xv -C "${PACKAGE_PATH}"
           - cd "${PACKAGE_PATH}"
-          - go get -u github.com/rhysd/go-github-selfupdate/selfupdate
+          - go mod download
           - go get -v golang.org/x/net/proxy
           - go get -v || true
           - go get -v golang.org/x/net/proxy
