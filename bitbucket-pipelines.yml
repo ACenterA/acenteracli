@@ -17,11 +17,11 @@ pipelines:
           - mkdir -pv "${PACKAGE_PATH}"
           - tar -cO --exclude=bitbucket-pipelines.yml . | tar -xv -C "${PACKAGE_PATH}"
           - cd "${PACKAGE_PATH}"
+          - go get -u github.com/rhysd/go-github-selfupdate/selfupdate
           - go get -v golang.org/x/net/proxy
           - go get -v || true
           - go get -v golang.org/x/net/proxy
           - go get -u golang.org/x/tools/cmd/goimports
-          - go get -u github.com/rhysd/go-github-selfupdate/selfupdate@master
           - go generate gen/aws/generators/main.go
           - cd ${GOPATH}/src/golang.org/x/net/proxy && go get -u -v && cd -
           - go build -o acentera -v
