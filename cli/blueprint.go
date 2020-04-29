@@ -107,6 +107,7 @@ func (api *BlueprintApi) CreateBlueprint(repoName string, uuid string, fullRepos
 	data["projectId"] = config.GetProjectId()
 	data["type"] = "git"
 	data["git_options"] = "skip_with_basicauth" // since we create it ourselves without any templates ... for now
+	data["debugfct"] = "CreateBlueprint"        // since we create it ourselves without any templates ... for now
 	data["title"] = displayName
 	data["branch"] = "master"
 	data["acentera_type"] = "blueprint" // blueprintci.xml required in java (ie it adds ci.xml)

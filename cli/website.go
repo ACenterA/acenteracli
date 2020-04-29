@@ -97,6 +97,7 @@ func (api *WebsiteApi) GetWebsitesById(projectId string, websiteId string) (*Web
 	return &resp, err
 }
 
+// proj, _().Websites().CreateSiteWithBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName, BluePrintId)
 func (api *WebsiteApi) CreateSiteWithBlueprint(repoName string, uuid string, fullRepository string, sshRepo string, httpRepo string, displayName string, blueprintId string) (map[string]WebsiteApi, error) {
 	url := "/sites/v1/websites/create"
 	req := API().Path(url).Post()
@@ -107,7 +108,8 @@ func (api *WebsiteApi) CreateSiteWithBlueprint(repoName string, uuid string, ful
 	data := make(map[string]interface{}, 0)
 	data["projectId"] = config.GetProjectId()
 	data["type"] = "git"
-	data["git_options"] = "skip_with_basicauth" // since we create it ourselves without any templates ... for now
+	data["git_options"] = "skip_with_basicauth"  // since we create it ourselves without any templates ... for now
+	data["debugfct"] = "CreateSiteWithBlueprint" // since we create it ourselves without any templates ... for now
 	data["title"] = displayName
 	data["branch"] = "master"
 
@@ -185,10 +187,11 @@ func (api *WebsiteApi) CreateSiteWithBlueprint(repoName string, uuid string, ful
 		data := make(map[string]interface{}, 0)
 		data["title"] = "master"
 
-		if blueprintId != "" {
-			data["blueprintid"] = blueprintId
+		data["blueprintid"] = blueprintId
+		data["acentera_type"] = "wp-from-blueprint" // docker-simple-wp-legacy"
+		if blueprintId == "" {
+			fmt.Printf("[ERROR[ -] Blueprint ID must not be empty")
 		}
-
 		req = API().Path(url).Post()
 
 		req.Use(body.JSON(data))
@@ -221,6 +224,7 @@ func (api *WebsiteApi) CreateSite(repoName string, uuid string, fullRepository s
 	data["projectId"] = config.GetProjectId()
 	data["type"] = "git"
 	data["git_options"] = "skip_with_basicauth" // since we create it ourselves without any templates ... for now
+	data["debugfct"] = "CreateSite"             // since we create it ourselves without any templates ... for now
 	data["title"] = displayName
 	data["branch"] = "master"
 	data["acentera_type"] = "docker-simple-wp-legacy"

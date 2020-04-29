@@ -89,7 +89,7 @@ func normalizeColumns(cmd *cobra.Command, args []string) error {
 }
 
 func initGitHook(cmd *cobra.Command, args []string) error {
-	fmt.Println("Provider is set to :" + GitProvider)
+	// fmt.Println("Provider is set to :" + GitProvider)
 
 	tokenKey := fmt.Sprintf("_%s.token", strings.Trim(strings.ToLower(GitProvider), ""))
 	// usernameKey := fmt.Sprintf("%s.user.username", strings.Trim(strings.ToLower(GitProvider), ""))
@@ -105,10 +105,10 @@ func initGitHook(cmd *cobra.Command, args []string) error {
 	var username string
 	var pass string
 	// resp := false
-	fmt.Println("LOWER TEST?")
+	// fmt.Println("LOWER TEST?")
 
 	if strings.ToLower(GitProvider) == "bitbucket" {
-		fmt.Println("LOWER TEST? - 1")
+		// fmt.Println("LOWER TEST? - 1")
 		_, err := AskBitBucketUserPassword(&username, &pass)
 		return err
 	} else if strings.ToLower(GitProvider) == "github" {

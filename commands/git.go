@@ -153,8 +153,8 @@ func gitBitBucketListResource(*cobra.Command, []string) {
 	*/
 
 	c := BitBucket
-	fmt.Println("DID WE GOT USER?")
-	fmt.Println(c.User)
+	//fmt.Println("DID WE GOT USER?")
+	//fmt.Println(c.User)
 	f, errz := c.User.Profile()
 	if errz == nil {
 
@@ -173,7 +173,7 @@ func gitBitBucketListResource(*cobra.Command, []string) {
 			panic(err)
 			return
 		}
-		fmt.Println(r)
+		// fmt.Println(r)
 
 		/* ?? pages ...
 				Page    int32
@@ -293,6 +293,7 @@ func gitCreateBitBucketResource(*cobra.Command, []string) {
 		proj, _ := cli.API().Websites().CreateSite(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName)
 		fmt.Println(proj)
 	} else {
+		// fmt.Println("CREATE SITE USING BLUEPRINTID:", BluePrintId)
 		proj, _ := cli.API().Websites().CreateSiteWithBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName, BluePrintId)
 		fmt.Println(proj)
 	}
