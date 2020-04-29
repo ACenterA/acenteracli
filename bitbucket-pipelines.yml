@@ -8,6 +8,7 @@ image: golang:1.12
 pipelines:
   master:
     - step:
+        name: Build and release
         script: # Modify the commands below to build your repository.
           - export CURRFOLDER=$(pwd)
           - BITBUCKET_REPO_FULL_NAME="wallix/awless"
