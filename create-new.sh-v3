@@ -1,0 +1,149 @@
+#!/bin/bash
+set -e
+./acentera git logout
+./acentera login
+./acentera project select --output json
+
+
+# OK Create BluePrint...
+WSNAME="base-woocommerce"
+TEAM="zizani-dev"
+BLUEPRINTDESC="Base Woo - Blueprint"
+
+# ./.acentera git create-blueprint --provider bitbucket --name ${WSNAME} --description "${BLUEPRINTDESC}" --team "${TEAM}" || true > /dev/null 2>&1
+# THIS CREATE A BLUEPRINT ID (GIT Bucket + Blueprint ID)
+
+export BLUEPRINTID=$(./acentera blueprint list --output json | jq -r ".[] | select(.Name == \"${BLUEPRINTDESC}\").Id")
+
+exit 0
+
+
+# new base02 blueprint id:  04fc7f0058db11ea85903f2be18c6c78
+
+#BLUEPRINTID="7cbf60b0319011ea9e53e72d77fc546d"
+BLUEPRINTDESC="Base Woo - Blueprint"
+
+WSNAME="ao4"
+TEAM="zizani-dev"
+WSDESC="https://ao4.zani.ca"
+# OLDSITEHOST="${WSDESC}"
+OLDSITEHOST="${WSDESC}"
+DBPREFIX="wp_"
+# gestionltraversy.com"
+DBNAME="prod_zizani_${WSNAME}"
+UPLOAD_DIR="shared/prod_${WSNAME}"
+export WSNAME TEAM WSDESC DBNAME DBPREFIX
+export BLUEPRINTID=$(./acentera blueprint list --output json | jq -r ".[] | select(.Name == \"${BLUEPRINTDESC}\").Id")
+
+./acentera git create --provider bitbucket --name "${WSNAME}" --description "${WSDESC}" --team "${TEAM}" --blueprintid "${BLUEPRINTID}" || true > /dev/null 2>&1
+
+# # ok to create a stage and website need to do git create ....
+#
+export WEBSITEID=$(./acentera website list --output json | jq -r ".[] | select(.Name == \"${WSDESC}\").Id")
+if [[ "${WEBSITEID}" = "null" ]]; then
+  ./.acentera website list --output json
+  echo "Could not find Website ${WSDESC}"
+  exit 1;
+fi
+export STAGE=$(./acentera website get --website ${WEBSITEID} --output json | jq -r '.[].Stage')
+# # could be used by config show ...
+export PROJECT=$(./acentera website get --website ${WEBSITEID} --output json | jq -r '.[].Project')
+#
+export DBID=$(./acentera database list-servers --output json | jq -r '.[].Id')
+#
+echo "Creating ${DBNAME} on Project: ${PROJECT}, Database Server: ${DBID} for ${WEBSITEID} and ${STAGE}. with name ${DBNAME}"
+#
+./acentera database create --name ${DBNAME} --website "${WEBSITEID}" --stage "${STAGE}" --project "${PROJECT}" --database "${DBID}"
+# # ./.acentera -v -e database list --database "${DBID}" --filter name="${DBNAME}"--output json
+# # echo ./.acentera database list --database "${DBID}" --filter name="${DBNAME}" --output json
+export PW=$(./acentera database list --database "${DBID}" --filter name="${DBNAME}" --output json | jq -r '.[].Pass')
+export USER=$(./acentera database list --database "${DBID}" --filter name="${DBNAME}" --output json | jq -r '.[].User')
+
+
+export DBHOST=mysql-maggie01.10744400d19811e992d8910affe1eb9e.namespacev2.service.consul
+
+(
+sleep 2;
+echo "-----------------------"
+echo "MySQL User: ${USER}"
+echo "MySQL Password: ${PW}"
+echo "Stage: ${STAGE}"
+echo "WSID: ${WEBSITEID}"
+echo "WS: ${WSDESC}"
+echo "export SHORTID=${WSNAME}"
+echo export DOMAIN=$(echo ${WSDESC} | cut -d '/' -f 3-)
+echo "export DBPASS='${PW}'"
+echo "export DBHOST='${DBHOST}'"
+echo "export STAGE=${STAGE}"
+#echo "DBNAME OVERRIDE IS : prod_zizani_mac_bal"
+
+echo "export OLDSITEHOST='${OLDSITEHOST}'"
+echo "export WPCLI_SITEHOST='https://${STAGE}.web.acentera.com'"
+echo "export WPCLI_DBPREFIX='${DBPREFIX}'"
+echo "export WPCLI_DBHOST='${DBHOST}'"
+echo "export WPCLI_DBUSER='${USER}'"
+echo "export WPCLI_DBPASS='${PW}'"
+echo "export WPCLI_DBNAME='${DBNAME}'"
+echo "/usr/local/bin/switch_url.sh"
+echo "-----------------------"
+) &
+sleep 3;
+
+aws --region "us-east-1" dynamodb update-item \
+ --table-name "acentera-prod-AppData" --key \
+ "{\"id\":{\"S\":\"${STAGE}\"},\"sk\":{\"S\":\"WEBSITESTAGE\"}}" \
+ --update-expression 'SET #H = :h' \
+ --expression-attribute-names '{"#H":"DBPrefix"}' \
+ --expression-attribute-values "{\":h\":{\"S\":\"${DBPREFIX}\"}}"
+
+
+aws --region "us-east-1" dynamodb update-item \
+ --table-name "acentera-prod-AppData" --key \
+ "{\"id\":{\"S\":\"${STAGE}\"},\"sk\":{\"S\":\"WEBSITESTAGE\"}}" \
+ --update-expression 'SET #H = :h' \
+ --expression-attribute-names '{"#H":"WPUploadDir"}' \
+ --expression-attribute-values "{\":h\":{\"S\":\"${UPLOAD_DIR}\"}}"
+
+exit 0;
+
+
+EMAIL_FROM="info@soinsmobiles.ca"
+EMAIL_NAME="Soins Mobiles"
+aws --region "us-east-1" dynamodb update-item \
+ --table-name "acentera-prod-AppData" --key \
+ "{\"id\":{\"S\":\"${STAGE}\"},\"sk\":{\"S\":\"WEBSITESTAGE\"}}" \
+ --update-expression 'SET #H = :h' \
+ --expression-attribute-names '{"#H":"WPEmailName"}' \
+ --expression-attribute-values "{\":h\":{\"S\":\"${EMAIL_NAME}\"}}"
+
+ aws --region "us-east-1" dynamodb update-item \
+ --table-name "acentera-prod-AppData" --key \
+ "{\"id\":{\"S\":\"${STAGE}\"},\"sk\":{\"S\":\"WEBSITESTAGE\"}}" \
+ --update-expression 'SET #H = :h' \
+ --expression-attribute-names '{"#H":"WPEmail"}' \
+ --expression-attribute-values "{\":h\":{\"S\":\"${EMAIL_FROM}\"}}"
+
+
+
+exit 0;
+
+
+
+MySQL User: prod_zizani_ao4
+MySQL Password: {uij$+vvqvtN
+Stage: fc15d7002a1d11ebb8e7f771d3e61695
+WSID: f31770f02a1d11eb89f14f08e46bf642
+WS: https://ao4.zani.ca
+export SHORTID=ao4
+export DOMAIN=ao4.zani.ca
+export DBPASS='{uij$+vvqvtN'
+export DBHOST=''
+export STAGE=fc15d7002a1d11ebb8e7f771d3e61695
+export OLDSITEHOST='https://ao4.zani.ca'
+export WPCLI_SITEHOST='https://fc15d7002a1d11ebb8e7f771d3e61695.web.acentera.com'
+export WPCLI_DBPREFIX='wp_'
+export WPCLI_DBHOST=''
+export WPCLI_DBUSER='prod_zizani_ao4'
+export WPCLI_DBPASS='{uij$+vvqvtN'
+export WPCLI_DBNAME='prod_zizani_ao4'
+/usr/local/bin/switch_url.sh
