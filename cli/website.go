@@ -98,6 +98,7 @@ func (api *WebsiteApi) GetWebsitesById(projectId string, websiteId string) (*Web
 }
 
 // proj, _().Websites().CreateSiteWithBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName, BluePrintId)
+
 func (api *WebsiteApi) CreateSiteWithBlueprint(repoName string, uuid string, fullRepository string, sshRepo string, httpRepo string, displayName string, blueprintId string) (map[string]WebsiteApi, error) {
 	url := "/sites/v1/websites/create"
 	req := API().Path(url).Post()
@@ -341,3 +342,116 @@ func (api *APIInternal) Website() (map[string]interface{}, err) {
 	}
 }
 */
+
+
+func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, displayName string, blueprintId string, dbServerId string, dbName string) (map[string]WebsiteApi, error) {
+	url := "/sites/v1/websites/create"
+	req := API().Path(url).Post()
+
+	// Method to be used
+	// req.Method("POST")
+
+	data := make(map[string]interface{}, 0)
+	data["projectId"] = config.GetProjectId()
+
+	data["type"] = "no_git" // this goes with wp-from-blueprint to ignore custom git creation
+
+	data["git_options"] = "skip_with_basicauth"  // since we create it ourselves without any templates ... for now
+	data["debugfct"] = "CreateSiteWithBlueprintAndDbWithoutGit" // since we create it ourselves without any templates ... for now
+	data["title"] = displayName
+	data["branch"] = "master"
+	data["stage"] = "master"
+	data["dbname"] = dbName
+
+	// if blueprintId != "" {
+	// 	data["acentera_type"] = "wp-from-blueprint"
+	// } else {
+	data["acentera_type"] = "wp-from-blueprint" // docker-simple-wp-legacy"
+	// }
+
+	// data["ssh_repository"] = sshRepo
+	// data["http_repository"] = httpRepo
+	// data["repository"] = fullRepository
+	data["blueprintid"] = blueprintId
+	data["databaseServerId"] = dbServerId
+
+	// repodetails := map[string]string{}
+	// repodetails["uuid"] = uuid
+	// repodetails["name"] = repoName
+	// data["repodetails"] = repodetails
+
+	//todo : if bitbucket ???
+	/*
+	token, _ := config.Get("_bitbucket.token")
+	if token != nil {
+		c := bitbucket.NewOAuthbearerToken(token.(string))
+		_, er := c.User.Profile()
+		if er == nil {
+			fmt.Println("added AUTH ? token")
+			data["auth"] = token.(string)
+		}
+	}
+	if _, ok := data["auth"]; !ok {
+		auth := config.GetGitUsername("bitbucket") + ":" + config.GetGitPassword("bitbucket")
+		data["auth"] = base64.StdEncoding.EncodeToString([]byte(auth))
+	}
+	data["token"] = "" // leave empty as we want to use basic auth
+	*/
+	data["token"] = "" // leave empty as we want to use basic auth
+
+	req.Use(body.JSON(data))
+
+	// Perform the request
+	res, err := req.Do()
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Request error: %s\n", err))
+	}
+	if !res.Ok {
+		// fmt.Printf("Invalid server response: %d\n", res.StatusCode)
+		return nil, errors.New(fmt.Sprintf("Invalid server response: %d\n", res.StatusCode))
+	}
+
+	// fmt.Printf("zs Status: %d\n", res.StatusCode)
+	// fmt.Printf("sf Body: %s", res.String())
+
+	if res.StatusCode == 200 {
+		// fmt.Println("Will create stage ?")
+		var decoded map[string]interface{}
+		if res.StatusCode < 400 {
+			if err := UnmarshalResponse(res, &decoded); err != nil {
+				// fmt.Println(errors.Wrap(err, "Unmarshalling response failed"))
+				logger.Error(errors.Wrap(err, "Unmarshalling response failed"))
+			}
+		} else {
+			logger.ExtraVerbosef("HTTP %d: %s", res.StatusCode, res.String())
+		}
+		/*
+		websiteId := ""
+		if _, ok := decoded["websiteId"]; ok {
+			websiteId = decoded["websiteId"].(string)
+		}
+		projectId := ""
+		if _, ok := decoded["projectId"]; ok {
+			projectId = decoded["projectId"].(string)
+		}
+		*/
+		wsSiteUrl := ""
+		if _, ok := decoded["websiteUrl"]; ok {
+			wsSiteUrl = decoded["websiteUrl"].(string)
+		}
+
+		if (wsSiteUrl != "") {
+		// # Do we support stages? I guess so  it make sense... ?
+			fmt.Println(fmt.Sprintf("URGENT!: Please configure your website at %s", wsSiteUrl))
+		} else {
+			fmt.Println("There was an unkown error provisionning your website.")
+			fmt.Println(fmt.Sprintf("Error: %s", decoded))
+		}
+		// fmt.Printf("01 - Status: %d\n", res.StatusCode)
+		// fmt.Printf("01 - Body: %s", res.String())
+	} else {
+		fmt.Println("There was an error provisionning your website.")
+	}
+ 
+	return nil, nil
+}
