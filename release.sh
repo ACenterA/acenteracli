@@ -5,6 +5,7 @@ export VERSION
 echo "Creating release v${VERSION}"
 go get github.com/mitchellh/gox || true
 go get -u -v github.com/aktau/github-release || true
+gox -osarch="linux/arm64"
 gox -osarch="linux/amd64"
 gox -osarch="darwin/amd64"
 ls -latrh
@@ -15,6 +16,8 @@ tar -czvf acentera-darwin-amd64.tar.gz acentera
 gox -osarch="windows/amd64"
 mv *_windows_amd64.exe acentera.exe
 zip -y acentera-windows-amd64.zip acentera.exe
+mv *_linux_arm64 acentera
+tar -czvf acentera-linux-arm64.tar.gz acentera 
 
 [ -e acentera ] && rm -f acentera
 [ -e acentera.exe ] && rm -f acentera.exe
@@ -33,3 +36,6 @@ github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo ac
 
 github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
     --tag v${VERSION} --name acentera-windows-amd64.zip --file acentera-windows-amd64.zip
+
+github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
+    --tag v${VERSION} --name acentera-linux-arm64.tar.gz --file acentera-linux-arm64.tar.gz
