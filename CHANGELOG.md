@@ -1,3 +1,9 @@
+## 0.0.6
+
+# Release date : [2022-03-15]
+
+Disabled need of AWS CREDENTIALS and Profiles
+
 ## 0.0.3
 
 # Release date : [2019-09-01]
