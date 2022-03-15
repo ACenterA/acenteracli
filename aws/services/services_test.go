@@ -534,7 +534,7 @@ func TestBuildInfraRdfGraph(t *testing.T) {
 				RunningTasksCount:    awssdk.Int64(2),
 				Status:               awssdk.String("ACTIVE"),
 				Version:              awssdk.Int64(2),
-				VersionInfo:          &ecs.VersionInfo{AgentVersion: awssdk.String("0.0.5"), DockerVersion: awssdk.String("v1.0.12")},
+				VersionInfo:          &ecs.VersionInfo{AgentVersion: awssdk.String("0.0.6"), DockerVersion: awssdk.String("v1.0.12")},
 			},
 			{
 				ContainerInstanceArn: awssdk.String("cont_inst_2"),

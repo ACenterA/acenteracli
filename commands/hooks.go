@@ -199,6 +199,13 @@ func initCloudServicesHook(cmd *cobra.Command, args []string) error {
 
 	profile, region := config.GetAWSProfile(), config.GetAWSRegion()
 
+	if region == "" {
+		//deactivate
+		return nil
+	}
+	if region == "auto" {
+		region = "us-east-1"
+	}
 	// logger.Verbosef("awless %s - loading AWS session with profile '%s' and region '%s'", config.Version, profile, region)
 
 	if err := awsservices.Init(profile, region, config.GetConfigWithPrefix("aws."), logger.DefaultLogger, config.SetProfileCallback, networkMonitorFlag); err != nil {
@@ -442,6 +449,7 @@ func AskBitBucketUserPassword(username *string, pass *string) (bool, error) {
 	if prompted {
 		config.Set("_bitbucket.token", string(""))
 		c := bitbucket.NewBasicAuth(*username, *pass)
+		fmt.Printf("\nTrying to authenticate using %s\n", *username)
 		r, ez := c.User.Profile()
 		if ez == nil {
 			config.Set("_bitbucket.user.password", *pass)
