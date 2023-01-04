@@ -22,6 +22,7 @@ tar -czvf acentera-linux-arm64.tar.gz acentera
 [ -e acentera ] && rm -f acentera
 [ -e acentera.exe ] && rm -f acentera.exe
 
+GITCOMMIT=$(git rev-parse HEAD)
 git tag v${VERSION}
 git push
 git push --tags
@@ -45,4 +46,4 @@ mv *.tar.gz out/.
 #     --tag v${VERSION} --name acentera-linux-arm64.tar.gz --file acentera-linux-arm64.tar.gz
 # github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
 # 
-ghr -t "${GITHUB_TOKEN}" -u ACenterA -r acenteracli  -n v${VERSION} -delete -replace  -generatenotes  v${VERSION} out/
+ghr -t "${GITHUB_TOKEN}" -u ACenterA -r acenteracli -c "${GITCOMMIT}" -n v${VERSION} -delete -replace  -generatenotes  v${VERSION} out/
