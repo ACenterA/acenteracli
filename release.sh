@@ -30,6 +30,7 @@ git push --tags
 
 mkdir -p out/
 mv *.tar.gz out/.
+mv *.zip out/.
  
 # github-release release --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli --tag v${VERSION}
 # 
