@@ -1,3 +1,4 @@
+github.com/aktau/github-release v0.7.2 h1:la7AnShr2MQPIlBEcRA9MPbI8av0YFmpFP9WM5EoqJs=
 github.com/aktau/github-release v0.7.2/go.mod h1:cPkP83iRnV8pAJyQlQ4vjLJoC+JE+aT5sOrYz3sTsX0=
 github.com/alecthomas/assert v0.0.0-20170929043011-405dbfeb8e38/go.mod h1:r7bzyVFMNntcxPZXK3/+KdruV1H5KSlyVY0gc+NgInI=
 github.com/alecthomas/chroma v0.7.2 h1:B76NU/zbQYIUhUowbi4fmvREmDUJLsUzKWTZmQd3ABY=
