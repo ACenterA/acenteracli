@@ -45,13 +45,4 @@ mv *.tar.gz out/.
 #     --tag v${VERSION} --name acentera-linux-arm64.tar.gz --file acentera-linux-arm64.tar.gz
 # github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
 # 
-ghr \
-    -t "${GITHUB_TOKEN}" \
-    -u ACenterA \     # Set Github username
-    -r acenteracli \         # Set repository name
-    -n v${VERSION} \        # Set release title
-    -delete \         # Delete release and its git tag in advance if it exists (same as -recreate)
-    -replace          # Replace artifacts if it is already uploaded
-    -prerelease \     # Create prerelease
-    -generatenotes \  # Generate Release Notes automatically (See below)
-    v${VERSION} out/
+ghr -t "${GITHUB_TOKEN}" -u ACenterA -r acenteracli  -n v${VERSION} -delete -replace  -generatenotes  v${VERSION} out/
