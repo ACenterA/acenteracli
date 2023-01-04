@@ -237,6 +237,9 @@ func gitCreateBitBucketResource(*cobra.Command, []string) {
 		displayNameOrName = GitRepoName
 	}
 
+	dbPrefix := DBPrefixTmp
+	uploadDir := UploadDirTmp
+
 	fmt.Println("CREATE REPOSITORY TEST A")
 	opt := &bitbucket.RepositoryOptions{
 		Owner:       teamNameOrOwner,
@@ -296,7 +299,7 @@ func gitCreateBitBucketResource(*cobra.Command, []string) {
 		fmt.Println(proj)
 	} else {
 		// fmt.Println("CREATE SITE USING BLUEPRINTID:", BluePrintId)
-		proj, _ := cli.API().Websites().CreateSiteWithBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName, BluePrintId)
+		proj, _ := cli.API().Websites().CreateSiteWithBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName, BluePrintId, dbPrefix, uploadDir)
 		fmt.Println(proj)
 	}
 	/*

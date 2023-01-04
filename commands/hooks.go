@@ -386,7 +386,7 @@ func AskBitBucketUserPassword(username *string, pass *string) (bool, error) {
 		*username = os.Getenv("ACENTERA_BITBUCKET_USERNAME")
 		if *username == "" {
 			if !prompted {
-				fmt.Printf("\nPlease enter your bitbucket credentials.\n")
+				fmt.Printf("\nPlease enter your bitbucket Username / App Password.\n")
 			}
 			prompted = true
 			config.PromptUntilNonEmpty("\nUsername: ", username)

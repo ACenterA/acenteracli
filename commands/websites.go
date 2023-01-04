@@ -34,7 +34,9 @@ import (
 var (
 	defaultWebsitesColumns = []string{}
 	WebsiteId              = ""
-	DBNameTmp			   = ""
+	DBNameTmp              = ""
+	DBPrefixTmp            = ""
+	UploadDirTmp           = ""
 )
 
 func init() {
@@ -46,7 +48,7 @@ func init() {
 	listWebsiteCobraCmd.PersistentFlags().StringSliceVar(&listingColumnsFlag, "columns", []string{}, "Select the properties to display in the columns. Ex: --columns id,name")
 	listWebsiteCobraCmd.PersistentFlags().BoolVar(&noHeadersFlag, "no-headers", false, "Do not display headers")
 	listWebsiteCobraCmd.PersistentFlags().BoolVar(&reverseFlag, "reverse", false, "Use in conjunction with --sort to reverse sort")
-	listWebsiteCobraCmd.PersistentFlags().StringSliceVar(&sortBy, "sort", []string{"Id"}, "Sort tables by column(s) name(s)")	
+	listWebsiteCobraCmd.PersistentFlags().StringSliceVar(&sortBy, "sort", []string{"Id"}, "Sort tables by column(s) name(s)")
 
 	cobra.EnableCommandSorting = false
 
@@ -62,10 +64,12 @@ func init() {
 	createSimpleCobraCmd.PersistentFlags().StringVar(&BluePrintId, "blueprintid", "", "Blueprint Id")
 	createSimpleCobraCmd.PersistentFlags().StringVar(&GitRepoName, "name", "", "Website Short Name")
 	createSimpleCobraCmd.PersistentFlags().StringVar(&DBNameTmp, "dbname", "", "DB Short Name ie: prod_team_shortname")
+	createSimpleCobraCmd.PersistentFlags().StringVar(&DBPrefixTmp, "dbprefix", "wp_", "Enter the DB Prefix")
+	createSimpleCobraCmd.PersistentFlags().StringVar(&UploadDirTmp, "uploaddir", "", "Enter an Upload dir ie: prod_XXXX")
 	createSimpleCobraCmd.PersistentFlags().StringVar(&DatbaseServerId, "database", "", "Database ServerId to create the website databaes. See `database list-servers`")
 	// createSimpleCobraCmd.PersistentFlags().StringVar(&gitTeamName, "team", "", "Git Team name")
 	createSimpleCobraCmd.PersistentFlags().StringVar(&gitDisplayName, "description", "", "Git Short description")
-	websiteCmd.AddCommand(createSimpleCobraCmd)	
+	websiteCmd.AddCommand(createSimpleCobraCmd)
 }
 
 var websiteCmd = &cobra.Command{
@@ -87,7 +91,6 @@ var listWebsiteCobraCmd = &cobra.Command{
 	Short: "List websites",
 	Run:   websiteListResource,
 }
-
 
 var createSimpleCobraCmd = &cobra.Command{
 	Use:   "create",
@@ -283,10 +286,10 @@ func gitWebsiteWithBlueprintAndWithoutGitResource(*cobra.Command, []string) {
 		logger.Error("Missing --name parameter")
 		return
 	}
-	if (DBNameTmp == "") {
+	if DBNameTmp == "" {
 		logger.Error("Missing --dbname parameter")
 		return
-	}	
+	}
 	if gitDisplayName == "" {
 		logger.Error("Missing --description parameter")
 		return
@@ -299,5 +302,5 @@ func gitWebsiteWithBlueprintAndWithoutGitResource(*cobra.Command, []string) {
 
 	proj := config.GetProjectId()
 	fmt.Println(fmt.Sprintf("Project: %s, Will create website [%s] with Description %s - BlueprintId: %s on Database %s", proj, GitRepoName, gitDisplayName, BluePrintId, DatbaseServerId))
-	cli.API().Websites().CreateSiteWithBlueprintAndDbWithoutGit(GitRepoName, gitDisplayName, BluePrintId, DatbaseServerId, DBNameTmp)
+	cli.API().Websites().CreateSiteWithBlueprintAndDbWithoutGit(GitRepoName, gitDisplayName, BluePrintId, DatbaseServerId, DBNameTmp, DBPrefixTmp, UploadDirTmp)
 }

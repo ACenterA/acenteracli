@@ -1,3 +1,9 @@
+## 0.0.7
+
+Adjusted for dbprefix and upload dir
+
+Removed email validation
+
 ## 0.0.6
 
 # Release date : [2022-03-15]
