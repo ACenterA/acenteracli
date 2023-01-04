@@ -99,7 +99,7 @@ func (api *WebsiteApi) GetWebsitesById(projectId string, websiteId string) (*Web
 
 // proj, _().Websites().CreateSiteWithBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName, BluePrintId)
 
-func (api *WebsiteApi) CreateSiteWithBlueprint(repoName string, uuid string, fullRepository string, sshRepo string, httpRepo string, displayName string, blueprintId string) (map[string]WebsiteApi, error) {
+func (api *WebsiteApi) CreateSiteWithBlueprint(repoName string, uuid string, fullRepository string, sshRepo string, httpRepo string, displayName string, blueprintId string, dbprefix string, uploaddir string) (map[string]WebsiteApi, error) {
 	url := "/sites/v1/websites/create"
 	req := API().Path(url).Post()
 
@@ -193,6 +193,8 @@ func (api *WebsiteApi) CreateSiteWithBlueprint(repoName string, uuid string, ful
 		if blueprintId == "" {
 			fmt.Printf("[ERROR[ -] Blueprint ID must not be empty")
 		}
+		data["dbprefix"] = dbprefix
+		data["uploaddir"] = uploaddir
 		req = API().Path(url).Post()
 
 		req.Use(body.JSON(data))
@@ -343,8 +345,7 @@ func (api *APIInternal) Website() (map[string]interface{}, err) {
 }
 */
 
-
-func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, displayName string, blueprintId string, dbServerId string, dbName string) (map[string]WebsiteApi, error) {
+func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, displayName string, blueprintId string, dbServerId string, dbName string, dbPrefix string, uploadDir string) (map[string]WebsiteApi, error) {
 	url := "/sites/v1/websites/create"
 	req := API().Path(url).Post()
 
@@ -356,12 +357,14 @@ func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, d
 
 	data["type"] = "no_git" // this goes with wp-from-blueprint to ignore custom git creation
 
-	data["git_options"] = "skip_with_basicauth"  // since we create it ourselves without any templates ... for now
+	data["git_options"] = "skip_with_basicauth"                 // since we create it ourselves without any templates ... for now
 	data["debugfct"] = "CreateSiteWithBlueprintAndDbWithoutGit" // since we create it ourselves without any templates ... for now
 	data["title"] = displayName
 	data["branch"] = "master"
 	data["stage"] = "master"
 	data["dbname"] = dbName
+	data["dbprefix"] = dbPrefix
+	data["uploaddir"] = uploadDir
 
 	// if blueprintId != "" {
 	// 	data["acentera_type"] = "wp-from-blueprint"
@@ -382,20 +385,20 @@ func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, d
 
 	//todo : if bitbucket ???
 	/*
-	token, _ := config.Get("_bitbucket.token")
-	if token != nil {
-		c := bitbucket.NewOAuthbearerToken(token.(string))
-		_, er := c.User.Profile()
-		if er == nil {
-			fmt.Println("added AUTH ? token")
-			data["auth"] = token.(string)
+		token, _ := config.Get("_bitbucket.token")
+		if token != nil {
+			c := bitbucket.NewOAuthbearerToken(token.(string))
+			_, er := c.User.Profile()
+			if er == nil {
+				fmt.Println("added AUTH ? token")
+				data["auth"] = token.(string)
+			}
 		}
-	}
-	if _, ok := data["auth"]; !ok {
-		auth := config.GetGitUsername("bitbucket") + ":" + config.GetGitPassword("bitbucket")
-		data["auth"] = base64.StdEncoding.EncodeToString([]byte(auth))
-	}
-	data["token"] = "" // leave empty as we want to use basic auth
+		if _, ok := data["auth"]; !ok {
+			auth := config.GetGitUsername("bitbucket") + ":" + config.GetGitPassword("bitbucket")
+			data["auth"] = base64.StdEncoding.EncodeToString([]byte(auth))
+		}
+		data["token"] = "" // leave empty as we want to use basic auth
 	*/
 	data["token"] = "" // leave empty as we want to use basic auth
 
@@ -426,22 +429,22 @@ func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, d
 			logger.ExtraVerbosef("HTTP %d: %s", res.StatusCode, res.String())
 		}
 		/*
-		websiteId := ""
-		if _, ok := decoded["websiteId"]; ok {
-			websiteId = decoded["websiteId"].(string)
-		}
-		projectId := ""
-		if _, ok := decoded["projectId"]; ok {
-			projectId = decoded["projectId"].(string)
-		}
+			websiteId := ""
+			if _, ok := decoded["websiteId"]; ok {
+				websiteId = decoded["websiteId"].(string)
+			}
+			projectId := ""
+			if _, ok := decoded["projectId"]; ok {
+				projectId = decoded["projectId"].(string)
+			}
 		*/
 		wsSiteUrl := ""
 		if _, ok := decoded["websiteUrl"]; ok {
 			wsSiteUrl = decoded["websiteUrl"].(string)
 		}
 
-		if (wsSiteUrl != "") {
-		// # Do we support stages? I guess so  it make sense... ?
+		if wsSiteUrl != "" {
+			// # Do we support stages? I guess so  it make sense... ?
 			fmt.Println(fmt.Sprintf("URGENT!: Please configure your website at %s", wsSiteUrl))
 		} else {
 			fmt.Println("There was an unkown error provisionning your website.")
@@ -452,6 +455,6 @@ func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, d
 	} else {
 		fmt.Println("There was an error provisionning your website.")
 	}
- 
+
 	return nil, nil
 }

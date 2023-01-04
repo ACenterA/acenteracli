@@ -22,7 +22,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
 	github.com/jmespath/go-jmespath v0.4.0
-	github.com/ktrysmt/go-bitbucket v0.5.7
+	github.com/ktrysmt/go-bitbucket v0.9.44
 	github.com/mattn/go-colorable v0.0.9
 	github.com/mattn/go-isatty v0.0.4
 	github.com/mattn/go-runewidth v0.0.2
@@ -43,9 +43,11 @@ require (
 	github.com/wallix/awless-scheduler v0.0.6
 	github.com/wallix/triplestore v0.0.0-20180213143850-4099dd913851
 	github.com/xanzy/ssh-agent v0.2.1
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
-	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	golang.org/x/net v0.0.0-20220420153159-1850ba15e1be
+	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad
+	golang.org/x/tools v0.1.10 // indirect
+	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	gopkg.in/h2non/gentleman.v2 v2.0.4
 	gopkg.in/src-d/go-billy.v3 v3.1.0
 	gopkg.in/src-d/go-git.v4 v4.0.0-rc13

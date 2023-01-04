@@ -57,6 +57,7 @@ var (
 	KeysDir    = filepath.Join(AwlessHome, "keys")
 
 	emailRe            = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	stringRe           = regexp.MustCompile("^.*")
 	AwlessFirstInstall bool
 )
 
@@ -150,7 +151,7 @@ func PromptUntilNonEmpty(question string, v *string) {
 		fmt.Print(question)
 		_, err := fmt.Scanln(v)
 		if err == nil && strings.TrimSpace(*v) != "" {
-			if emailRe.MatchString(*v) {
+			if stringRe.MatchString(*v) {
 				return false
 			} else {
 				fmt.Printf("Error: %s. Retry please...\n", "Invalid email address")

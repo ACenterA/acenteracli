@@ -158,7 +158,7 @@ func gitBitBucketListResource(*cobra.Command, []string) {
 	f, errz := c.User.Profile()
 	if errz == nil {
 
-		accountId := f.(map[string]interface{})["account_id"].(string) // or team ?
+		accountId := f.AccountId // (map[string]interface{})["account_id"].(string) // or team ?
 
 		teamNameOrOwner := gitTeamName
 		if teamNameOrOwner == "" {
@@ -237,6 +237,10 @@ func gitCreateBitBucketResource(*cobra.Command, []string) {
 		displayNameOrName = GitRepoName
 	}
 
+	dbPrefix := DBPrefixTmp
+	uploadDir := UploadDirTmp
+
+	fmt.Println("CREATE REPOSITORY TEST A")
 	opt := &bitbucket.RepositoryOptions{
 		Owner:       teamNameOrOwner,
 		RepoSlug:    GitRepoName,
@@ -244,6 +248,7 @@ func gitCreateBitBucketResource(*cobra.Command, []string) {
 		Description: fmt.Sprintf("[ACenterA] - %s", displayNameOrName),
 		Scm:         "git",
 	}
+	fmt.Println("CREATE REPOSITORY TEST B")
 	res, err := c.Repositories.Repository.Create(opt)
 	if err != nil {
 		fmt.Println(err)
@@ -294,7 +299,7 @@ func gitCreateBitBucketResource(*cobra.Command, []string) {
 		fmt.Println(proj)
 	} else {
 		// fmt.Println("CREATE SITE USING BLUEPRINTID:", BluePrintId)
-		proj, _ := cli.API().Websites().CreateSiteWithBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName, BluePrintId)
+		proj, _ := cli.API().Websites().CreateSiteWithBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName, BluePrintId, dbPrefix, uploadDir)
 		fmt.Println(proj)
 	}
 	/*
@@ -377,15 +382,25 @@ func gitCreateBlueprintBitBucketResource(*cobra.Command, []string) {
 		displayNameOrName = GitRepoName
 	}
 
+	fmt.Println("1a -WILL CREATE GIT ON : %s / %s - %s", teamNameOrOwner, GitRepoName, fmt.Sprintf("[ACenterA] - %s", displayNameOrName))
 	opt := &bitbucket.RepositoryOptions{
-		Owner:       teamNameOrOwner,
-		RepoSlug:    GitRepoName,
-		IsPrivate:   "true",
+		Owner:    teamNameOrOwner,
+		RepoSlug: GitRepoName,
+		// IsPrivate:   "true",
 		Description: fmt.Sprintf("[ACenterA] - %s", displayNameOrName),
-		Scm:         "git",
+		// Scm:         "git",
 	}
+
+	fmt.Println("2a - CALLING CREATE REPOSITORY HEREzz")
+	fmt.Println("2a - CALLING CREATE REPOSITORY HEREzz a1:", opt.Owner)
+	fmt.Println("2a - CALLING CREATE REPOSITORY HEREzz a2:", opt.RepoSlug)
+	fmt.Println("2a - CALLING CREATE REPOSITORY HEREzz a3:", opt.IsPrivate)
+	fmt.Println("2a - CALLING CREATE REPOSITORY HEREzz a4:", opt.Description)
+	fmt.Println("2a - CALLING CREATE REPOSITORY HEREzz a5:", opt.Scm)
+	fmt.Println(opt)
 	res, err := c.Repositories.Repository.Create(opt)
 	if err != nil {
+		fmt.Println("3a - CALLING GOT ERROR HERE A")
 		fmt.Println(err)
 		panic(err)
 	}
@@ -429,6 +444,7 @@ func gitCreateBlueprintBitBucketResource(*cobra.Command, []string) {
 		fmt.Println("GOT UUID", uuidInfo)
 	*/
 
+	fmt.Println("OK CALLING CREATE API BLCUEPRINT EHRE AAA")
 	proj, _ := cli.API().Blueprints().CreateBlueprint(GitRepoName, uuidInfo, fmt.Sprintf("https://api.bitbucket.org/2.0/repositories/%v", res.Full_name), sshRepo, httpRepo, displayNameOrName)
 	fmt.Println(proj)
 	/*
