@@ -17,6 +17,8 @@ pipelines:
           - mkdir -pv "${PACKAGE_PATH}"
           - tar -cO --exclude=bitbucket-pipelines.yml . | tar -xv -C "${PACKAGE_PATH}"
           - cd "${PACKAGE_PATH}"
+          - go install github.com/mitchellh/gox@latest
+          - go install golang.org/x/tools/cmd/goimports@latest
           - go mod download
           - go env
           - go get -v golang.org/x/net/proxy
@@ -27,6 +29,7 @@ pipelines:
           - cd "$(find /go/pkg/mod/golang.org/x/ -type d -name goimports)" && go build && cp -f goimports /go/. && cd -
           - export PATH=$PATH:/go/
           - find /go | grep goimport
+          - find /go | grep gox
           - go generate gen/aws/generators/main.go
           - cd ${GOPATH}/src/golang.org/x/net/proxy && go get -u -v && cd -
           - go build -o acentera -v
