@@ -25,17 +25,33 @@ tar -czvf acentera-linux-arm64.tar.gz acentera
 git tag v${VERSION}
 git push
 git push --tags
+
+
+mkdir -p out/
+mv *.tar.gz out/.
  
-github-release release --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli --tag v${VERSION}
-
-github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
-    --tag v${VERSION} --name acentera-linux-amd64.tar.gz --file acentera-linux-amd64.tar.gz
-
-github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
-    --tag v${VERSION} --name acentera-darwin-amd64.tar.gz --file acentera-darwin-amd64.tar.gz
-
-github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
-    --tag v${VERSION} --name acentera-windows-amd64.zip --file acentera-windows-amd64.zip
-
-github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
-    --tag v${VERSION} --name acentera-linux-arm64.tar.gz --file acentera-linux-arm64.tar.gz
+# github-release release --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli --tag v${VERSION}
+# 
+# github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
+#     --tag v${VERSION} --name acentera-linux-amd64.tar.gz --file acentera-linux-amd64.tar.gz
+# 
+# github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
+#     --tag v${VERSION} --name acentera-darwin-amd64.tar.gz --file acentera-darwin-amd64.tar.gz
+# 
+# github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
+#     --tag v${VERSION} --name acentera-windows-amd64.zip --file acentera-windows-amd64.zip
+# 
+# github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
+#     --tag v${VERSION} --name acentera-linux-arm64.tar.gz --file acentera-linux-arm64.tar.gz
+# github-release upload --security-token ${GITHUB_TOKEN} --user ACenterA --repo acenteracli \
+# 
+ghr \
+    -t "${GITHUB_TOKEN}" \
+    -u ACenterA \     # Set Github username
+    -r acenteracli \         # Set repository name
+    -n v${VERSION} \        # Set release title
+    -delete \         # Delete release and its git tag in advance if it exists (same as -recreate)
+    -replace          # Replace artifacts if it is already uploaded
+    -prerelease \     # Create prerelease
+    -generatenotes \  # Generate Release Notes automatically (See below)
+    v${VERSION} out/

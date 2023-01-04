@@ -20,6 +20,7 @@ pipelines:
           - go install github.com/mitchellh/gox@latest
           - go install golang.org/x/tools/cmd/goimports@latest
           - go install github.com/aktau/github-release@v0.7.2
+          - go install github.com/tcnksm/ghr@latest
           - go mod download
           - go env
           - go get -v golang.org/x/net/proxy
