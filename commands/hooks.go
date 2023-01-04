@@ -372,7 +372,7 @@ func AskBitBucketUserPassword(username *string, pass *string) (bool, error) {
 	if er == nil {
 		BitBucket = c
 		fmt.Println("Successfully loggedin using Bitbucket Token")
-		config.Set("bitbucket.user.account_id", r.(map[string]interface{})["account_id"].(string))
+		config.Set("bitbucket.user.account_id", r.AccountId) // r.(map[string]interface{})["account_id"].(string))
 		ac, _ := config.Get("bitbucket.user.account_id")
 		config.Set("_bitbucket.token", token)
 		GitOwner = ac.(string)
@@ -411,7 +411,7 @@ func AskBitBucketUserPassword(username *string, pass *string) (bool, error) {
 			config.Set("_bitbucket.token", string(""))
 			config.Set("bitbucket.user.username", *username)
 			config.Set("_bitbucket.user.password", *pass)
-			config.Set("bitbucket.user.account_id", r.(map[string]interface{})["account_id"].(string))
+			config.Set("bitbucket.user.account_id", r.AccountId) // r.(map[string]interface{})["account_id"].(string))
 			BitBucket = c
 
 			ac, _ := config.Get("bitbucket.user.account_id")
@@ -429,7 +429,7 @@ func AskBitBucketUserPassword(username *string, pass *string) (bool, error) {
 				config.Set("_bitbucket.token", string(""))
 				config.Set("bitbucket.user.username", *username)
 				config.Set("_bitbucket.user.password", *pass)
-				config.Set("bitbucket.user.account_id", r.(map[string]interface{})["account_id"].(string))
+				config.Set("bitbucket.user.account_id", r.AccountId) // r.(map[string]interface{})["account_id"].(string))
 				BitBucket = c
 				ac, _ := config.Get("bitbucket.user.account_id")
 				GitOwner = ac.(string)
@@ -453,7 +453,7 @@ func AskBitBucketUserPassword(username *string, pass *string) (bool, error) {
 		r, ez := c.User.Profile()
 		if ez == nil {
 			config.Set("_bitbucket.user.password", *pass)
-			config.Set("bitbucket.user.account_id", r.(map[string]interface{})["account_id"].(string))
+			config.Set("bitbucket.user.account_id", r.AccountId) // r.(map[string]interface{})["account_id"].(string))
 
 			ac, _ := config.Get("bitbucket.user.account_id")
 			GitOwner = ac.(string)

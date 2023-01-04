@@ -9,7 +9,7 @@ generate:
 
 build: generate
 	@echo Building application binary
-	@go build -o acentera
+	@go build -o acentera || (go get -u golang.org/x/tools/cmd/goimports && go build -o acentera)
 
 build-only:
 	@echo Building application binary
