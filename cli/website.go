@@ -38,12 +38,14 @@ import (
 */
 
 type WebsiteStage struct {
+	Id      string
 	Enabled string `json:"enabled"`
 	Stage   string `json:"title"`
 }
 
 type WebsiteApi struct {
 	Id           string                  `json:"websiteId"`
+	Type         string                  `json:"sk"`
 	Name         string                  `json:"title"`
 	Status       string                  `json:"type"`
 	ACenterAType string                  `json:"acentera_type"`
@@ -51,6 +53,8 @@ type WebsiteApi struct {
 	Stage        string                  `json:"stage"`
 	Project      string                  `json:"projectId"`
 	Stages       map[string]WebsiteStage `json:"stages"`
+	Email        string                  `json:"WPEmail"`
+	EmailFrom    string                  `json:"WPEmailFrom"`
 }
 
 func WebsiteApiObject() WebsiteApi {
@@ -74,6 +78,8 @@ func (api *WebsiteApi) GetWebsites(projectId string) (map[string]WebsiteApi, err
 		fmt.Println(err)
 		return nil, err
 	}
+	// 	fmt.Println("WEBISTE INFO IS:")
+	// fmt.Println(fmt.Sprintf("%s", jsonData))
 	if err := json.Unmarshal(jsonData, &resp); err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -216,6 +222,60 @@ func (api *WebsiteApi) CreateSiteWithBlueprint(repoName string, uuid string, ful
 	return nil, nil
 }
 
+func (api *WebsiteApi) DeleteEmailConfiguration(projectId string, websiteId string, stageId string, stageName string) (map[string]WebsiteApi, error) {
+
+	url := fmt.Sprintf("/sites/v1/websites/%s/%s/stage/%s/email/delete", projectId, websiteId, stageId)
+
+	data := make(map[string]interface{}, 0)
+	data["projectId"] = config.GetProjectId()
+	data["websiteId"] = websiteId
+	data["stageId"] = stageId
+
+	req := API().Path(url).Post()
+	req.Use(body.JSON(data))
+
+	// Perform the request
+	res, err := req.Do()
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Request error: %s\n", err))
+	}
+	if !res.Ok {
+		// fmt.Printf("Invalid server response: %d\n", res.StatusCode)
+		return nil, errors.New(fmt.Sprintf("Invalid server response: %d\n", res.StatusCode))
+	}
+
+	return nil, nil
+}
+
+func (api *WebsiteApi) UpdateEmailConfiguration(projectId string, websiteId string, stageId string, stageName string, mailFrom string, mail string) (map[string]WebsiteApi, error) {
+	url := fmt.Sprintf("/sites/v1/websites/%s/%s/stage/%s/email/configure", projectId, websiteId, stageId)
+
+	// fmt.Println(fmt.Sprintf("Sumit towrards %s", url))
+
+	data := make(map[string]interface{}, 0)
+	data["projectId"] = config.GetProjectId()
+	data["websiteId"] = websiteId
+	data["stageId"] = stageId
+	data["email"] = mail
+	data["email_from"] = mailFrom
+
+	req := API().Path(url).Post()
+	req.Use(body.JSON(data))
+	// fmt.Println(fmt.Sprintf("Sumit data %s", data))
+
+	// Perform the request
+	res, err := req.Do()
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Request error: %s\n", err))
+	}
+	if !res.Ok {
+		// fmt.Printf("Invalid server response: %d\n", res.StatusCode)
+		return nil, errors.New(fmt.Sprintf("Invalid server response: %d\n", res.StatusCode))
+	}
+
+	return nil, nil
+}
+
 func (api *WebsiteApi) CreateSite(repoName string, uuid string, fullRepository string, sshRepo string, httpRepo string, displayName string) (map[string]WebsiteApi, error) {
 	url := "/sites/v1/websites/create"
 	req := API().Path(url).Post()
@@ -345,7 +405,7 @@ func (api *APIInternal) Website() (map[string]interface{}, err) {
 }
 */
 
-func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, displayName string, blueprintId string, dbServerId string, dbName string, dbPrefix string, uploadDir string) (map[string]WebsiteApi, error) {
+func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, displayName string, blueprintId string, dbServerId string, dbName string, dbPrefix string, uploadDir string, emailFrom string, email string) (map[string]WebsiteApi, error) {
 	url := "/sites/v1/websites/create"
 	req := API().Path(url).Post()
 
@@ -365,6 +425,10 @@ func (api *WebsiteApi) CreateSiteWithBlueprintAndDbWithoutGit(repoName string, d
 	data["dbname"] = dbName
 	data["dbprefix"] = dbPrefix
 	data["uploaddir"] = uploadDir
+	if emailFrom != "" && email != "" {
+		data["email_from"] = emailFrom
+		data["email"] = email
+	}
 
 	// if blueprintId != "" {
 	// 	data["acentera_type"] = "wp-from-blueprint"

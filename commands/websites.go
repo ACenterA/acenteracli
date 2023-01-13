@@ -37,6 +37,9 @@ var (
 	DBNameTmp              = ""
 	DBPrefixTmp            = ""
 	UploadDirTmp           = ""
+	EmailFromTmp           = ""
+	EmailTmp               = ""
+	StageTmp               = "master"
 )
 
 func init() {
@@ -66,10 +69,18 @@ func init() {
 	createSimpleCobraCmd.PersistentFlags().StringVar(&DBNameTmp, "dbname", "", "DB Short Name ie: prod_team_shortname")
 	createSimpleCobraCmd.PersistentFlags().StringVar(&DBPrefixTmp, "dbprefix", "wp_", "Enter the DB Prefix")
 	createSimpleCobraCmd.PersistentFlags().StringVar(&UploadDirTmp, "uploaddir", "", "Enter an Upload dir ie: prod_XXXX")
+	createSimpleCobraCmd.PersistentFlags().StringVar(&EmailFromTmp, "email-from", "", "Enter the From Display Name")
+	createSimpleCobraCmd.PersistentFlags().StringVar(&EmailTmp, "email", "", "Enter an valid email address")
 	createSimpleCobraCmd.PersistentFlags().StringVar(&DatbaseServerId, "database", "", "Database ServerId to create the website databaes. See `database list-servers`")
 	// createSimpleCobraCmd.PersistentFlags().StringVar(&gitTeamName, "team", "", "Git Team name")
 	createSimpleCobraCmd.PersistentFlags().StringVar(&gitDisplayName, "description", "", "Git Short description")
 	websiteCmd.AddCommand(createSimpleCobraCmd)
+
+	updateEmailCobraCmd.PersistentFlags().StringVar(&WebsiteId, "website", "", "Website Id")
+	updateEmailCobraCmd.PersistentFlags().StringVar(&EmailFromTmp, "email-from", "", "Enter the From Display Name")
+	updateEmailCobraCmd.PersistentFlags().StringVar(&EmailTmp, "email", "", "Enter an valid email address")
+	updateEmailCobraCmd.PersistentFlags().StringVar(&StageTmp, "stage", "", "Enter an valid stage or leave empty to use the default 'master'")
+	websiteCmd.AddCommand(updateEmailCobraCmd)
 }
 
 var websiteCmd = &cobra.Command{
@@ -90,6 +101,12 @@ var listWebsiteCobraCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List websites",
 	Run:   websiteListResource,
+}
+
+var updateEmailCobraCmd = &cobra.Command{
+	Use:   "update-email",
+	Short: "Update website email",
+	Run:   websiteEmailUpdate,
 }
 
 var createSimpleCobraCmd = &cobra.Command{
@@ -154,6 +171,53 @@ func websiteGetbyIdResource(*cobra.Command, []string) {
 
 	exitOn(displayer.Print(os.Stdout))
 	return
+}
+
+func websiteEmailUpdate(*cobra.Command, []string) {
+	// websites, _ := cli.API().Websites().GetWebsites(config.GetProjectId())
+	if WebsiteId == "" {
+		logger.Error("Missing --website parameter")
+		return
+	}
+
+	if EmailFromTmp != "" && EmailTmp == "" {
+		logger.Error("Missing --email parameter")
+		return
+	}
+	if EmailFromTmp == "" && EmailTmp != "" {
+		logger.Error("Missing --email-from parameter")
+		return
+	}
+	if StageTmp == "" {
+		StageTmp = "master"
+	}
+
+	website, err := cli.API().Websites().GetWebsitesById(config.GetProjectId(), WebsiteId)
+	exitOn(err)
+	if len(website.Stages) <= 0 {
+		exitWithError(nil, "This website is not from a blueprint, cannot perform update email yet...")
+		return
+	}
+
+	var currentStage cli.WebsiteStage
+	for id, r := range website.Stages {
+		if r.Stage == StageTmp {
+			currentStage = r
+			currentStage.Id = id
+			break
+		}
+	}
+
+	// fmt.Printf(fmt.Sprintf("\nproject:%s\n", website.Project))
+	if EmailFromTmp == "" && EmailTmp == "" {
+		// Delete the WPEmail and WPEmailFrom
+		cli.API().Websites().DeleteEmailConfiguration(website.Project, website.Id, currentStage.Id, currentStage.Stage)
+		return
+	}
+
+	// exitOn(displayer.Print(os.Stdout))
+	cli.API().Websites().UpdateEmailConfiguration(website.Project, website.Id, currentStage.Id, currentStage.Stage, EmailFromTmp, EmailTmp)
+	// fmt.Println("Received webiste:", website)
 }
 
 func websiteListResource(*cobra.Command, []string) {
@@ -294,6 +358,16 @@ func gitWebsiteWithBlueprintAndWithoutGitResource(*cobra.Command, []string) {
 		logger.Error("Missing --description parameter")
 		return
 	}
+
+	if EmailFromTmp != "" && EmailTmp == "" {
+		logger.Error("Missing --email parameter")
+		return
+	}
+	if EmailFromTmp == "" && EmailTmp != "" {
+		logger.Error("Missing --email-from parameter")
+		return
+	}
+
 	if DatbaseServerId == "" {
 		logger.Error("Missing --database parameter")
 		d, _ := cli.API().Databases().GetDatabases(config.GetProjectId())
@@ -302,5 +376,5 @@ func gitWebsiteWithBlueprintAndWithoutGitResource(*cobra.Command, []string) {
 
 	proj := config.GetProjectId()
 	fmt.Println(fmt.Sprintf("Project: %s, Will create website [%s] with Description %s - BlueprintId: %s on Database %s", proj, GitRepoName, gitDisplayName, BluePrintId, DatbaseServerId))
-	cli.API().Websites().CreateSiteWithBlueprintAndDbWithoutGit(GitRepoName, gitDisplayName, BluePrintId, DatbaseServerId, DBNameTmp, DBPrefixTmp, UploadDirTmp)
+	cli.API().Websites().CreateSiteWithBlueprintAndDbWithoutGit(GitRepoName, gitDisplayName, BluePrintId, DatbaseServerId, DBNameTmp, DBPrefixTmp, UploadDirTmp, EmailFromTmp, EmailTmp)
 }

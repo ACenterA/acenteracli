@@ -1,3 +1,10 @@
+# Changelog
+
+## 0.0.8
+
+Add ability to add email eaddress and email from name
+
+
 ## 0.0.7
 
 Adjusted for dbprefix and upload dir
