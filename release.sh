@@ -8,11 +8,14 @@ go get -u -v github.com/aktau/github-release || true
 gox -osarch="linux/arm64"
 gox -osarch="linux/amd64"
 gox -osarch="darwin/amd64"
+gox -osarch="darwin/arm64"
 ls -latrh
 mv *_linux_amd64 acentera
 tar -czvf acentera-linux-amd64.tar.gz acentera 
 mv *_darwin_amd64 acentera
 tar -czvf acentera-darwin-amd64.tar.gz acentera 
+mv *_darwin_arm64 acentera
+tar -czvf acentera-darwin-arm64.tar.gz acentera 
 gox -osarch="windows/amd64"
 mv *_windows_amd64.exe acentera.exe
 zip -y acentera-windows-amd64.zip acentera.exe

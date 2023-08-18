@@ -3,25 +3,28 @@ module github.com/wallix/awless
 go 1.13
 
 require (
-	github.com/aktau/github-release v0.7.2 // indirect
+	github.com/aktau/github-release v0.10.0 // indirect
 	github.com/alecthomas/chroma v0.7.2
 	github.com/aws/aws-sdk-go v1.35.31
 	github.com/boltdb/bolt v1.3.1
 	github.com/boombuler/barcode v1.0.1-0.20180203080148-5a7395f62784
 	github.com/chzyer/readline v0.0.0-20171208011716-f6d7a1f6fbf3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/color v1.5.0
+	github.com/github-release/github-release v0.10.0 // indirect
 	github.com/go-ini/ini v1.32.0
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/google/go-github/v30 v30.1.0
 	github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f
 	github.com/gorilla/mux v1.6.0
 	github.com/gucumber/gucumber v0.0.0-20180127021336-7d5c79e832a2 // indirect
+	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
 	github.com/inconshreveable/mousetrap v1.0.0
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
 	github.com/jmespath/go-jmespath v0.4.0
+	github.com/kevinburke/rest v0.0.0-20230306061549-8f487d822ad0 // indirect
 	github.com/ktrysmt/go-bitbucket v0.9.44
 	github.com/mattn/go-colorable v0.0.9
 	github.com/mattn/go-isatty v0.0.4

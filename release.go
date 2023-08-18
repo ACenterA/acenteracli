@@ -44,7 +44,7 @@ var (
 )
 
 var builds = map[string][]string{
-	"darwin":  {"amd64"},
+	"darwin":  {"amd64","arm64"},
 	"linux":   {"386", "amd64"},
 	"windows": {"386", "amd64"},
 }
