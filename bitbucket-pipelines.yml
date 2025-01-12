@@ -3,7 +3,7 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: golang:1.18
+image: golang:1.23
 
 pipelines:
   branches:
@@ -32,7 +32,8 @@ pipelines:
           - export PATH=$PATH:/go/
           - find /go | grep goimport
           - find /go | grep gox
-          - go generate gen/aws/generators/main.go
+          - go mod vendor
+          - go generate -mod=mod gen/aws/generators/main.go
           - cd ${GOPATH}/src/golang.org/x/net/proxy && go get -u -v && cd -
           - export CGO_CFLAGS="-fno-stack-protector" && export CGO_LDFLAGS="-fno-stack-protector" && go build -gcflags="all=-N -l" -o acentera -v
           - cd ${PACKAGE_PATH}
