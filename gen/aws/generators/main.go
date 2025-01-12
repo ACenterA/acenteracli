@@ -1,4 +1,4 @@
-//go:generate go run $GOFILE properties.go paramsdoc.go mocks.go fetchers.go services.go commands.go acceptance_mocks.go global.go
+//go:generate go run $GOFILE properties.go paramsdoc.go mocks.go fetchers.go services.go commands.go global.go
 
 //go:generate gofmt -s -w ../../../aws
 //go:generate goimports -w ../../../aws
@@ -20,9 +20,6 @@
 
 //go:generate gofmt -s -w ../../../aws/spec
 //go:generate goimports -w ../../../aws/spec
-
-//go:generate gofmt -s -w ../../../acceptance/aws
-//go:generate goimports -w ../../../acceptance/aws
 
 package main
 
@@ -64,7 +61,7 @@ func main() {
 	// commands
 	generateCommands()
 	// generateAcceptanceMocks()
-	generateAcceptanceFactory()
+	// generateAcceptanceFactory()
 
 	// properties
 	generateProperties()
@@ -73,7 +70,7 @@ func main() {
 	// Global objects?
 	generateGlobal()
 	// doc
-	generateParamsDocLookup()
+	// generateParamsDocLookup()
 }
 
 func writeTemplateToFile(templ *template.Template, data interface{}, dir, filename string) {

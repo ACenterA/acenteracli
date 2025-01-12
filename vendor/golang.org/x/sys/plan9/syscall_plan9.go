@@ -12,6 +12,7 @@
 package plan9
 
 import (
+	"bytes"
 	"syscall"
 	"unsafe"
 )
@@ -50,12 +51,11 @@ func atoi(b []byte) (n uint) {
 }
 
 func cstring(s []byte) string {
-	for i := range s {
-		if s[i] == 0 {
-			return string(s[0:i])
-		}
+	i := bytes.IndexByte(s, 0)
+	if i == -1 {
+		i = len(s)
 	}
-	return string(s)
+	return string(s[:i])
 }
 
 func errstr() string {
@@ -132,8 +132,10 @@ func Pipe(p []int) (err error) {
 	}
 	var pp [2]int32
 	err = pipe(&pp)
-	p[0] = int(pp[0])
-	p[1] = int(pp[1])
+	if err == nil {
+		p[0] = int(pp[0])
+		p[1] = int(pp[1])
+	}
 	return
 }
 
