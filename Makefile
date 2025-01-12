@@ -5,15 +5,16 @@ test:
 
 generate:
 	@echo Generating commands code: runtime, doc, etc.
+	@go mod vendor
 	@go generate gen/aws/generators/main.go
 
 build: generate
 	@echo Building application binary
-	@go build -o acentera || (go get -u golang.org/x/tools/cmd/goimports && go build -o acentera)
+	@go build -mod=mod -o acentera || (go get -u golang.org/x/tools/cmd/goimports && go build -o acentera)
 
 build-only:
 	@echo Building application binary
-	@go build -o acentera
+	@go build -mod=mod -o acentera
 
 build-watch:
 	@echo Watch/Build application binary
