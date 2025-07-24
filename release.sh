@@ -12,17 +12,22 @@ gox -osarch="darwin/arm64"
 ls -latrh
 mv *_linux_amd64 acentera
 tar -czvf acentera-linux-amd64.tar.gz acentera 
+rm -f acentera
 mv *_darwin_amd64 acentera
 tar -czvf acentera-darwin-amd64.tar.gz acentera 
+rm -f acentera
 mv *_darwin_arm64 acentera
 tar -czvf acentera-darwin-arm64.tar.gz acentera 
+rm -f acentera
 
 mv *_linux_arm64 acentera
 tar -czvf acentera-linux-arm64.tar.gz acentera 
+rm -f acentera
 
 gox -osarch="windows/amd64"
 mv *_windows_amd64.exe acentera.exe
 zip -y acentera-windows-amd64.zip acentera.exe
+rm -f acentera.exe
 
 [ -e acentera ] && rm -f acentera
 [ -e acentera.exe ] && rm -f acentera.exe
